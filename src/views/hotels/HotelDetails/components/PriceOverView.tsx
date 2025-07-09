@@ -25,7 +25,7 @@ const PriceOverView = () => {
         <div className="d-sm-flex justify-content-sm-between align-items-center mb-3">
           <div>
             <span>Price Start at</span>
-            <h4 className="card-title mb-0">{currency}3,500</h4>
+            <h4 className="card-title mb-0">{currency}3,500 HEREHHE</h4>
           </div>
           <div>
             <h6 className="fw-normal mb-0">1 room per night</h6>

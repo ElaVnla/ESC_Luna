@@ -21,7 +21,7 @@ const AboutHotel = () => {
             <div className="vstack gap-5">
               <Card className="bg-transparent">
                 <CardHeader className="border-bottom bg-transparent px-0 pt-0">
-                  <h3 className="mb-0">About This Hotel</h3>
+                  <h3 className="mb-0">About This Hotel - About Hotel.tsx</h3>
                 </CardHeader>
                 <CardBody className="pt-4 p-0">
                   <h5 className="fw-light mb-4">Main Highlights</h5>

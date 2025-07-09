@@ -9,7 +9,7 @@ const RoomOptions = () => {
     <Card className="bg-transparent" id="room-options">
       <CardHeader className="border-bottom bg-transparent px-0 pt-0">
         <div className="d-sm-flex justify-content-sm-between align-items-center">
-          <h3 className="mb-2 mb-sm-0">Room Options</h3>
+          <h3 className="mb-2 mb-sm-0">Room Options.tsx</h3>
           <Col sm={4}>
             <form className="form-control-bg-light">
               <SelectFormInput className="form-select form-select-sm js-choice border-0">

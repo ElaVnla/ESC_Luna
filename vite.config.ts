@@ -9,9 +9,21 @@ const __dirname = dirname(__filename);
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
     },
+  },
+
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://hotelapi.loyalty.dev',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
 });
