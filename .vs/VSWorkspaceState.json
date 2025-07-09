@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\entities",
+    "\\src\\routes",
+    "\\src\\views",
+    "\\src\\views\\hotels\\Booking",
+    "\\src\\views\\hotels\\Grid",
+    "\\src\\views\\hotels\\HotelDetails",
+    "\\src\\views\\hotels\\Resort",
+    "\\src\\views\\hotels\\Resort\\components"
+  ],
+  "SelectedNode": "\\src\\entities\\room.ts",
+  "PreviewInSolutionExplorer": false
+}

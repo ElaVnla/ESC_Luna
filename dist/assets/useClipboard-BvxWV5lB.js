@@ -1,0 +1,1 @@
+import{r as e}from"./index-CJzBCe4p.js";const p=()=>{const[a,o]=e.useState(null);return[a,async r=>{if(!navigator.clipboard)return console.warn("Clipboard not supported"),r;try{return await navigator.clipboard.writeText(r),o(r),r}catch(t){return console.warn("Copy failed",t),o(null),null}}]};export{p as u};

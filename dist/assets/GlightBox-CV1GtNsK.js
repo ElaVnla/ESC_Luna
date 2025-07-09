@@ -1,0 +1,1 @@
+import{r,dc as c,j as o,c as l}from"./index-CJzBCe4p.js";const n=({children:f,image:a,...t})=>{const s=r.useRef(null);return r.useEffect(()=>{let e=null;return s.current&&(e=new c({openEffect:"fade",closeEffect:"fade"})),()=>e==null?void 0:e.destroy()},[s]),o.jsx("a",{ref:s,href:a,...t,className:l("glightbox",t.className),children:f})};export{n as G};
