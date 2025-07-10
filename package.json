@@ -1,0 +1,23 @@
+{
+  "name": "ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\""  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElaVnla/ECS_Luna.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ElaVnla/ECS_Luna/issues"
+  },
+  "homepage": "https://github.com/ElaVnla/ECS_Luna#readme",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
