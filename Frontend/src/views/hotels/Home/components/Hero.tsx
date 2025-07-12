@@ -9,6 +9,7 @@ import bg6 from '@/assets/images/bg/06.jpg'
 import fourByThree11 from '@/assets/images/category/hotel/4by3/11.jpg'
 import fourByThree12 from '@/assets/images/category/hotel/4by3/12.jpg'
 
+
 const Hero = () => {
   return (
     <section className="pt-3 pt-lg-5">

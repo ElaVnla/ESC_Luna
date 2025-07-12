@@ -20,7 +20,7 @@ import type { FeaturedHotelType, NearbyPlaceType, NotificationType } from './typ
 export const nearbyPlacesData: NearbyPlaceType[] = [
   {
     image: hotelNearby1,
-    name: 'San Francisco',
+    name: 'San Diego',
     travelTime: '13 mins drive',
   },
   {
