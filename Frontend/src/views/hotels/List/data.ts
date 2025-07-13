@@ -7,16 +7,36 @@ import hotel8 from '@/assets/images/category/hotel/4by3/08.jpg'
 import hotel11 from '@/assets/images/category/hotel/4by3/11.jpg'
 import hotel10 from '@/assets/images/category/hotel/4by3/10.jpg'
 
+// export type HotelsListType = {
+//   id: number
+//   name: string
+//   address: string
+//   sale?: string
+//   images: string[]
+//   rating: number
+//   features: string[]
+//   price: number
+//   schemes?: string[]
+// }
+
 export type HotelsListType = {
-  id: number
-  name: string
-  address: string
-  sale?: string
-  images: string[]
-  rating: number
-  features: string[]
-  price: number
-  schemes?: string[]
+  id: string;
+  name: string;
+  address: string;
+  rating: number;
+  latitude: number;
+  longitude: number;
+  phone_number: string;
+  contact_email: string;
+  fax_number: string;
+  amenities: string; // will be JSON string
+  description: string;
+  postal_code: string;
+  city: string;
+  state: string;
+  country_code: string;
+  image_count: number;
+  primary_destination_id: string;
 }
 
 export type NotificationType = {
