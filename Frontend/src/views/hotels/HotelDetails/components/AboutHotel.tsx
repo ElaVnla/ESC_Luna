@@ -7,6 +7,8 @@ import { FaAngleDown, FaAngleUp, FaSnowflake, FaWifi } from 'react-icons/fa6'
 import CustomerReview from './CustomerReview'
 import HotelPolicies from './HotelPolicies'
 import PriceOverView from './PriceOverView'
+import MapComponent from './HotelMaps'
+
 import RoomOptions from './RoomOptions'
 
 import { amenities } from '../data'
@@ -175,6 +177,8 @@ const AboutHotel = () => {
             </div>
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
+            
+            <MapComponent />
             <PriceOverView />
           </Col>
         </Row>

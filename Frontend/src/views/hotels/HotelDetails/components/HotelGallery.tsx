@@ -86,7 +86,7 @@ const HotelGallery = () => {
               </div>
             </Col>
           </Row>
-          <Alert
+          {/* <Alert
             show={alertVisible}
             variant="danger"
             className="d-flex justify-content-between align-items-center rounded-3 fade show mb-4 mb-0 pe-2 py-3"
@@ -103,7 +103,7 @@ const HotelGallery = () => {
             <Button variant="link" onClick={hideAlert} type="button" className="pb-0 pt-1 text-end" data-bs-dismiss="alert" aria-label="Close">
               <BsXLg className=" text-dark" />
             </Button>
-          </Alert>
+          </Alert> */}
         </Container>
       </section>
 

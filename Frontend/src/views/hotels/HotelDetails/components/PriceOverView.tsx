@@ -56,26 +56,7 @@ const PriceOverView = () => {
           </Button>
         </div>
       </Card>
-      <div className="mt-4 d-none d-xl-block">
-        <h4>Today's Best Deal</h4>
-        <Card className="shadow rounded-3 overflow-hidden">
-          <Row className="g-0 align-items-center">
-            <Col sm={6} md={12} lg={6}>
-              <Image src={offerImg4} className="card-img rounded-0" />
-            </Col>
-            <Col sm={6} md={12} lg={6}>
-              <CardBody className="p-3">
-                <h6 className="card-title">
-                  <Link to="/offer-detail" className="stretched-link">
-                    Travel Plan
-                  </Link>
-                </h6>
-                <p className="mb-0">Get up to {currency}10,000 for lifetime limits</p>
-              </CardBody>
-            </Col>
-          </Row>
-        </Card>
-      </div>
+      
     </Sticky>
   )
 }
