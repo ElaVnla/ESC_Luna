@@ -100,6 +100,11 @@ const FAQs = lazy(() => import('@/views/FAQs'))
 const NotFoundPage = lazy(() => import('@/views/NotFound'))
 const ComingSoon = lazy(() => import('@/views/ComingSoon'))
 
+//Feature 4 - Erika and Toni ==========================================
+const DirectBooking = lazy(() => import('@/views/hotels/Feature4/flow1/DirectBooking'))
+const ReviewBooking = lazy(() => import('@/views/hotels/Feature4/flow1/ReviewBooking'))
+// End of Feature 4  ==========================================
+
 const hotelRoutes: RoutesProps[] = [
   {
     path: '/',
@@ -146,6 +151,17 @@ const hotelRoutes: RoutesProps[] = [
     name: 'hotels.booking',
     element: <HotelBooking />,
   },
+  // Feature 4 - Direct Booking
+  {
+    path: '/hotels/direct-booking',
+    name: 'hotels.direct.booking',
+    element: <DirectBooking />,
+  },
+  {
+    path: '/hotels/review-booking',
+    name: 'hotels.review.booking',
+    element: <ReviewBooking />,
+  }
 ]
 
 const flightsRoutes: RoutesProps[] = [
@@ -533,6 +549,8 @@ const otherRoutes: RoutesProps[] = [
     element: <ComingSoon />,
   },
 ]
+
+
 
 export const appRoutes = [
   ...hotelRoutes,
