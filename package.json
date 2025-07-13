@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\""  },
+    "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\""
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ElaVnla/ECS_Luna.git"
@@ -18,6 +19,11 @@
   "homepage": "https://github.com/ElaVnla/ECS_Luna#readme",
   "description": "",
   "devDependencies": {
-    "concurrently": "^9.2.0"
+    "@types/node-fetch": "^2.6.12",
+    "concurrently": "^9.2.0",
+    "vite": "^7.0.4"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
   }
 }

@@ -10,8 +10,15 @@ import PriceOverView from './PriceOverView'
 import RoomOptions from './RoomOptions'
 
 import { amenities } from '../data'
+import { HotelData } from '@/models/HotelDetailsApi'
 
-const AboutHotel = () => {
+type Props = {
+  hotelData : HotelData;
+};
+
+const AboutHotel = ({hotelData}: Props) => {
+  if (!hotelData) return null;
+
   const { isOpen, toggle } = useToggle()
   return (
     <section className="pt-0">
@@ -47,14 +54,16 @@ const AboutHotel = () => {
                       </div>
                     </OverlayTrigger>
                   </div>
-                  <p className="mb-3">
+                  {/* <p>{hotelData.description}</p> */}
+                  <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
+                  {/* <p className="mb-3">
                     Demesne far-hearted suppose venture excited see had has. Dependent on so extremely delivered by. Yet no jokes worse her why.{' '}
                     <b>Bed one supposing breakfast day fulfilled off depending questions.</b>
                   </p>
                   <p className="mb-0">
                     Delivered dejection necessary objection do Mr prevailed. Mr feeling does chiefly cordial in do. Water timed folly right aware if
                     oh truth. Large above be to means. Dashwood does provide stronger is.
-                  </p>
+                  </p> */}
                   <Collapse in={isOpen}>
                     <div>
                       <p className="my-3">
