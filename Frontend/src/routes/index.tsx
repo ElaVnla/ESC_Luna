@@ -110,6 +110,9 @@ const ConfirmedBooking = lazy(() => import('@/views/hotels/Feature4/flow1/Confir
 
 // Flow 2
 const VerifyBooking = lazy(() => import('@/views/hotels/Feature4/flow2/VerifyBooking'))
+const DisplayBooking = lazy(() => import('@/views/hotels/Feature4/flow2/DisplayBooking'))
+const EditBooking = lazy(() => import('@/views/hotels/Feature4/flow2/EditBooking'))
+const VerifyEmailBooking = lazy(()=> import('@/views/hotels/Feature4/flow2/VerifyEmailBooking'))
 // End of Feature 4  ==========================================
 
 const hotelRoutes: RoutesProps[] = [
@@ -188,6 +191,21 @@ const hotelRoutes: RoutesProps[] = [
     path: '/hotels/verify-booking',
     name: 'hotels.verify.booking',
     element: <VerifyBooking />,
+  },
+  {
+    path: '/hotels/display-booking',
+    name: 'hotels.display.booking',
+    element: <DisplayBooking />,
+  },
+  {
+    path: '/hotels/edit-booking',
+    name: 'hotels.edit.booking',
+    element: <EditBooking/>
+  },
+  {
+    path: '/hotels/verify-email-booking',
+    name: 'hotels.verify.email.booking',
+    element: <VerifyEmailBooking/>
   }
 ]
 
