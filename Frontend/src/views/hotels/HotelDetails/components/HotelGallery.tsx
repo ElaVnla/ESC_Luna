@@ -12,8 +12,16 @@ import gallery13 from '@/assets/images/gallery/13.jpg'
 import gallery14 from '@/assets/images/gallery/14.jpg'
 import gallery15 from '@/assets/images/gallery/15.jpg'
 import gallery16 from '@/assets/images/gallery/16.jpg'
+import { HotelData } from '@/models/HotelDetailsApi'
 
-const HotelGallery = () => {
+type Props = {
+  hotelData : HotelData;
+};
+  
+
+const HotelGallery = ({hotelData}: Props) => {
+  if (!hotelData) return null;
+
   const { isOpen, toggle } = useToggle()
 
   const { isOpen: alertVisible, hide: hideAlert } = useToggle(true)
@@ -26,10 +34,10 @@ const HotelGallery = () => {
             <Col xs={12}>
               <div className="d-lg-flex justify-content-lg-between mb-1">
                 <div className="mb-2 mb-lg-0">
-                  <h1 className="fs-2">Courtyard by Marriott New York </h1>
+                  <h1 className="fs-2">{hotelData.name} </h1>
                   <p className="fw-bold mb-0 items-center flex-wrap">
                     <BsGeoAlt className=" me-2" />
-                    5855 W Century Blvd, Los Angeles - 90045
+                    {hotelData.address}
                     <Link
                       to=""
                       onClick={toggle}
@@ -86,7 +94,7 @@ const HotelGallery = () => {
               </div>
             </Col>
           </Row>
-          <Alert
+          {/* <Alert
             show={alertVisible}
             variant="danger"
             className="d-flex justify-content-between align-items-center rounded-3 fade show mb-4 mb-0 pe-2 py-3"
@@ -103,7 +111,7 @@ const HotelGallery = () => {
             <Button variant="link" onClick={hideAlert} type="button" className="pb-0 pt-1 text-end" data-bs-dismiss="alert" aria-label="Close">
               <BsXLg className=" text-dark" />
             </Button>
-          </Alert>
+          </Alert> */}
         </Container>
       </section>
 

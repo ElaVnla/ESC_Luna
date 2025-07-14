@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom'
 import avatar1 from '@/assets/images/avatar/01.jpg'
 import { notificationData } from '../data'
 
+
 type ThemeModeType = {
   theme: LayoutState['theme']
   icon: IconType

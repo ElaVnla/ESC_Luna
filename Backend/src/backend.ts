@@ -16,7 +16,7 @@ import CustomerRouter from './routes/CustomerRouter';
 import RoomRouter from './routes/RoomRouter';
 import BookingRouter from './routes/BookingRouter';
 import PaymentRouter from './routes/PaymentRouter'; 
-
+import APIRouter from './routes/APIRouter';
 
 // create instance of express
 const app = express();
@@ -39,6 +39,7 @@ app.use('/customers', CustomerRouter);
 app.use('/rooms', RoomRouter);
 app.use('/bookings', BookingRouter);
 app.use('/payments', PaymentRouter);
+app.use('/api', APIRouter);
 
 // Setup "/" route to serve the index.html file
 app.get('/', (req, res) => {
@@ -67,3 +68,4 @@ Database.initialize()
 // app.listen(PORT, () => {
 //     console.log(`Server is running on port ${PORT}`);
 // });
+// 
