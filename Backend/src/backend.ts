@@ -67,19 +67,4 @@ Database.initialize()
 // app.listen(PORT, () => {
 //     console.log(`Server is running on port ${PORT}`);
 // });
-app.get('/api/hotels/:id', async (req, res) => {
-  const { id } = req.params;
-  console.log('Testing')
-  try {
-    const response = await fetch(`https://hotelapi.loyalty.dev/api/hotels/${id}`);
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    console.error('Error fetching hotel data:', err);
-    res.status(500).json({ error: 'Failed to fetch hotel data' });
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Backend proxy running at http://localhost:${PORT}`);
-});
+// 
