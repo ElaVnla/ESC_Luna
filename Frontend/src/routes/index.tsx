@@ -101,11 +101,15 @@ const NotFoundPage = lazy(() => import('@/views/NotFound'))
 const ComingSoon = lazy(() => import('@/views/ComingSoon'))
 
 //Feature 4 - Erika and Toni ==========================================
+// Flow 1
 const DirectBooking = lazy(() => import('@/views/hotels/Feature4/flow1/DirectBooking'))
 const ReviewBooking = lazy(() => import('@/views/hotels/Feature4/flow1/ReviewBooking'))
 const VerifyEmail = lazy(() => import('@/views/hotels/Feature4/flow1/VerifyEmail'))
 const VerifyPayment = lazy(() => import('@/views/hotels/Feature4/flow1/VerifyPayment'))
 const ConfirmedBooking = lazy(() => import('@/views/hotels/Feature4/flow1/ConfirmedBooking'))
+
+// Flow 2
+const VerifyBooking = lazy(() => import('@/views/hotels/Feature4/flow2/VerifyBooking'))
 // End of Feature 4  ==========================================
 
 const hotelRoutes: RoutesProps[] = [
@@ -179,6 +183,11 @@ const hotelRoutes: RoutesProps[] = [
     path: '/hotels/confirmed-booking',
     name: 'hotels.confirmed.booking',
     element: <ConfirmedBooking />,
+  },
+  {
+    path: '/hotels/verify-booking',
+    name: 'hotels.verify.booking',
+    element: <VerifyBooking />,
   }
 ]
 
