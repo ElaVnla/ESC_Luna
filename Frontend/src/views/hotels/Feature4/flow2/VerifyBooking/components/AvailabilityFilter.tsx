@@ -95,7 +95,7 @@ const AvailabilityFilter = () => {
                 />
               </Col>
               <div className="col-12">
-                <Link to="/hotels/Display-Booking" className="btn btn-primary w-100 mb-0">
+                <Link to="/hotels/verify-email-booking" className="btn btn-primary w-100 mb-0">
                       Retrieve Booking
                 </Link>
               </div>

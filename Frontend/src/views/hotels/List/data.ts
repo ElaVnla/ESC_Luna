@@ -20,7 +20,7 @@ import hotel10 from '@/assets/images/category/hotel/4by3/10.jpg'
 // }
 
 export type HotelsListType = {
-  id: string;
+  id: number;
   name: string;
   address: string;
   rating: number;
