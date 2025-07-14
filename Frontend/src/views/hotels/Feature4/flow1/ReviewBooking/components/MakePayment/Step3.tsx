@@ -30,9 +30,6 @@ const Step3 = ({ control }: StepProps) => {
             <Col md={6} xl={12}>
                 <OfferAndDiscounts />
             </Col>
-            <Col md={6} xl={12}>
-                <LoginAdvantages />
-            </Col>
             </Row>
         </Col>
         </Row>
@@ -41,8 +38,8 @@ const Step3 = ({ control }: StepProps) => {
         <button onClick={() => previousStep()} className="btn btn-secondary prev-btn mb-0">
           Previous
         </button>
-        <Link to="/listings/added" className="btn btn-success mb-0">
-          Add Listing
+        <Link to="/hotels/verify-email" className="btn btn-success mb-0">
+          Proceed with payment
         </Link>
       </div>
     </div>

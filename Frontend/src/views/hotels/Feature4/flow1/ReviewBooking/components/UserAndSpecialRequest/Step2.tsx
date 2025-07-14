@@ -8,7 +8,7 @@ import GuestDetails from './GuestDetails'
 import { CheckFormInput, DropzoneFormInput, FileFormInput, SelectFormInput, TextAreaFormInput, TextFormInput } from '@/components'
 import { Button, Card, CardBody, CardHeader, Col, Row, Container } from 'react-bootstrap'
 import type { StepProps } from '../types'
-
+import MainGuestDetails from './MainGuestDetails'
 
 const Step2 = ({ control }: StepProps) => {
   const { previousStep, nextStep } = useWizard()
@@ -18,6 +18,8 @@ const Step2 = ({ control }: StepProps) => {
       <Row className="g-4">
         <Col xs={12}>
             <div>
+            <MainGuestDetails />
+            
             <GuestDetails />
             </div>
         </Col>

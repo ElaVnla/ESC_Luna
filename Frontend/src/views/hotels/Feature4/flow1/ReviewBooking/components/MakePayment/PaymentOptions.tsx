@@ -48,7 +48,6 @@ const PaymentOptions = () => {
     resolver: yupResolver(paymentSchema),
   })
 
-  const { isOpen, toggle } = useToggle(true)
 
   return (
     <Card className="shadow">
@@ -59,20 +58,6 @@ const PaymentOptions = () => {
         </h4>
       </CardHeader>
       <CardBody className="p-4 pb-0">
-        <div className="bg-primary bg-opacity-10 rounded-3 mb-4 p-3">
-          <div className="d-md-flex justify-content-md-between align-items-center">
-            <div className="d-sm-flex align-items-center mb-2 mb-md-0">
-              <Image src={element16} className="h-50px" />
-              <div className="ms-sm-3 mt-2 mt-sm-0">
-                <h5 className="card-title mb-0">Get Additional Discount</h5>
-                <p className="mb-0">Login to access saved payments and discounts!</p>
-              </div>
-            </div>
-            <Button variant="primary" href="/auth/sign-in" className="mb-0">
-              Login now
-            </Button>
-          </div>
-        </div>
         <Accordion defaultActiveKey="1" className="accordion-icon accordion-bg-light" id="accordioncircle">
           <AccordionItem eventKey="1" className="mb-3">
             <AccordionHeader as="h6" id="heading-1">
@@ -118,37 +103,6 @@ const PaymentOptions = () => {
                   name="cardHolderName"
                   placeholder="Enter card holder name"
                 />
-
-                <Col xs={12}>
-                  <Alert show={isOpen} onClose={toggle} variant="success" className="fade my-3" role="alert" dismissible>
-                    <div className="d-sm-flex align-items-center mb-3">
-                      <Image src={element12} className="w-40px me-3 mb-2 mb-sm-0" />
-                      <h5 className="alert-heading mb-0">{currency}50,000 Covid Cover &amp; More</h5>
-                    </div>
-                    <p className="mb-2">
-                      Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see
-                      how spacing within an alert works with this kind of content.
-                    </p>
-                    <div className="d-sm-flex align-items-center">
-                      <Button variant="success" className="mb-2 mb-sm-0 me-3">
-                        <FaPlus className="me-2" />
-                        Add
-                      </Button>
-                      <h6 className="mb-0">{currency}69 per person</h6>
-                    </div>
-                  </Alert>
-                </Col>
-
-                <Col xs={12}>
-                  <div className="d-sm-flex justify-content-sm-between align-items-center">
-                    <h4>
-                      {currency}1800 <span className="small fs-6">Due now</span>
-                    </h4>
-                    <Button variant="primary" type="submit" className="mb-0">
-                      Pay Now
-                    </Button>
-                  </div>
-                </Col>
               </form>
             </AccordionBody>
           </AccordionItem>
@@ -195,11 +149,6 @@ const PaymentOptions = () => {
                     <option>Bank of London</option>
                   </SelectFormInput>
                 </Col>
-                <div className="d-grid">
-                  <Button variant="success" className="mb-0">
-                    Pay {currency}1800
-                  </Button>
-                </div>
               </Row>
             </AccordionBody>
           </AccordionItem>

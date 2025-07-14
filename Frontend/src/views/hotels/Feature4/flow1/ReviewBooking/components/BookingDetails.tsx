@@ -34,7 +34,7 @@ const Header = () => {
           <button type="button" className="btn btn-link step-trigger mb-0" role="tab" id="steppertrigger2" aria-controls="step-2">
             <span className="bs-stepper-circle">2</span>
           </button>
-          <h6 className="bs-stepper-label d-none d-md-block">User Details & Special Requests</h6>
+          <h6 className="bs-stepper-label d-none d-md-block">Guest Details</h6>
         </div>
       </div>
       <div className="line" />
