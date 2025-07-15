@@ -23,6 +23,7 @@ export type HotelsListType = {
   id: number;
   name: string;
   address: string;
+  images: string[];
   rating: number;
   latitude: number;
   longitude: number;
