@@ -11,7 +11,7 @@ router.get('/hotels/:id', async (req, res) => {
   const { id } = req.params;
   console.log(`Fetching hotel with id: ${id}`);
   try {
-    const response = await fetch(`https://hotelapi.loyalty.dev/api/hotels/${id}`);
+    const response = await fetch(`http://hotelapi.loyalty.dev/api/hotels/${id}`);
     const data = await response.json();
     res.json(data);
   } catch (err) {

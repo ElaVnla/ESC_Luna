@@ -17,6 +17,7 @@ import RoomRouter from './routes/RoomRouter';
 import BookingRouter from './routes/BookingRouter';
 import PaymentRouter from './routes/PaymentRouter'; 
 import APIRouter from './routes/APIRouter';
+import ForTestingRouter from './routes/ForTestingRouter';
 
 // create instance of express
 const app = express();
@@ -40,6 +41,7 @@ app.use('/rooms', RoomRouter);
 app.use('/bookings', BookingRouter);
 app.use('/payments', PaymentRouter);
 app.use('/api', APIRouter);
+app.use('/fortesting', ForTestingRouter);
 
 // Setup "/" route to serve the index.html file
 app.get('/', (req, res) => {
