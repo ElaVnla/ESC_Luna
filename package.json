@@ -19,20 +19,21 @@
   "homepage": "https://github.com/ElaVnla/ECS_Luna#readme",
   "description": "",
   "devDependencies": {
-
-    "@types/node-fetch": "^2.6.12",
-    "concurrently": "^9.2.0",
-    "vite": "^7.0.4"
-  },
-  "dependencies": {
-    "node-fetch": "^2.7.0"
-
     "concurrently": "^9.2.0"
   },
   "dependencies": {
+    "axios": "^1.10.0",
+    "chalk": "^4.1.2",
     "date-fns": "^4.1.0",
     "flatpickr": "^4.6.13",
-    "react-flatpickr": "^4.0.11"
-
+    "loadash": "^1.0.0",
+    "lodash": "^4.17.21",
+    "react-flatpickr": "^4.0.11",
+    "rxjs": "^7.8.2",
+    "shell-quote": "^1.8.3",
+    "supports-color": "^10.0.0",
+    "tree-kill": "^1.2.2",
+    "wrap-ansi": "^9.0.0",
+    "yargs": "^18.0.0"
   }
 }

@@ -1,42 +1,83 @@
-import { useToggle } from '@/hooks'
-import { Alert, Button, Col, Container, Offcanvas, OffcanvasBody, OffcanvasHeader, Row } from 'react-bootstrap'
-import { BsExclamationOctagonFill, BsGridFill, BsListUl, BsXLg } from 'react-icons/bs'
-import { FaAngleLeft, FaAngleRight, FaSliders } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
-import HotelListCard from './HotelListCard'
-import HotelListFilter from './HotelListFilter'
+import { useToggle } from "@/hooks";
+import {
+  Alert,
+  Button,
+  Col,
+  Container,
+  Offcanvas,
+  OffcanvasBody,
+  OffcanvasHeader,
+  Row,
+} from "react-bootstrap";
+import {
+  BsExclamationOctagonFill,
+  BsGridFill,
+  BsListUl,
+  BsXLg,
+} from "react-icons/bs";
+import { FaAngleLeft, FaAngleRight, FaSliders } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import HotelListCard from "./HotelListCard";
+import HotelListFilter from "./HotelListFilter";
 
-import { hotels } from '../data'
+import { HotelsListType } from "../data";
+import { useEffect, useState, useRef } from "react";
 
 const HotelLists = () => {
-  const { isOpen, toggle } = useToggle()
+  const { isOpen, toggle } = useToggle();
 
-  const { isOpen: alertVisible, hide: hideAlert } = useToggle(true)
+  const [hotels, setHotels] = useState<HotelsListType[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/hotels/getHotels")
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = data.map((hotel: any) => ({
+          id: parseInt(hotel.id), // or hash to int if your ID is a string
+          name: hotel.name,
+          address: hotel.address,
+          images: [
+            `https://photo.hotellook.com/image_v2/limit/${hotel.id}/800/520.auto`,
+          ],
+          rating: hotel.rating || 0,
+          features: hotel.amenities ? hotel.amenities.split(",") : [],
+          price: Math.floor(Math.random() * 1000) + 100, // You can customize this
+        }));
+        setHotels(mapped);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load hotels:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const hotelListRef = useRef<HTMLDivElement | null>(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const hotelsPerPage = 10;
+
+  const totalPages = Math.ceil(hotels.length / hotelsPerPage);
+  const startIndex = (currentPage - 1) * hotelsPerPage;
+  const endIndex = startIndex + hotelsPerPage;
+  const currentHotels = hotels.slice(startIndex, endIndex);
+
+  // For pagination numbers
+  const visiblePages = 5;
+  const startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+  const endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+  const pageNumbers = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
 
   return (
     <section className="pt-0">
       <Container>
         <Row className="mb-4">
           <Col xs={12}>
-            <Alert
-              show={alertVisible}
-              variant="danger"
-              className="d-flex justify-content-between align-items-center rounded-3 fade show mb-4 mb-0 pe-2 py-3"
-              role="alert"
-            >
-              <div className="items-center">
-                <span className="alert-heading h5 mb-0 me-2">
-                  <BsExclamationOctagonFill />
-                </span>
-                <span>
-                  <strong className="alert-heading me-2">Covid Policy:</strong>You may require to present an RT-PCR negative test report at the hotel
-                </span>
-              </div>
-              <Button variant="link" onClick={hideAlert} type="button" className="pb-0 pt-1 text-end" data-bs-dismiss="alert" aria-label="Close">
-                <BsXLg className=" text-dark" />
-              </Button>
-            </Alert>
-
             <div className="hstack gap-3 justify-content-between justify-content-md-end">
               <Button
                 onClick={toggle}
@@ -49,14 +90,24 @@ const HotelLists = () => {
               >
                 <FaSliders className="me-1" /> Show filters
               </Button>
-              <ul className="nav nav-pills nav-pills-dark" id="tour-pills-tab" role="tablist">
+              <ul
+                className="nav nav-pills nav-pills-dark"
+                id="tour-pills-tab"
+                role="tablist"
+              >
                 <li className="nav-item">
-                  <Link className="nav-link rounded-start rounded-0 mb-0 active " to="/hotels/list">
+                  <Link
+                    className="nav-link rounded-start rounded-0 mb-0 active "
+                    to="/hotels/list"
+                  >
                     <BsListUl className=" fa-fw mb-1" />
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link rounded-end rounded-0 mb-0 " to="/hotels/grid">
+                  <Link
+                    className="nav-link rounded-end rounded-0 mb-0 "
+                    to="/hotels/grid"
+                  >
                     <BsGridFill className=" fa-fw mb-1" />
                   </Link>
                 </li>
@@ -97,12 +148,82 @@ const HotelLists = () => {
             </Offcanvas>
           </Col>
           <Col xl={8} xxl={9}>
-            <div className="vstack gap-4">
-              {hotels.map((hotel, idx) => (
+            <div className="vstack gap-4" ref={hotelListRef}>
+              {currentHotels.map((hotel, idx) => (
                 <HotelListCard key={idx} hotel={hotel} />
               ))}
 
-              <nav className="d-flex justify-content-center" aria-label="navigation">
+              <nav
+                className="d-flex justify-content-center"
+                aria-label="navigation"
+              >
+                <ul className="pagination pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
+                  {/* Previous button */}
+                  <li
+                    className={`page-item mb-0 ${
+                      currentPage === 1 ? "disabled" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => {
+                        setCurrentPage((prev) => {
+                          const newPage = Math.max(prev - 1, 1);
+                          hotelListRef.current?.scrollIntoView({ behavior: "smooth" });
+                          return newPage;
+                        });
+                      }}
+                    >
+                      <FaAngleLeft />
+                    </button>
+                  </li>
+
+                  {/* Page numbers */}
+                  {pageNumbers.map((number) => (
+                    <li
+                      key={number}
+                      className={`page-item mb-0 ${
+                        currentPage === number ? "active" : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => {
+                          setCurrentPage(number);
+                          hotelListRef.current?.scrollIntoView({ behavior: "smooth" });
+                        }}
+                      >
+                        {number}
+                      </button>
+                    </li>
+                  ))}
+
+                  {/* Next button */}
+                  <li
+                    className={`page-item mb-0 ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => {
+                        setCurrentPage((prev) => {
+                          const newPage = Math.min(prev + 1, totalPages);
+                          hotelListRef.current?.scrollIntoView({ behavior: "smooth" });
+                          return newPage;
+                        });
+                      }}
+                    >
+                      <FaAngleRight />
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+
+              {/* <nav
+                className="d-flex justify-content-center"
+                aria-label="navigation"
+              >
                 <ul className="pagination pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
                   <li className="page-item mb-0">
                     <Link className="page-link" to="" tabIndex={-1}>
@@ -135,13 +256,13 @@ const HotelLists = () => {
                     </Link>
                   </li>
                 </ul>
-              </nav>
+              </nav> */}
             </div>
           </Col>
         </Row>
       </Container>
     </section>
-  )
-}
+  );
+};
 
-export default HotelLists
+export default HotelLists;
