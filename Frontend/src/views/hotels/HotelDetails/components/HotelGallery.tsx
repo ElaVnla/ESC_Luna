@@ -24,7 +24,7 @@ const HotelGallery = ({hotelData}: Props) => {
 
   const { isOpen, toggle } = useToggle()
 
-  const { isOpen: alertVisible, hide: hideAlert } = useToggle(true)
+  // const { isOpen: alertVisible, hide: hideAlert } = useToggle(true)
 
   return (
     <>
