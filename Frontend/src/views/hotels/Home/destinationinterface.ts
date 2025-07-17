@@ -6,4 +6,8 @@ export interface destinationinterface
     lng: number,
     type: string,
     state: string
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

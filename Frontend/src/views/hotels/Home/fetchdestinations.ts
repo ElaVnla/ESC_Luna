@@ -1,5 +1,8 @@
 import { destinationinterface  } from '../Home/destinationinterface';
+<<<<<<< Updated upstream
 import { useEffect, useState } from 'react'
+=======
+>>>>>>> Stashed changes
 export async function parsedestinations(): Promise<destinationinterface[]> 
 {
   try 
@@ -16,5 +19,9 @@ export async function parsedestinations(): Promise<destinationinterface[]>
     console.error("Error fetching destinations:", error);
     return [];
   }
+<<<<<<< Updated upstream
 }
 
+=======
+}
+>>>>>>> Stashed changes
