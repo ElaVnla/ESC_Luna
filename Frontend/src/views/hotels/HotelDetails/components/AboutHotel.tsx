@@ -16,8 +16,10 @@ import { PiHairDryer } from "react-icons/pi";
 import { TbIroning } from "react-icons/tb";
 import { MdOutlineRoomService } from "react-icons/md";
 import {AirVent, BriefcaseBusinessIcon, Cable, Presentation, Shirt, Square, SquareParking, Tv, Vault, Voicemail, WavesLadder, } from 'lucide-react'
+import { RoomData } from '@/models/RoomDetailsApi'
 type Props = {
   hotelData : HotelData;
+  roomData: RoomData;
 };
 const amenityIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   airCondtioning : AirVent,
@@ -35,8 +37,9 @@ const amenityIconMap: Record<string, React.ComponentType<{ className?: string }>
   voiceMail: Voicemail,
 };
 
-const AboutHotel = ({hotelData}: Props) => {
+const AboutHotel = ({hotelData, roomData}: Props) => {
   if (!hotelData) return null;
+  console.log(roomData, "In About Hotel");
 
 
 
@@ -219,7 +222,7 @@ const AboutHotel = ({hotelData}: Props) => {
                 </CardBody>
               </Card>
 
-              <RoomOptions />
+              <RoomOptions roomData = {roomData}/>
 
               <CustomerReview />
 

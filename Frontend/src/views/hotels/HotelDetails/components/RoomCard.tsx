@@ -64,13 +64,14 @@ const RoomCard = ({ features, images, name, price, sale, schemes }: HotelsRoomTy
             <h5 className="card-title">
               <Link to="">{name}</Link>
             </h5>
-            <ul className="nav nav-divider mb-2">
+            {/* <ul className="nav nav-divider mb-2">
               {features.map((feature, idx) => (
                 <li key={idx} className="nav-item">
                   {feature}
                 </li>
               ))}
-            </ul>
+            </ul> */}
+            <div>{features}</div>
 
             {schemes ? (
               schemes.map((scheme, idx) => (
