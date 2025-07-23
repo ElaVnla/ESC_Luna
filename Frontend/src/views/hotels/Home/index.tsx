@@ -9,7 +9,7 @@ import Hero from './components/Hero'
 import NearbyPlaces from './components/NearbyPlaces'
 import OfferSlider from './components/OfferSlider'
 import TestimonialsSlider from './components/TestimonialsSlider'
-import TopNavBar from './components/TopNavBar'
+import TopNavBar from '@/layouts/UserLayout/TopNavBar'
 
 const HotelHome = () => {
   return (
@@ -23,15 +23,15 @@ const HotelHome = () => {
 
         <OfferSlider />
 
-        <FeaturedHoliday />
-
         <FeaturedHotels />
 
-        <Clients />
-
-        <TestimonialsSlider />
+        {/* <Clients /> */}
 
         <NearbyPlaces />
+
+        <FeaturedHoliday />
+
+        {/* <TestimonialsSlider /> */}
 
         <AppsLink />
       </main>

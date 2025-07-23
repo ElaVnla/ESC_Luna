@@ -2,7 +2,7 @@ import { PageMetaData } from '@/components'
 import FooterWithLinks from './components/FooterWithLinks'
 import Hero from './components/Hero'
 import HotelLists from './components/HotelLists'
-import TopNavBar4 from './components/TopNavBar4'
+import TopNavBar from '@/layouts/UserLayout/TopNavBar'
 
 const HotelsList = () => {
   return (
@@ -10,7 +10,7 @@ const HotelsList = () => {
       <PageMetaData title="Hotel - List" />
 
       <main>
-        <TopNavBar4 />
+        <TopNavBar />
         <Hero />
         <HotelLists />
       </main>
