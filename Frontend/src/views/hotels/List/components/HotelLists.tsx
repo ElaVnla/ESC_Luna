@@ -30,7 +30,7 @@ const HotelLists = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/hotels/getHotels")
+    fetch("http://localhost:3000/hotels/getHotelsByCity/Singapore")
       .then((res) => res.json())
       .then((data) => {
         const mapped = data.map((hotel: any) => ({

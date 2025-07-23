@@ -1,12 +1,27 @@
 import { Router } from "express";
 import { Database } from "../Database";
-import { getAllHotels, syncHotelsFromAPI } from "../Services/HotelService";
+import { getAllHotels, getHotelsByCity } from "../Services/HotelService";
 const axios = require("axios");
 
 const router = Router();
 
 router.get("/", (req, res) => {
   res.json({ message: "Hotel API is working!" });
+});
+
+router.get("/getHotelsByCity", async (req, res) => {
+  try {
+    const { city } = req.query;
+    if (!city || typeof city !== 'string') {
+      return res.status(400).json({ error: "Missing or invalid city parameter" });
+    }
+
+    const hotels = await getHotelsByCity(city);
+    res.json(hotels);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch hotels" });
+  }
 });
 
 router.get("/getAllHotels", async (req, res) => {
@@ -36,14 +51,14 @@ router.get("/getAllHotels", async (req, res) => {
 //   }
 // });
 
-router.get("/getHotels", async (req, res) => {
-  try {
-    const response = await syncHotelsFromAPI();
-    res.json(response);
-  } catch (error) {
-    console.error("Error fetching external data:", error);
-    res.status(500).json({ message: "Failed to fetch external data" });
-  }
-});
+// router.get("/getHotels", async (req, res) => {
+//   try {
+//     const response = await syncHotelsFromAPI();
+//     res.json(response);
+//   } catch (error) {
+//     console.error("Error fetching external data:", error);
+//     res.status(500).json({ message: "Failed to fetch external data" });
+//   }
+// });
 
 export default router;
