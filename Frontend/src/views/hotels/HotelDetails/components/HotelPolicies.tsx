@@ -2,14 +2,6 @@ import { RoomAdditionalInfo } from '@/models/RoomDetailsApi';
 import { Card, CardBody, CardHeader } from 'react-bootstrap'
 import { BsArrowRight, BsCheckCircleFill, BsXCircleFill } from 'react-icons/bs'
 
-const policies = [
-  'Check-in: 1:00 pm - 9:00 pm',
-  'Check out: 11:00 am',
-  'Self-check-in with building staff',
-  'No pets',
-  'No parties or events',
-  'Smoking is allowed',
-]
 type Props = {
   roomPolicies: RoomAdditionalInfo;
 };
@@ -20,56 +12,18 @@ const HotelPolicies = ({roomPolicies}:Props) => {
         <h3 className="mb-0">Hotel Policies</h3>
       </CardHeader>
       <CardBody className="pt-4 p-0">
+        <h5>Check in Instructions</h5>
         <div>
-          {roomPolicies.displayFields.check_in_instructions}
+          {roomPolicies.displayFields.special_check_in_instructions}
         </div>
-        <div>
-          {roomPolicies.displayFields.fees_mandatory}
-        </div>
-        <div>
-          {roomPolicies.displayFields.fees_optional}
-        </div>
-        <div>
-          {roomPolicies.displayFields.know_before_you_go}
-        </div>
-        <ul className="list-group list-group-borderless mb-2">
-          <li className="list-group-item d-flex align-items-start">
-            <BsCheckCircleFill className=" me-2" />
-            This is a family farmhouse, hence we request you to not indulge.
-          </li>
-          <li className="list-group-item d-flex align-items-start">
-            <BsCheckCircleFill size={24} className=" me-2" />
-            Drinking and smoking within controlled limits are permitted at the farmhouse but please do not create a mess or ruckus at the house.
-          </li>
-          <li className="list-group-item d-flex align-items-start">
-            <BsCheckCircleFill size={18} className=" me-2" />
-            Drugs and intoxicating illegal products are banned and not to be brought to the house or consumed.
-          </li>
-          <li className="list-group-item d-flex align-items-start">
-            <BsXCircleFill className=" me-2" />
-            For any update, the customer shall pay applicable cancellation/modification charges.
-          </li>
-        </ul>
-        <ul className="list-group list-group-borderless mb-2">
-          {policies.map((item, idx) => {
-            return (
-              <li key={idx} className="list-group-item h6 fw-light mb-0 items-center">
-                <BsArrowRight className=" me-2" />
-                {item}
-              </li>
-            )
-          })}
-        </ul>
-        <div className="bg-danger bg-opacity-10 rounded-2 p-3 mb-3">
-          <p className="mb-0 text-danger">
-            During the COVID-19 pandemic, all hosts and guests must review and follow Booking social distancing and other COVID-19-related guidelines.
-          </p>
-        </div>
-        <div className="bg-danger bg-opacity-10 rounded-2 p-3">
-          <p className="mb-0 text-danger">
-            Smoke alarm not reported — The host hasn't reported a smoke alarm on the property. We suggest bringing a portable detector for your trip.
-          </p>
-        </div>
+        <div dangerouslySetInnerHTML={{ __html: roomPolicies.displayFields.check_in_instructions }} />
+        
+        <h5>Know Before You Go</h5>
+        <div dangerouslySetInnerHTML={{ __html: roomPolicies.displayFields.know_before_you_go }} />
+
+        <h5>Optional fees</h5>
+        <div dangerouslySetInnerHTML={{ __html: roomPolicies.displayFields.fees_optional }} />
+        
       </CardBody>
     </Card>
   )
