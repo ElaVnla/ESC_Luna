@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvent } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, useMapEvent } from 'react-leaflet';
 import { Button, Card } from 'react-bootstrap'
 
 import L from 'leaflet';
@@ -7,7 +7,8 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
-import { BsExclamationOctagonFill, BsEyeFill, BsFullscreen, BsGeoAlt, BsPinMapFill, BsXLg } from 'react-icons/bs'
+import { BsEyeFill} from 'react-icons/bs'
+import { isOffCenter } from '../utils/MapsUtils';
 
 
 
@@ -36,11 +37,7 @@ const Recentre: React.FC < {initialPosition: [number,number]}> = ({
     useMapEvent('moveend', () => {
         const{lat,lng} = map.getCenter();
         console.log('Map moved to:', lat, lng, 'init:', initLat, initLng);
-        if (Math.abs(lat - initLat) > 0.0005 || Math.abs(lng - initLng) > 0.0005){
-            setOffCenter(true);
-        }else{
-            setOffCenter(false);
-        }
+        setOffCenter(isOffCenter(lat, lng, initLat, initLng));
     });
 
     if (!offCenter){
@@ -117,12 +114,10 @@ const MapComponent: React.FC<HotelMapProps> = ({
                 />
 
                 <Marker position={position}>
-                    <Popup>
-                        Location.
-                    </Popup>
+
 
                 </Marker>
-
+                    <Recentre initialPosition={position}/>
                 </MapContainer>
             </div>
 
@@ -203,9 +198,7 @@ const MapComponent: React.FC<HotelMapProps> = ({
                 
                 <Marker position={position}>
                     
-                    <Popup>
-                        Location.
-                    </Popup>
+
 
                 </Marker>
                 
