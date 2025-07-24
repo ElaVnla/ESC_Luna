@@ -1,5 +1,4 @@
 import { PageMetaData } from '@/components'
-import FooterWithLinks from './components/FooterWithLinks'
 import Hero from './components/Hero'
 import HotelLists from './components/HotelLists'
 import TopNavBar from '@/layouts/UserLayout/TopNavBar'
@@ -14,8 +13,6 @@ const HotelsList = () => {
         <Hero />
         <HotelLists />
       </main>
-
-      <FooterWithLinks />
     </>
   )
 }

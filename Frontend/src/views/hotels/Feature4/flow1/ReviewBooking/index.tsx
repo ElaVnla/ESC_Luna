@@ -16,8 +16,6 @@ const ReviewBooking = () => {
         <BookingDetails />
       </main>
 
-      <FooterWithLinks />
-      <Footer />
     </>
   )
 }

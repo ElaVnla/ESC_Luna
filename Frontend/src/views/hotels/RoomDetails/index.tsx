@@ -1,5 +1,4 @@
 import { PageMetaData } from '@/components'
-import FooterWithLinks from './components/FooterWithLinks'
 import RoomGallery from './components/RoomGallery'
 import RoomSelection from './components/RoomSelection'
 import TopNavBar4 from './components/TopNavBar4'
@@ -15,8 +14,6 @@ const RoomDetails = () => {
 
         <RoomSelection />
       </main>
-
-      <FooterWithLinks />
     </>
   )
 }
