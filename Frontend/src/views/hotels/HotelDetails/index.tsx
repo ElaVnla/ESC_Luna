@@ -8,9 +8,17 @@ import { useEffect, useState } from 'react'
 import { HotelData } from '@/models/HotelDetailsApi'
 import { RoomData } from '@/models/RoomDetailsApi'
 
+import roomMockData2 from './price.json'
 const HotelDetails = () => {
   const [hotelData, setHotelData] = useState<HotelData>();
   const [roomData, setRoomData] = useState<RoomData>();
+  const [mockRoom, setMockRoom] = useState<RoomData>();
+
+  useEffect(() => {
+    // Cast JSON to RoomData
+    setMockRoom(roomMockData2 as RoomData);
+  }, []);
+
   useEffect(() => {
     if (hotelData) return;
     const fetchHotel = async () => {
@@ -30,7 +38,7 @@ const HotelDetails = () => {
   // console.log(hotelData?.description);
 
   useEffect(() => {
-    if (roomData) return;
+    if (true) return;
     const fetchRoom = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/hotels/atH8/price?destination_id=WD0M&checkin=2026-01-01&checkout=2026-01-07&lang=en_US&currency=SGD&partner_id=16&country_code=SG&guests=2');
@@ -87,7 +95,7 @@ const HotelDetails = () => {
       <main>
         <AvailabilityFilter />
         <HotelGallery hotelData = {hotelData}/>
-        <AboutHotel hotelData = {hotelData} roomData = {roomData}/>
+        <AboutHotel hotelData = {hotelData} roomData = {mockRoom}/>
       </main>
 
       <FooterWithLinks />

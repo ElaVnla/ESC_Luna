@@ -17,6 +17,8 @@ import { TbIroning } from "react-icons/tb";
 import { MdOutlineRoomService } from "react-icons/md";
 import {AirVent, BriefcaseBusinessIcon, Cable, Presentation, Shirt, Square, SquareParking, Tv, Vault, Voicemail, WavesLadder, } from 'lucide-react'
 import { RoomData } from '@/models/RoomDetailsApi'
+import RoomCard2 from './RoomCard2'
+import RoomDetails from './RoomDetails'
 type Props = {
   hotelData : HotelData;
   roomData: RoomData;
@@ -221,19 +223,23 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                   </Row>
                 </CardBody>
               </Card>
-
-              <RoomOptions roomData = {roomData}/>
-
-              <CustomerReview />
-
-              <HotelPolicies />
+              {/* <RoomCard2/> */}
+              
             </div>
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
             <PriceOverView />
           </Col>
         </Row>
+        <RoomDetails roomData = {roomData}/>      
+        {/* <RoomOptions roomData = {roomData}/> */}
+
+        {/* <CustomerReview /> */}
+
+        <HotelPolicies roomPolicies = {roomData.rooms[0].roomAdditionalInfo} />
+
       </Container>
+      
     </section>
   )
 }

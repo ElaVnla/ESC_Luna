@@ -1,3 +1,4 @@
+import { RoomAdditionalInfo } from '@/models/RoomDetailsApi';
 import { Card, CardBody, CardHeader } from 'react-bootstrap'
 import { BsArrowRight, BsCheckCircleFill, BsXCircleFill } from 'react-icons/bs'
 
@@ -9,14 +10,28 @@ const policies = [
   'No parties or events',
   'Smoking is allowed',
 ]
-
-const HotelPolicies = () => {
+type Props = {
+  roomPolicies: RoomAdditionalInfo;
+};
+const HotelPolicies = ({roomPolicies}:Props) => {
   return (
     <Card className="bg-transparent">
       <CardHeader className="border-bottom bg-transparent px-0 pt-0">
         <h3 className="mb-0">Hotel Policies</h3>
       </CardHeader>
       <CardBody className="pt-4 p-0">
+        <div>
+          {roomPolicies.displayFields.check_in_instructions}
+        </div>
+        <div>
+          {roomPolicies.displayFields.fees_mandatory}
+        </div>
+        <div>
+          {roomPolicies.displayFields.fees_optional}
+        </div>
+        <div>
+          {roomPolicies.displayFields.know_before_you_go}
+        </div>
         <ul className="list-group list-group-borderless mb-2">
           <li className="list-group-item d-flex align-items-start">
             <BsCheckCircleFill className=" me-2" />

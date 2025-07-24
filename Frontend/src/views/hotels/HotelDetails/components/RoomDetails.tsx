@@ -1,18 +1,19 @@
 import { SelectFormInput } from '@/components'
 import { Card, CardBody, CardHeader, Col } from 'react-bootstrap'
-import RoomCard from './RoomCard'
+import RoomCard2 from './RoomCard2';
 
 import { hotelRooms } from '../data'
 import { RoomData } from '@/models/RoomDetailsApi';
 import { useState } from 'react';
-
 type Props = {
   roomData: RoomData;
 };
 
 
-const RoomOptions = ({roomData}: Props) => {
-  
+const RoomDetails = ({roomData}: Props) => {
+    // const[scheme, setScheme] = useState<string[]>([]);
+    // const empty = () => {setScheme([]);};
+    
   return (
     <Card className="bg-transparent mt-5 mb-5" id="room-options">
       <CardHeader className="border-bottom bg-transparent px-0 pt-0">
@@ -33,17 +34,25 @@ const RoomOptions = ({roomData}: Props) => {
       <CardBody className="pt-4 p-0">
         <div className="vstack gap-4">
           {roomData?.rooms?.map((room, idx) => {
-            console.log(room, "In RoomOptions");
+            console.log(room);
+            const schemes: string[] = [];
+
+            console.log(room.roomAdditionalInfo.breakfastInfo, "RoomDetails")
+            if (room.free_cancellation){schemes.push("Free Cancellation");} else{schemes.push("Non Refundable")}
+            if (room.roomAdditionalInfo.breakfastInfo != ""){schemes.push(room.roomAdditionalInfo.breakfastInfo);}
+            // console.log(room.amenities, "ammenties")
+            const details = room.long_description.replace(/<\/?b>/g, '').replace(/<\/?b>/g, '').replace('<br/>', '').replace('</p>', '')
+            
             return (
-              <RoomCard
+              <RoomCard2
                 key={idx}
-                features={room.roomAdditionalInfo.displayFields.special_check_in_instructions}
-                images={hotelRooms[1].images}// hotelRoom.get(idx).images?
+                features={details}
+                images={room.images}// hotelRoom.get(idx).images?
                 id={123}
-                name={room.roomNormalizedDescription}
+                name={room.roomDescription}
                 price={room.base_rate_in_currency}
-                // sale={hotelRooms[1].sale}
-                schemes={hotelRooms[1].schemes}
+                ammenities = {room.amenities}
+                schemes={schemes}
               />
             )
           })}
@@ -53,4 +62,4 @@ const RoomOptions = ({roomData}: Props) => {
   )
 }
 
-export default RoomOptions
+export default RoomDetails
