@@ -1,7 +1,6 @@
 import { PageMetaData } from '@/components'
 import ActionBox from './components/ActionBox'
 import Companies from './components/Companies'
-import FooterWithLinks from './components/FooterWithLinks'
 import PricingFAQs from './components/PricingFAQs'
 import PricingPlans from './components/PricingPlans'
 import TopNavBar11 from './components/TopNavBar11'
@@ -19,8 +18,6 @@ const Pricing = () => {
         <PricingFAQs />
         <ActionBox />
       </main>
-
-      <FooterWithLinks />
     </>
   )
 }

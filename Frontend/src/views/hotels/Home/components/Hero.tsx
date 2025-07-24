@@ -31,18 +31,6 @@ const Hero = () => {
             </h1>
             <p className="mb-4">We bring you not only a stay option, but an experience in your budget to enjoy the luxury.</p>
             <div className="hstack gap-4 flex-wrap align-items-center">
-              <button className="btn btn-primary-soft mb-0">Discover Now</button>
-              <GlightBox data-glightbox data-gallery="office-tour" image="https://www.youtube.com/embed/tXHviS-4ygo" className="d-block">
-                <div className="avatar avatar-md z-index-1 position-relative me-2">
-                  <Image className="avatar-img rounded-circle" src={avatar12} alt="avatar" />
-                  <div className="btn btn-xs btn-round btn-white shadow-sm position-absolute top-50 start-50 translate-middle z-index-9 mb-0 flex-centered">
-                    <FaPlay />
-                  </div>
-                </div>
-                <div className="align-middle d-inline-block">
-                  <h6 className="fw-normal small mb-0">&nbsp;Watch our story</h6>
-                </div>
-              </GlightBox>
             </div>
           </Col>
 
@@ -113,13 +101,6 @@ const Hero = () => {
               </svg>
             </figure>
 
-            <div className="position-absolute top-0 end-0 z-index-1 mt-n4">
-              <div className="bg-blur border border-light rounded-3 text-center shadow-lg p-3">
-                <BsHeadset className=" text-danger fs-3 my-2" />
-                <h5 className="text-dark mb-1">24 / 7</h5>
-                <h6 className="text-dark fw-light small mb-0">Guide Supports</h6>
-              </div>
-            </div>
             <div className="vstack gap-5 align-items-center position-absolute top-0 start-0 d-none d-md-flex mt-4 ms-n3">
               <img className="icon-lg shadow-lg border border-3 border-white rounded-circle" src={fourByThree11} alt="avatar" />
               <img className="icon-xl shadow-lg border border-3 border-white rounded-circle" src={fourByThree12} alt="avatar" />

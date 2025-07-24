@@ -14,9 +14,6 @@ const DirectBooking = () => {
         <NavigateToBooking />
       </main>
 
-      <FooterWithLinks />
-
-      <Footer />
     </>
   )
 }
