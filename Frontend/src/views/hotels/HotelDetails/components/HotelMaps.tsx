@@ -115,9 +115,12 @@ const MapComponent: React.FC<HotelMapProps> = ({
 
                 <Marker position={position}>
 
-
+                
                 </Marker>
+                {!expanded && (
                     <Recentre initialPosition={position}/>
+                )}
+                    
                 </MapContainer>
             </div>
 

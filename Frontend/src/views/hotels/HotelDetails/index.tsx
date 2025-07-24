@@ -7,7 +7,6 @@ import TopNavBar4 from './components/TopNavBar4'
 import { useEffect, useState } from 'react'
 import { HotelData } from '@/models/HotelDetailsApi'
 import { RoomData } from '@/models/RoomDetailsApi'
-import 'leaflet/dist/leaflet.css';
 
 import roomMockData2 from './price.json'
 const HotelDetails = () => {
@@ -91,7 +90,7 @@ const HotelDetails = () => {
     <>
       <PageMetaData title="Hotel - Details" />
 
-      <TopNavBar4/>
+      <TopNavBar4 />
 
       <main>
         <AvailabilityFilter />

@@ -229,7 +229,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
             </div>
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
-            <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} address1={hotelData.address1}/>
+            <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
             <PriceOverView />
           </Col>
         </Row>
