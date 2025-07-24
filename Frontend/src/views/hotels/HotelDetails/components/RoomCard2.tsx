@@ -58,7 +58,7 @@
                 {images.map((image, idx) => {
                     return (
                     <div key={idx}>
-                        <Image src={image.url} alt="Card image" className='w-100 h-100 object-fit-cover'/>
+                        <Image src={image.url} alt="Card image" className='w-100 h-100 object-fit-fill'/>
                     </div>
                     )
                 })}

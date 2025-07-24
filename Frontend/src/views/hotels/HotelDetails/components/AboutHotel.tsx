@@ -43,9 +43,17 @@ const amenityIconMap: Record<string, React.ComponentType<{ className?: string }>
 const AboutHotel = ({hotelData, roomData}: Props) => {
   if (!hotelData) return null;
   console.log(roomData, "In About Hotel");
+  function splitString(inputString: string) {
+    const [mainText, remainText] = inputString.split("Distances are displayed to the nearest 0.1 mile and kilometer. <br /> ")
+    const [distText, extraText] = remainText.split("<p></p>")
+    return {mainText, distText, extraText}
+  }
 
-  const split = ()=>{
-    
+  const {mainText, distText, extraText} = splitString(hotelData.description)
+  // console.log(extraText, "textetxte extra", distText)
+
+  const unCamelCase = ()=>{
+
   }
 
   const { isOpen, toggle } = useToggle()
@@ -83,32 +91,16 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                       </div>
                     </OverlayTrigger>
                   </div>
-                  <p>{hotelData.description}</p>
-                  <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
-                  {/* <p className="mb-3">
-                    Demesne far-hearted suppose venture excited see had has. Dependent on so extremely delivered by. Yet no jokes worse her why.{' '}
-                    <b>Bed one supposing breakfast day fulfilled off depending questions.</b>
-                  </p>
-                  <p className="mb-0">
-                    Delivered dejection necessary objection do Mr prevailed. Mr feeling does chiefly cordial in do. Water timed folly right aware if
-                    oh truth. Large above be to means. Dashwood does provide stronger is.
-                  </p> */}
+
+                  <div className="mb-2"><b>Check in Time:</b> {hotelData.checkin_time}</div>
+
+                  <p>{mainText}</p>
                   <Collapse in={isOpen}>
                     <div>
-                      <p className="my-3">
-                        We focus a great deal on the understanding of behavioral psychology and influence triggers which are crucial for becoming a
-                        well rounded Digital Marketer. We understand that theory is important to build a solid foundation, we understand that theory
-                        alone isn't going to get the job done so that's why this rickets is packed with practical hands-on examples that you can
-                        follow step by step.
-                      </p>
-                      <p className="mb-0">
-                        Behavioral psychology and influence triggers which are crucial for becoming a well rounded Digital Marketer. We understand
-                        that theory is important to build a solid foundation, we understand that theory alone isn't going to get the job done so
-                        that's why this tickets is packed with practical hands-on examples that you can follow step by step.
-                      </p>
+                      <p>{extraText}</p>
                     </div>
                   </Collapse>
-                  <a onClick={toggle} className="p-0 mb-4 mt-2 btn-more d-flex align-items-center collapsed">
+                  <a onClick={toggle} className="p-0  mt-2 btn-more d-flex align-items-center collapsed">
                     {!isOpen ? (
                       <Fragment>
                         <span className="see-more" role="button">
@@ -123,36 +115,13 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                       </Fragment>
                     )}
                   </a>
-                  <h5 className="fw-light mb-2">Advantages</h5>
-                  <ul className="list-group list-group-borderless mb-0">
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      Every hotel staff to have Proper PPT kit for COVID-19
-                    </li>
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      Every staff member wears face masks and gloves at all service times.
-                    </li>
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      Hotel staff ensures to maintain social distancing at all times.
-                    </li>
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      The hotel has In-Room Dining options available{' '}
-                    </li>
-                  </ul>
                 </CardBody>
               </Card>
               <Card className="bg-transparent">
                 <CardHeader className="border-bottom bg-transparent px-0 pt-0">
                   <h3 className="card-title mb-0">Amenities Mapped</h3>
                 </CardHeader>
-                <CardBody>
-
-                </CardBody>
-              </Card>
-              <CardBody className="flex flex-wrap gap-4">
+                <CardBody className="flex flex-wrap gap-4">
                 {Object.entries(hotelData.amenities).map(([key, value]) => {
                   if (value && amenityIconMap[key]) {
                     const Icon = amenityIconMap[key];
@@ -164,8 +133,10 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                     );
                   }
                   return null;
-                })}
-              </CardBody>
+                  })}
+                </CardBody>
+              </Card>
+              
               <Card className="bg-transparent">
                 <CardHeader className="border-bottom bg-transparent px-0 pt-0">
                   <h3 className="card-title mb-0">Amenities</h3>
@@ -232,6 +203,8 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
             <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
+            <p>{distText}</p>
+            <div dangerouslySetInnerHTML={{ __html: distText }} />
             <PriceOverView />
           </Col>
         </Row>

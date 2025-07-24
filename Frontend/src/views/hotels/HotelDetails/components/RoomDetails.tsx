@@ -5,14 +5,21 @@ import RoomCard2 from './RoomCard2';
 import { hotelRooms } from '../data'
 import { RoomData } from '@/models/RoomDetailsApi';
 import { useState } from 'react';
+import { IntegerType } from 'typeorm';
 type Props = {
   roomData: RoomData;
 };
-
-
+type RoomType = {
+  roomName: string;
+  count: IntegerType;
+}
 const RoomDetails = ({roomData}: Props) => {
     // const[scheme, setScheme] = useState<string[]>([]);
     // const empty = () => {setScheme([]);};
+    
+    const roomType = new Map<string, number>()
+
+
     
   return (
     <Card className="bg-transparent mt-5 mb-5" id="room-options">
@@ -37,13 +44,18 @@ const RoomDetails = ({roomData}: Props) => {
             console.log(room);
             const schemes: string[] = [];
 
+            
             console.log(room.roomAdditionalInfo.breakfastInfo, "RoomDetails")
             if (room.free_cancellation){schemes.push("Free Cancellation");} else{schemes.push("Non Refundable")}
-            if (room.roomAdditionalInfo.breakfastInfo != ""){schemes.push(room.roomAdditionalInfo.breakfastInfo);}
+            if (room.roomAdditionalInfo.breakfastInfo != ""){schemes.push("Free Breakfast Provided");}
             // console.log(room.amenities, "ammenties")
             const details = room.long_description.replace(/<\/?b>/g, '').replace(/<\/?b>/g, '').replace('<br/>', '').replace('</p>', '')
-            
-            return (
+            if (roomType.get(room.roomDescription) != null){
+              roomType.set(room.roomDescription, roomType.get(room.roomDescription) + 1)
+              console.log(room.base_rate_in_currency, room.roomDescription)
+            } else{
+              roomType.set(room.roomDescription, 1)
+              return (
               <RoomCard2
                 key={idx}
                 features={details}
@@ -55,6 +67,7 @@ const RoomDetails = ({roomData}: Props) => {
                 schemes={schemes}
               />
             )
+            }
           })}
         </div>
       </CardBody>
