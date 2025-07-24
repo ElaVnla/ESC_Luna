@@ -4,6 +4,7 @@ import { Card, CardBody, CardHeader, Col, Collapse, Container, OverlayTrigger, R
 import { BsPatchCheckFill, BsSafe, BsShieldFillCheck } from 'react-icons/bs'
 import { FaCheckCircle, FaConciergeBell, FaSwimmingPool, FaVolumeUp } from 'react-icons/fa'
 import { FaAngleDown, FaAngleUp, FaSnowflake, FaWifi } from 'react-icons/fa6'
+import MapComponent from './HotelMaps'
 import CustomerReview from './CustomerReview'
 import HotelPolicies from './HotelPolicies'
 import PriceOverView from './PriceOverView'
@@ -228,6 +229,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
             </div>
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
+            <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} address1={hotelData.address1}/>
             <PriceOverView />
           </Col>
         </Row>
