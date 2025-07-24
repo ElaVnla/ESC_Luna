@@ -15,9 +15,6 @@ const VerifyEmail = () => {
         <Hero />
         <TwoFactorAuth />
       </main>
-
-      <FooterWithLinks />
-      <Footer />
     </>
   )
 }

@@ -1,7 +1,6 @@
 import { PageMetaData } from '@/components'
 import AboutHotel from './components/AboutHotel'
 import AvailabilityFilter from './components/AvailabilityFilter'
-import FooterWithLinks from './components/FooterWithLinks'
 import HotelGallery from './components/HotelGallery'
 import TopNavBar4 from './components/TopNavBar4'
 import { useEffect, useState } from 'react'
@@ -41,7 +40,6 @@ const HotelDetails = () => {
         <AboutHotel hotelData = {hotelData}/>
       </main>
 
-      <FooterWithLinks />
     </>
   )
 }

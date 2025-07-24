@@ -31,8 +31,6 @@ const HotelChain = () => {
 
         <Gallery />
       </main>
-
-      <FooterWithLinks />
     </>
   )
 }
