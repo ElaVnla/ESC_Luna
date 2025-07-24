@@ -19,7 +19,7 @@ const AvailabilityFilter = () => {
   const { isOpen, toggle } = useToggle()
 
   const initialValue: AvailabilityFormType = {
-    location: 'San Jacinto, USA',
+    location: 'Singapore, Singapore',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
       adults: 2,
@@ -65,9 +65,9 @@ const AvailabilityFilter = () => {
               <label className="form-label">Location</label>
               <SelectFormInput className="form-select js-choice">
                 <option value={-1}>Select location</option>
-                <option>San Jacinto, USA</option>
-                <option>North Dakota, Canada</option>
-                <option>West Virginia, Paris</option>
+                <option>Singapore, Singapore</option>
+                <option>Rome, Italy</option>
+                <option>Bali, Indonesia</option>
               </SelectFormInput>
             </div>
           </Col>

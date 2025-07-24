@@ -16,7 +16,7 @@ type AvailabilityFormType = {
 
 const AvailabilityFilter = () => {
   const initialValue: AvailabilityFormType = {
-    location: 'San Jacinto, USA',
+    location: 'Singapore, Singapore',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
       adults: 2,
@@ -61,11 +61,14 @@ const AvailabilityFilter = () => {
             <BsGeoAlt size={37} />
             <div className="flex-grow-1">
               <FormLabel className="form-label">Location</FormLabel>
-              <SelectFormInput>
-                <option value={-1}>Select location</option>
-                <option value="1">San Jacinto, USA</option>
-                <option value="2">North Dakota, Canada</option>
-                <option value="3">West Virginia, Paris</option>
+              <SelectFormInput value={formValue.location}
+                onChange={(e) => setFormValue({ ...formValue, location: e.valueOf() })}>
+                <option value="" disabled>
+                  Select location
+                </option>
+                <option value="Singapore">Singapore, Singapore</option>
+                <option value="Rome">Rome, Italy</option>
+                <option value="Bali">Bali, Indonesia</option>
               </SelectFormInput>
             </div>
           </div>
