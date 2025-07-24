@@ -44,7 +44,9 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
   if (!hotelData) return null;
   console.log(roomData, "In About Hotel");
 
-
+  const split = ()=>{
+    
+  }
 
   const { isOpen, toggle } = useToggle()
   return (
@@ -81,7 +83,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                       </div>
                     </OverlayTrigger>
                   </div>
-                  {/* <p>{hotelData.description}</p> */}
+                  <p>{hotelData.description}</p>
                   <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
                   {/* <p className="mb-3">
                     Demesne far-hearted suppose venture excited see had has. Dependent on so extremely delivered by. Yet no jokes worse her why.{' '}
