@@ -203,7 +203,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
             <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
-            <p>{distText}</p>
+            {/* <p>{distText}</p> */}
             <div dangerouslySetInnerHTML={{ __html: distText }} />
             <PriceOverView />
           </Col>
