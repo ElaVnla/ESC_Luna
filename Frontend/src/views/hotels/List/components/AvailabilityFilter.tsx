@@ -66,9 +66,9 @@ const AvailabilityFilter = () => {
                 <option value={-1} disabled>
                   Select location
                 </option>
-                <option value="1">Central, Singapore</option>
-                <option value="2">West, Singapore</option>
-                <option value="3">East, Singapore</option>
+                <option value="1">Singapore, Singapore</option>
+                <option value="2">Rome, Italy</option>
+                <option value="3">Bali, Indonesia</option>
               </SelectFormInput>
             </div>
           </div>
