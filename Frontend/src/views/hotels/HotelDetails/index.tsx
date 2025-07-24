@@ -94,8 +94,8 @@ const HotelDetails = () => {
 
       <main>
         <AvailabilityFilter />
-        <HotelGallery hotelData = {hotelData}/>
-        <AboutHotel hotelData = {hotelData} roomData = {mockRoom}/>
+        <HotelGallery hotelData = {hotelData!}/>
+        <AboutHotel hotelData = {hotelData!} roomData = {mockRoom!}/>
       </main>
 
       <FooterWithLinks />
