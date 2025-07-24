@@ -14,7 +14,7 @@ import { HotelsRoomType } from '../data'
 import 'tiny-slider/dist/tiny-slider.css'
 
 const amenities: string[] = ['Swimming Pool', 'Spa', 'Kids Play Area', 'Gym', 'Tv', 'Mirror', 'Ac', 'Slippers']
-const RoomCard = ({ features, images, name, price, sale, schemes }: HotelsRoomType) => {
+const RoomCard = ({ features, images, name, price, schemes }: HotelsRoomType) => {
   const { isOpen, toggle } = useToggle()
 
   const { dir } = useLayoutContext()
@@ -38,11 +38,11 @@ const RoomCard = ({ features, images, name, price, sale, schemes }: HotelsRoomTy
     <Card className="shadow p-3">
       <Row className="g-4">
         <Col md={5} className="position-relative">
-          {sale && (
+          {/* {sale && (
             <div className="position-absolute top-0 start-0 z-index-1 mt-3 ms-4">
               <div className="badge text-bg-danger">{sale}</div>
             </div>
-          )}
+          )} */}
           <div className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2">
             <TinySlider settings={roomSliderSettings}>
               {images.map((image, idx) => {
@@ -64,13 +64,14 @@ const RoomCard = ({ features, images, name, price, sale, schemes }: HotelsRoomTy
             <h5 className="card-title">
               <Link to="">{name}</Link>
             </h5>
-            <ul className="nav nav-divider mb-2">
+            {/* <ul className="nav nav-divider mb-2">
               {features.map((feature, idx) => (
                 <li key={idx} className="nav-item">
                   {feature}
                 </li>
               ))}
-            </ul>
+            </ul> */}
+            <div>{features}</div>
 
             {schemes ? (
               schemes.map((scheme, idx) => (

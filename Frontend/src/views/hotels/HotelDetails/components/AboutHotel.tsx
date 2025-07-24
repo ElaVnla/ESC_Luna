@@ -1,9 +1,10 @@
 import { useToggle } from '@/hooks'
 import { Fragment } from 'react'
 import { Card, CardBody, CardHeader, Col, Collapse, Container, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
-import { BsPatchCheckFill, BsShieldFillCheck } from 'react-icons/bs'
+import { BsPatchCheckFill, BsSafe, BsShieldFillCheck } from 'react-icons/bs'
 import { FaCheckCircle, FaConciergeBell, FaSwimmingPool, FaVolumeUp } from 'react-icons/fa'
 import { FaAngleDown, FaAngleUp, FaSnowflake, FaWifi } from 'react-icons/fa6'
+import MapComponent from './HotelMaps'
 import CustomerReview from './CustomerReview'
 import HotelPolicies from './HotelPolicies'
 import PriceOverView from './PriceOverView'
@@ -12,12 +13,38 @@ import RoomOptions from './RoomOptions'
 import { amenities } from '../data'
 import { HotelData } from '@/models/HotelDetailsApi'
 
+import { PiHairDryer } from "react-icons/pi";
+import { TbIroning } from "react-icons/tb";
+import { MdOutlineRoomService } from "react-icons/md";
+import {AirVent, BriefcaseBusinessIcon, Cable, Presentation, Shirt, Square, SquareParking, Tv, Vault, Voicemail, WavesLadder, } from 'lucide-react'
+import { RoomData } from '@/models/RoomDetailsApi'
+import RoomCard2 from './RoomCard2'
+import RoomDetails from './RoomDetails'
 type Props = {
   hotelData : HotelData;
+  roomData: RoomData;
+};
+const amenityIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  airCondtioning : AirVent,
+  businessCenter: BriefcaseBusinessIcon, 
+  clothingIron: TbIroning,
+  dataPorts: Cable,
+  dryCleaning: Shirt,
+  hairDryer: PiHairDryer,
+  meetingRooms: Presentation,
+  outdoorPool : WavesLadder,
+  parkingGarage: SquareParking,
+  roomService : MdOutlineRoomService,
+  safe : Vault,
+  tVInRoom : Tv,
+  voiceMail: Voicemail,
 };
 
-const AboutHotel = ({hotelData}: Props) => {
+const AboutHotel = ({hotelData, roomData}: Props) => {
   if (!hotelData) return null;
+  console.log(roomData, "In About Hotel");
+
+
 
   const { isOpen, toggle } = useToggle()
   return (
@@ -117,6 +144,28 @@ const AboutHotel = ({hotelData}: Props) => {
               </Card>
               <Card className="bg-transparent">
                 <CardHeader className="border-bottom bg-transparent px-0 pt-0">
+                  <h3 className="card-title mb-0">Amenities Mapped</h3>
+                </CardHeader>
+                <CardBody>
+
+                </CardBody>
+              </Card>
+              <CardBody className="flex flex-wrap gap-4">
+                {Object.entries(hotelData.amenities).map(([key, value]) => {
+                  if (value && amenityIconMap[key]) {
+                    const Icon = amenityIconMap[key];
+                    return (
+                      <div key={key} className="flex items-center gap-2">
+                        <Icon className="w-5 h-5" />
+                        <span className="capitalize">{key}</span>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </CardBody>
+              <Card className="bg-transparent">
+                <CardHeader className="border-bottom bg-transparent px-0 pt-0">
                   <h3 className="card-title mb-0">Amenities</h3>
                 </CardHeader>
                 <CardBody className="pt-4 p-0">
@@ -175,19 +224,24 @@ const AboutHotel = ({hotelData}: Props) => {
                   </Row>
                 </CardBody>
               </Card>
-
-              <RoomOptions />
-
-              <CustomerReview />
-
-              <HotelPolicies />
+              {/* <RoomCard2/> */}
+              
             </div>
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
+            <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
             <PriceOverView />
           </Col>
         </Row>
+        <RoomDetails roomData = {roomData}/>      
+        {/* <RoomOptions roomData = {roomData}/> */}
+
+        {/* <CustomerReview /> */}
+
+        <HotelPolicies roomPolicies = {roomData.rooms[0].roomAdditionalInfo} />
+
       </Container>
+      
     </section>
   )
 }

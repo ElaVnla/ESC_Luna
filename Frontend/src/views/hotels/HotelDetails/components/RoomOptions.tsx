@@ -3,10 +3,18 @@ import { Card, CardBody, CardHeader, Col } from 'react-bootstrap'
 import RoomCard from './RoomCard'
 
 import { hotelRooms } from '../data'
+import { RoomData } from '@/models/RoomDetailsApi';
+import { useState } from 'react';
 
-const RoomOptions = () => {
+type Props = {
+  roomData: RoomData;
+};
+
+
+const RoomOptions = ({roomData}: Props) => {
+  
   return (
-    <Card className="bg-transparent" id="room-options">
+    <Card className="bg-transparent mt-5 mb-5" id="room-options">
       <CardHeader className="border-bottom bg-transparent px-0 pt-0">
         <div className="d-sm-flex justify-content-sm-between align-items-center">
           <h3 className="mb-2 mb-sm-0">Room Options</h3>
@@ -24,17 +32,18 @@ const RoomOptions = () => {
       </CardHeader>
       <CardBody className="pt-4 p-0">
         <div className="vstack gap-4">
-          {hotelRooms.map((room, idx) => {
+          {roomData?.rooms?.map((room, idx) => {
+            console.log(room, "In RoomOptions");
             return (
               <RoomCard
                 key={idx}
-                features={room.features}
-                images={room.images}
-                id={room.id}
-                name={room.name}
-                price={room.price}
-                sale={room.sale}
-                schemes={room.schemes}
+                features={room.roomAdditionalInfo.displayFields.special_check_in_instructions}
+                images={hotelRooms[1].images}// hotelRoom.get(idx).images?
+                id={123}
+                name={room.roomNormalizedDescription}
+                price={room.base_rate_in_currency}
+                // sale={hotelRooms[1].sale}
+                schemes={hotelRooms[1].schemes}
               />
             )
           })}

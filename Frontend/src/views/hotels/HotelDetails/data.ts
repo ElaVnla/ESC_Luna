@@ -11,7 +11,7 @@ export type HotelsRoomType = {
   name: string
   sale?: string
   images: string[]
-  features: string[]
+  features: string
   price: number
   schemes?: string[]
 }
@@ -40,7 +40,7 @@ const hotelRooms: HotelsRoomType[] = [
     name: 'Luxury Room with Balcony',
     images: [hotel4, hotel3, hotel2, hotel1],
     price: 750,
-    features: ['Air Conditioning', 'Wifi', 'Kitchen', 'pool'],
+    features: "stmth",//['Air Conditioning', 'Wifi', 'Kitchen', 'pool'],
     schemes: ['Free Cancellation till 7 Jan 2022', 'Free Breakfast'],
     sale: '30% Off',
   },
@@ -50,7 +50,7 @@ const hotelRooms: HotelsRoomType[] = [
     images: [hotel4, hotel3, hotel2, hotel1],
     price: 980,
     sale: '15% Off',
-    features: ['Air Conditioning', 'Wifi', 'Kitchen', 'pool'],
+    features: "smth", //['Air Conditioning', 'Wifi', 'Kitchen', 'pool'],
   },
 ]
 
