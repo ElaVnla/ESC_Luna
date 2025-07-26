@@ -16,9 +16,9 @@ const AppRouter = (props: RouteProps) => {
         <Route key={idx + route.name} path={route.path} element={<AuthLayout {...props}>{route.element}</AuthLayout>} />
       ))}
 
-      {(helpRoutes || []).map((route, idx) => (
+      {/* {(helpRoutes || []).map((route, idx) => (
         <Route key={idx + route.name} path={route.path} element={<HelpLayout {...props}>{route.element}</HelpLayout>} />
-      ))}
+      ))} */}
 
       {(userRoutes || []).map((route, idx) => (
         <Route
@@ -39,7 +39,7 @@ const AppRouter = (props: RouteProps) => {
         />
       ))}
 
-      {(agentRoutes || []).map((route, idx) => (
+      {/* {(agentRoutes || []).map((route, idx) => (
         <Route
           key={idx + route.name}
           path={route.path}
@@ -56,9 +56,9 @@ const AppRouter = (props: RouteProps) => {
             )
           }
         />
-      ))}
+      ))} */}
 
-      {(adminRoutes || []).map((route, idx) => (
+      {/* {(adminRoutes || []).map((route, idx) => (
         <Route
           key={idx + route.name}
           path={route.path}
@@ -75,7 +75,7 @@ const AppRouter = (props: RouteProps) => {
             )
           }
         />
-      ))}
+      ))} */}
     </Routes>
   )
 }

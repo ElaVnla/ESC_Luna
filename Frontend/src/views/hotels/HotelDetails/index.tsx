@@ -22,7 +22,7 @@ const HotelDetails = () => {
     if (hotelData) return;
     const fetchHotel = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/hotels/XVBJ');
+        const response = await fetch('http://localhost:3000/api/hotels/diH7');
 
         const data = await response.json();
         setHotelData(data);

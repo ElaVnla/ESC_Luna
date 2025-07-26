@@ -16,7 +16,7 @@
     import { HotelsRoomCardType } from '@/models/RoomDetailsApi'
 
     //const amenities: string[] = ['Swimming Pool', 'Spa', 'Kids Play Area', 'Gym', 'Tv', 'Mirror', 'Ac', 'Slippers']
-    const RoomCard = ({ features, images, name, price, ammenities, schemes }: HotelsRoomCardType) => {
+    const RoomCard = ({ features, images, name, price, ammenities, schemes, count }: HotelsRoomCardType) => {
     const { isOpen, toggle } = useToggle();
     const [isExpand, setExpand] = useState<boolean>(false);
     const [isExpand2, setExpand2] = useState<boolean>(false);
@@ -64,7 +64,7 @@
                 })}
                 </TinySlider>
             </div>
-            <h5 className=" fw-bold card-title mt-3">{name}</h5>
+            <h4 className=" fw-bold card-title mt-3">{name}</h4>
             {schemes? (schemes.map((scheme, idx) => (
                     scheme == "Non Refundable"?
                         <p key={idx} className="text-danger mb-0">{scheme}</p>
@@ -72,23 +72,29 @@
                         <p key={idx} className="text-success mb-0">{scheme}</p>
                 ))):<></> }
 
-            <div className="d-sm-flex justify-content-sm-between align-items-center mt-3">
-                <div className="d-flex align-items-center">
-                    <h5 className="fw-bold mb-0 me-1">
-                    {currency}
-                    {price}
-                    </h5>
-                    
-                    {/* <span className="mb-0 me-2">/day</span>
-                    <span className="text-decoration-line-through mb-0">{currency}1000</span> */}
-                </div>
+                <div className="d-sm-flex justify-content-sm-between align-items-center mt-3">
+                    <div className="d-flex align-items-center">
+                        <div className=" mb-0 me-1">Starts From:&nbsp;
+                        {/* {currency} */}
+                        <h3>${price}</h3>
+                        </div>
+                        
+                        {/* <span className="mb-0 me-2">/day</span>
+                        <span className="text-decoration-line-through mb-0">{currency}1000</span> */}
+                    </div>
             </div>
+            { count == 1 ?(
+                <div>Last Room Left!</div>  
+            ):count <= 5?(
+                <div>Room Selling Fast!</div>
+            ):null
+            }
             
             </Col>
             
 
             <Col md={7}>
-            <div className="card-body d-flex flex-column h-100 p-0">
+            <div className="card-body d-flex flex-column h-100 p-0 position-relative">
                 <h5 className="card-title mb-0">Ammenities</h5>
                 {amenitiesChunks.map((chunk, idx) => {
                         return (
@@ -145,20 +151,18 @@
                     </Fragment>
                 )}
                 </a>
-
-                <div className='d-sm-flex flex-column align-content-end'>
-                    
-                    
+                
+                <div className=' mt-auto text-end pe-4 pb-1'>
                     <div className="mt-3 mt-sm-0">
-                        <Button variant="primary" size="lg" className="mb-0">
-                        Select Room
-                        </Button>
+                    <Button variant="primary" size="lg" className="mb-0">Select Room</Button>
                     </div>
                     <Link to="" className="text-decoration-underline p-0 mb-0 mt-1" onClick={toggle}>
                         <BsEyeFill className=" me-1" />
                         View more details
                     </Link>
                 </div>
+                
+                
                 
             </div>
 

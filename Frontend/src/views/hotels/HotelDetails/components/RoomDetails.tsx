@@ -5,20 +5,30 @@ import RoomCard2 from './RoomCard2';
 import { hotelRooms } from '../data'
 import { RoomData } from '@/models/RoomDetailsApi';
 import { useState } from 'react';
-import { IntegerType } from 'typeorm';
+
 type Props = {
   roomData: RoomData;
 };
-type RoomType = {
-  roomName: string;
-  count: IntegerType;
-}
+
 const RoomDetails = ({roomData}: Props) => {
     // const[scheme, setScheme] = useState<string[]>([]);
     // const empty = () => {setScheme([]);};
     
-    const roomType = new Map<string, number>()
-
+    const roomCount = new Map<string, number>()
+    const roomPrice = new Map<string, number>()
+    const roomCheck = new Map<string, boolean>()
+    roomData.rooms.map((room, idx)=>{
+      //if (roomType.get(room.roomDescription) != null){
+      roomCount.set(room.roomDescription, (roomCount.get(room.roomDescription) ?? 0) + 1)
+      roomPrice.set(room.roomDescription, Math.min(roomPrice.get(room.roomDescription)?? Infinity, room.base_rate_in_currency))
+      roomCheck.set(room.roomDescription, false)
+      
+      // else{
+      //   roomType.set(room.roomDescription, 1)
+      //   roomPrice.set(room.roomDescription, room.base_rate_in_currency)
+      // }
+    }
+    )
 
     
   return (
@@ -26,16 +36,6 @@ const RoomDetails = ({roomData}: Props) => {
       <CardHeader className="border-bottom bg-transparent px-0 pt-0">
         <div className="d-sm-flex justify-content-sm-between align-items-center">
           <h3 className="mb-2 mb-sm-0">Room Options</h3>
-          <Col sm={4}>
-            <form className="form-control-bg-light">
-              <SelectFormInput className="form-select form-select-sm js-choice border-0">
-                <option value={-1}>Select Option</option>
-                <option>Recently search</option>
-                <option>Most popular</option>
-                <option>Top rated</option>
-              </SelectFormInput>
-            </form>
-          </Col>
         </div>
       </CardHeader>
       <CardBody className="pt-4 p-0">
@@ -50,24 +50,27 @@ const RoomDetails = ({roomData}: Props) => {
             if (room.roomAdditionalInfo.breakfastInfo != ""){schemes.push("Free Breakfast Provided");}
             // console.log(room.amenities, "ammenties")
             const details = room.long_description.replace(/<\/?b>/g, '').replace(/<\/?b>/g, '').replace('<br/>', '').replace('</p>', '')
-            if (roomType.get(room.roomDescription) != null){
-              roomType.set(room.roomDescription, roomType.get(room.roomDescription) + 1)
-              console.log(room.base_rate_in_currency, room.roomDescription)
-            } else{
-              roomType.set(room.roomDescription, 1)
+            
+            //get rooms
+            if(!roomCheck.get(room.roomDescription)){
+              roomCheck.set(room.roomDescription, true)
               return (
-              <RoomCard2
-                key={idx}
-                features={details}
-                images={room.images}// hotelRoom.get(idx).images?
-                id={123}
-                name={room.roomDescription}
-                price={room.base_rate_in_currency}
-                ammenities = {room.amenities}
-                schemes={schemes}
-              />
-            )
+                <RoomCard2
+                  key={idx}
+                  features={details}  
+                  images={room.images}// hotelRoom.get(idx).images?
+                  id={123}
+                  name={room.roomDescription}
+                  price={roomPrice.get(room.roomDescription)?? 0}
+                  ammenities = {room.amenities}
+                  schemes={schemes}
+                  count = {roomCount.get(room.roomDescription)?? 1}
+                />
+              )
             }
+            
+            
+            
           })}
         </div>
       </CardBody>

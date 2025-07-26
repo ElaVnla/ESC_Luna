@@ -86,4 +86,5 @@ export type HotelsRoomCardType = {
   price: number
   ammenities: string[]
   schemes?: string[]
+  count: number
 }
