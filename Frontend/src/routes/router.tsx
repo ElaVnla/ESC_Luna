@@ -1,5 +1,5 @@
 import { AdminLayout, AgentLayout, AuthLayout, DefaultLayout, HelpLayout, UserLayout } from '@/layouts'
-import { adminRoutes, agentRoutes, appRoutes, authRoutes, helpRoutes, userRoutes } from '@/routes/index'
+import { appRoutes, authRoutes } from '@/routes/index'
 import { useAuthContext } from '@/states'
 import { Navigate, Route, Routes, type RouteProps } from 'react-router-dom'
 
@@ -16,11 +16,11 @@ const AppRouter = (props: RouteProps) => {
         <Route key={idx + route.name} path={route.path} element={<AuthLayout {...props}>{route.element}</AuthLayout>} />
       ))}
 
-      {(helpRoutes || []).map((route, idx) => (
+      {/* {(helpRoutes || []).map((route, idx) => (
         <Route key={idx + route.name} path={route.path} element={<HelpLayout {...props}>{route.element}</HelpLayout>} />
-      ))}
+      ))} */}
 
-      {(userRoutes || []).map((route, idx) => (
+      {/* {(userRoutes || []).map((route, idx) => (
         <Route
           key={idx + route.name}
           path={route.path}
@@ -37,9 +37,9 @@ const AppRouter = (props: RouteProps) => {
             )
           }
         />
-      ))}
+      ))} */}
 
-      {(agentRoutes || []).map((route, idx) => (
+      {/* {(agentRoutes || []).map((route, idx) => (
         <Route
           key={idx + route.name}
           path={route.path}
@@ -56,9 +56,9 @@ const AppRouter = (props: RouteProps) => {
             )
           }
         />
-      ))}
+      ))} */}
 
-      {(adminRoutes || []).map((route, idx) => (
+      {/* {(adminRoutes || []).map((route, idx) => (
         <Route
           key={idx + route.name}
           path={route.path}
@@ -75,7 +75,7 @@ const AppRouter = (props: RouteProps) => {
             )
           }
         />
-      ))}
+      ))} */}
     </Routes>
   )
 }
