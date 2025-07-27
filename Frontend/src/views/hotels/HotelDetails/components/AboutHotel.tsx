@@ -130,7 +130,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
             <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
-            <Card className="mt-3">
+            <Card className="mt-1">
               <Card.Body>
                 <Card.Title className="mb-3">Nearby Places</Card.Title>
                 <div dangerouslySetInnerHTML={{ __html: cleanedDistText }} />
@@ -158,7 +158,6 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                 }
               </Col>
               <Col>
-                {/* {hotelData.amenities_ratings?(<h5>Amenities Ratings</h5>):null} */}
                 {hotelData.amenities_ratings? (hotelData.amenities_ratings.map((amenity,__)=>{
                     return(
                     <div className=' d-flex align-items-center pb-1' style={{minHeight:"25px"}}>
