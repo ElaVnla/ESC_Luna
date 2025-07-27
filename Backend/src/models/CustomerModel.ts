@@ -10,3 +10,4 @@ export class CustomerModel {
         public billing_address: string
     ) {}
 }
+//this is for the MAIN GUEST only; other guests will be in the GuestModel. 
