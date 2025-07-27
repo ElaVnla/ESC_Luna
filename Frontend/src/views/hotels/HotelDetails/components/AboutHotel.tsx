@@ -7,11 +7,11 @@ import { FaAngleDown, FaAngleUp, FaSnowflake, FaWifi } from 'react-icons/fa6'
 import MapComponent from './HotelMaps'
 import HotelPolicies from './HotelPolicies'
 import PriceOverView from './PriceOverView'
-import { amenities } from '../data'
 import { HotelData } from '@/models/HotelDetailsApi'
 import { RoomData } from '@/models/RoomDetailsApi'
 
-import RoomDetails from './RoomDetails'
+
+import RoomOptions from './RoomOptions'
 type Props = {
   hotelData : HotelData;
   roomData: RoomData;
@@ -125,10 +125,6 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                   </a>
                 </CardBody>
               </Card>
-              
-              
-              {/* <RoomCard2/> */}
-              
             </div>
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
@@ -174,8 +170,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
           </CardBody>
         </Card>
 
-        <RoomDetails roomData = {roomData}/>      
-        {/* <RoomOptions roomData = {roomData}/> */}
+        <RoomOptions roomData = {roomData}/> 
 
         {/* <CustomerReview /> */}
 
