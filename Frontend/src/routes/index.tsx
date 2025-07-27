@@ -97,6 +97,7 @@ const TwoFactorAuth = lazy(() => import('@/views/auth/TwoFactorAuth'))
 
 const Pricing = lazy(() => import('@/views/Pricing'))
 // const FAQs = lazy(() => import('@/views/FAQs'))
+
 // const NotFoundPage = lazy(() => import('@/views/NotFound'))
 // const ComingSoon = lazy(() => import('@/views/ComingSoon'))
 
@@ -126,6 +127,7 @@ const hotelRoutes: RoutesProps[] = [
     name: 'hotels.index',
     element: <HotelsHome />,
   },
+
   // {
   //   path: '/hotels/chain',
   //   name: 'hotels.chain',
