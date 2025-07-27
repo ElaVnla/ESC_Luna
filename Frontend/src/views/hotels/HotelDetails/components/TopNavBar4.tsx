@@ -25,7 +25,7 @@ import { BsBell, BsBookmarkCheck, BsCircleHalf, BsGear, BsHeart, BsInfoCircle, B
 import { Link } from 'react-router-dom'
 
 import avatar1 from '@/assets/images/avatar/01.jpg'
-import { notificationData } from '../data'
+// import { notificationData } from '../data'
 
 type ThemeModeType = {
   theme: LayoutState['theme']
@@ -113,7 +113,7 @@ const TopNavBar4 = () => {
                     </Link>
                   </CardHeader>
 
-                  <CardBody className="p-0">
+                  {/* <CardBody className="p-0">
                     <ListGroup className="list-group-flush list-unstyled p-2">
                       {(notificationData ?? []).map((notification, idx) => (
                         <li key={idx}>
@@ -125,7 +125,7 @@ const TopNavBar4 = () => {
                         </li>
                       ))}
                     </ListGroup>
-                  </CardBody>
+                  </CardBody> */}
 
                   <CardFooter className="bg-transparent text-center border-top">
                     <Link to="" className="btn btn-sm btn-link mb-0 p-0">

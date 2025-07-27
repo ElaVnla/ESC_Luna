@@ -9,22 +9,14 @@ type Props = {
 };
 
 const RoomOptions = ({roomData}: Props) => {
-    // const[scheme, setScheme] = useState<string[]>([]);
-    // const empty = () => {setScheme([]);};
     
     const roomCount = new Map<string, number>()
     const roomPrice = new Map<string, number>()
     const roomCheck = new Map<string, boolean>()
     roomData.rooms.map((room, __)=>{
-      //if (roomType.get(room.roomDescription) != null){
-      roomCount.set(room.roomDescription, (roomCount.get(room.roomDescription) ?? 0) + 1)
-      roomPrice.set(room.roomDescription, Math.min(roomPrice.get(room.roomDescription)?? Infinity, room.base_rate_in_currency))
-      roomCheck.set(room.roomDescription, false)
-      
-      // else{
-      //   roomType.set(room.roomDescription, 1)
-      //   roomPrice.set(room.roomDescription, room.base_rate_in_currency)
-      // }
+    roomCount.set(room.roomDescription, (roomCount.get(room.roomDescription) ?? 0) + 1)
+    roomPrice.set(room.roomDescription, Math.min(roomPrice.get(room.roomDescription)?? Infinity, room.base_rate_in_currency))
+    roomCheck.set(room.roomDescription, false)
     }
     )
 
@@ -46,7 +38,6 @@ const RoomOptions = ({roomData}: Props) => {
             console.log(room.roomAdditionalInfo.breakfastInfo, "RoomDetails")
             if (room.free_cancellation){schemes.push("Free Cancellation");} else{schemes.push("Non Refundable")}
             if (room.roomAdditionalInfo.breakfastInfo != ""){schemes.push("Free Breakfast Provided");}
-            // console.log(room.amenities, "ammenties")
             const details = room.long_description.replace(/<\/?b>/g, '').replace(/<\/?b>/g, '').replace('<br/>', '').replace('</p>', '')
             
             //get rooms
@@ -56,7 +47,7 @@ const RoomOptions = ({roomData}: Props) => {
                 <RoomCard
                   key={idx}
                   features={details}  
-                  images={room.images}// hotelRoom.get(idx).images?
+                  images={room.images}
                   id={123}
                   name={room.roomDescription}
                   price={roomPrice.get(room.roomDescription)?? 0}
