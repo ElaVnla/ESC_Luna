@@ -1,6 +1,8 @@
 import { lazy } from 'react'
 import { Navigate, type RouteProps } from 'react-router-dom'
 
+
+
 export type RoutesProps = {
   path: RouteProps['path']
   name: string

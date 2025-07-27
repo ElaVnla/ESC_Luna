@@ -6,6 +6,8 @@ import { Button, Card, Col, Dropdown, DropdownDivider, DropdownMenu, DropdownTog
 import { BsCalendar, BsDashCircle, BsGeoAlt, BsPerson, BsPlusCircle, BsSearch } from 'react-icons/bs'
 import { parsedestinations } from '../fetchdestinations';
 import { destinationinterface } from '../destinationinterface';
+import { useNavigate } from 'react-router-dom';
+
 
 type AvailabilityFormType = {
   location: string
@@ -17,9 +19,11 @@ type AvailabilityFormType = {
   }
 }
 
+
 const AvailabilityFilter = () => {
+  const nav = useNavigate();
   const initialValue: AvailabilityFormType = {
-    location: '00Hr',
+    location: 'Sienna',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
       adults: 2,
@@ -29,6 +33,24 @@ const AvailabilityFilter = () => {
   }
 
   const [formValue, setFormValue] = useState<AvailabilityFormType>(initialValue)
+
+  const subhandler = (e: React.FormEvent) =>{
+      e.preventDefault();
+      const { location, stayFor, guests } = formValue;
+      const checkin = Array.isArray(stayFor) ? stayFor[0].toISOString() : stayFor.toISOString();
+      const checkout = Array.isArray(stayFor) ? stayFor[1].toISOString() : stayFor.toISOString();
+      const query = new URLSearchParams({
+        location,
+        checkin,
+        checkout,
+        adults: guests.adults.toString(),
+        children: guests.children.toString(),
+        rooms: guests.rooms.toString(),
+      }).toString();
+      nav(`/hotels/list?${query}`);
+
+    };
+
 
   const updateGuests = (type: keyof AvailabilityFormType['guests'], increase: boolean = true) => {
     const val = formValue.guests[type]
@@ -66,7 +88,7 @@ const AvailabilityFilter = () => {
       <Col xl={10} className="position-relative mt-n3 mt-xl-n9">
         <h6 className="d-none d-xl-block mb-3">Check Availability</h6>
 
-        <Card as="form" className="shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4">
+        <Card as="form"onSubmit={subhandler} className="shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4">
           <Row className="g-4 align-items-center">
             <Col lg={4}>
               <div className="form-control-border form-control-transparent form-fs-md flex-centered gap-2">
@@ -82,7 +104,7 @@ const AvailabilityFilter = () => {
                       Select location
                     </option>
                     {locations.map((loc) => (
-                      <option key={loc.uid} value={loc.uid}>
+                      <option key={loc.uid} value={`${loc.uid || 'none'},${loc.term.split(",")[0] || 'none'},${loc.state || 'none'}`}>
                         {loc.term}, {loc.state ? `, ${loc.state}` : ''}
                       </option>
                     ))}
@@ -107,7 +129,8 @@ const AvailabilityFilter = () => {
                     options={{
                       mode: 'range',
                       dateFormat: 'd M',
-                      closeOnSelect:false
+                      closeOnSelect:false,
+                      minDate: 'today'
                     }}
                   />
                 </div>

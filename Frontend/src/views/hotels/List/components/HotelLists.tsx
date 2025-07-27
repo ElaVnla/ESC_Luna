@@ -34,7 +34,16 @@ const HotelLists = () => {
   const [loading, setLoading] = useState(true);
 
   const query = useQuery();
-  const city = query.get("city") || "Singapore";
+  const lsplit = query.get("location")?.split(",") || ['RsBU', 'Singapore', 'none']; 
+  const uid = lsplit[0];
+  const city = lsplit[1];
+  const state = lsplit[2];
+  console.log(lsplit);
+  const checkin = query.get("checkin");
+  const checkout = query.get("checkout");
+  const adults = Number(query.get("adults")) || 0;
+  const children = Number(query.get("children")) || 0;
+  const rooms = Number(query.get("rooms")) || 0;
 
   useEffect(() => {
     setLoading(true);
