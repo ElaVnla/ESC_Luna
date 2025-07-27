@@ -17,4 +17,5 @@ export default defineConfig({
     setupFiles: 'vitest.setup.ts',
     // (no need to repeat alias here if your config is picked up)
   }
+  
 });

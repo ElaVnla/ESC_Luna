@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvent } from 'react-leaflet';
 import { Button, Card } from 'react-bootstrap'
@@ -103,18 +104,9 @@ const MapComponent: React.FC<HotelMapProps> = ({latitude,longitude,address,}) =>
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
-<<<<<<< Updated upstream
-
-                <Marker position={position}>
-
-
-                </Marker>
-                    <Recentre initialPosition={position}/>
-=======
                 <Marker position={position} />
                 <MapEventsHandler initialPosition={position} setOffCenter={setOffCenter} />
                 {!expanded && <RecenterButton initialPosition={position} show={offcenter} />}
->>>>>>> Stashed changes
                 </MapContainer>
             </div>
 
