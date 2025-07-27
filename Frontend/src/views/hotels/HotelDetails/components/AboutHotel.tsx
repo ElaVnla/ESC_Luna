@@ -1,12 +1,11 @@
 import { useToggle } from '@/hooks'
 import { Fragment } from 'react'
 import { Card, CardBody, CardHeader, Col, Collapse, Container, OverlayTrigger, ProgressBar, Row, Tooltip } from 'react-bootstrap'
-import { BsShieldFillCheck } from 'react-icons/bs'
-import { FaCheckCircle, FaConciergeBell, FaSwimmingPool, FaVolumeUp } from 'react-icons/fa'
+import { FaCheckCircle, FaConciergeBell, FaSwimmingPool } from 'react-icons/fa'
 import { FaAngleDown, FaAngleUp, FaSnowflake, FaWifi } from 'react-icons/fa6'
 import MapComponent from './HotelMaps'
 import HotelPolicies from './HotelPolicies'
-import PriceOverView from './PriceOverView'
+
 import { HotelData } from '@/models/HotelDetailsApi'
 import { RoomData } from '@/models/RoomDetailsApi'
 
@@ -129,9 +128,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
             <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
-            {/* <p>{distText}</p> */}
             <div dangerouslySetInnerHTML={{ __html: distText }} />
-            {/* <PriceOverView /> */}
           </Col>
         </Row>
         <Card className="bg-transparent">
@@ -171,9 +168,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
         </Card>
 
         <RoomOptions roomData = {roomData}/> 
-
-        {/* <CustomerReview /> */}
-
+        
         <HotelPolicies roomPolicies = {roomData.rooms[0].roomAdditionalInfo} />
 
       </Container>

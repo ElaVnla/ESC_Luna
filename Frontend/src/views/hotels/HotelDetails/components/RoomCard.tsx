@@ -43,9 +43,7 @@
     const chunk_size = 2
     const amenitiesChunks = splitArray(ammenities.slice(0,14), chunk_size)
     const extraChunks = splitArray(ammenities.slice(14), chunk_size)
-    // const defaultChunks = amenitiesChunks.slice(0, 5);
     console.log(extraChunks)
-    // const remainingChunks = amenitiesChunks.slice(5);
     return (
         <Card className="shadow py-4 px-3">
         <Row className="g-4">
@@ -72,12 +70,8 @@
                 <div className="d-sm-flex justify-content-sm-between align-items-center mt-3">
                     <div className="d-flex align-items-center">
                         <div className=" mb-0 me-1">Starts From:&nbsp;
-                        {/* {currency} */}
                         <h3>${price}</h3>
                         </div>
-                        
-                        {/* <span className="mb-0 me-2">/day</span>
-                        <span className="text-decoration-line-through mb-0">{currency}1000</span> */}
                     </div>
             </div>
             { count == 1 ?(
