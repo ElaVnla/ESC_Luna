@@ -1,17 +1,21 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+// Frontend/vite.config.ts
+import { defineConfig } from 'vitest/config';
+import react      from '@vitejs/plugin-react';
+import { fileURLToPath, URL } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
-    },
+      // <-- THIS
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: 'vitest.setup.ts',
+    // (no need to repeat alias here if your config is picked up)
+  }
+  
 });
