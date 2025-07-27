@@ -38,20 +38,56 @@ const HotelLists = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:3000/hotels/getHotelsByCity?city=${encodeURIComponent(city)}`)
+    fetch(
+      `http://localhost:3000/hotels/getHotelsByCity?city=${encodeURIComponent(
+        city
+      )}`
+    )
       .then((res) => res.json())
       .then((data) => {
-        const mapped = data.map((hotel: any) => ({
-          id: parseInt(hotel.id), // or hash to int if your ID is a string
-          name: hotel.name,
-          address: hotel.address,
-          images: [
-            `https://photo.hotellook.com/image_v2/limit/${hotel.id}/800/520.auto`,
-          ],
-          rating: hotel.rating || 0,
-          features: hotel.amenities ? hotel.amenities.split(",") : [],
-          price: Math.floor(Math.random() * 1000) + 100, // You can customize this
-        }));
+        const mapped = data.map((hotel: any) => {
+          // Generate multiple image URLs for the slider
+          let images = [];
+          console.log(
+            "Hotel data:",
+            hotel.name,
+            hotel.img_baseurl,
+            hotel.img_suffix,
+            hotel.image_count
+          );
+
+          if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
+            const maxImages = Math.min(hotel.image_count, 5); // Generate up to 5 images
+            for (let i = 0; i < maxImages; i++) {
+              const imageUrl =
+                hotel.img_baseurl + i.toString() + hotel.img_suffix;
+              console.log(`Generated image URL: ${imageUrl}`);
+              images.push(imageUrl);
+            }
+          }
+
+          // Test with the working URL pattern as fallback
+          if (images.length === 0) {
+            console.log(`No images found for ${hotel.name}, using fallbacks`);
+            images = [
+              `https://d2ey9sqrvkqdfs.cloudfront.net/${hotel.id}/0.jpg`,
+              `https://d2ey9sqrvkqdfs.cloudfront.net/0dAF/0.jpg`, // Known working image
+              `https://via.placeholder.com/800x520/f8f9fa/6c757d?text=${encodeURIComponent(
+                hotel.name
+              )}`,
+            ];
+          }
+
+          return {
+            id: parseInt(hotel.id),
+            name: hotel.name,
+            address: hotel.address,
+            images: images,
+            rating: hotel.rating || 0,
+            amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
+            price: Math.floor(Math.random() * 1000) + 100,
+          };
+        });
         setHotels(mapped);
         setLoading(false);
       })
@@ -177,7 +213,9 @@ const HotelLists = () => {
                       onClick={() => {
                         setCurrentPage((prev) => {
                           const newPage = Math.max(prev - 1, 1);
-                          hotelListRef.current?.scrollIntoView({ behavior: "smooth" });
+                          hotelListRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                          });
                           return newPage;
                         });
                       }}
@@ -198,7 +236,9 @@ const HotelLists = () => {
                         className="page-link"
                         onClick={() => {
                           setCurrentPage(number);
-                          hotelListRef.current?.scrollIntoView({ behavior: "smooth" });
+                          hotelListRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                          });
                         }}
                       >
                         {number}
@@ -217,7 +257,9 @@ const HotelLists = () => {
                       onClick={() => {
                         setCurrentPage((prev) => {
                           const newPage = Math.min(prev + 1, totalPages);
-                          hotelListRef.current?.scrollIntoView({ behavior: "smooth" });
+                          hotelListRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                          });
                           return newPage;
                         });
                       }}

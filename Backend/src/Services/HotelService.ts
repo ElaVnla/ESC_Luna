@@ -15,6 +15,36 @@ export async function getAllHotels() {
   return hotels;
 }
 
+function processAmenities(amenities: Record<string,boolean>) : string[] {
+  const keyMap: Record<string,string> ={
+    airConditioning: "Air-conditioning",
+    clothingIron: "Clothing Iron",
+    continentalBreakfast: "Continental Breakfast",
+    dataPorts: "Data Ports",
+    hairDryer: "Hair Dryer",
+    kitchen: "Kitchen",
+    outdoorPool: "Outdoor Pool",
+    parkingGarage: "Parking Garage",
+    safe: "Safe",
+    tVInRoom: "TV",
+    voiceMail: "Voice Mail",
+    roomService: "Room Service",
+    miniBarInRoom: "Mini-bar",
+    businessCenter: "Business Center",
+    inHouseDining: "In-house Dining",
+    nonSmokingRooms: "Non-smoking Rooms",
+    fitnessFacility: "Fitness Facility",
+    meetingRooms: "Meeting Rooms",
+    exteriorRoomEntrance: "Exterior Room Entrance",
+    videoCheckOut: "Video Check-out",
+    sauna: "Sauna",
+    dryCleaning: "Dry Cleaning"
+  }
+  return Object.entries(amenities)
+    .filter(([_, value]) => value)
+    .map(([key]) => keyMap[key] || key);
+}
+
 export async function getHotelsByCity(city: string) {
   // Retrieve all hotels based on destination city
   const hotelsRepo = Database.getRepository(Hotel);
@@ -37,16 +67,18 @@ export async function storeHotels(hotelsData: any[]) {
       phone_number: "null",
       contact_email: "null",
       fax_number: "null",
-      amenities: JSON.stringify(data.amenities),
+      amenities: JSON.stringify(processAmenities(data.amenities)),
       description: data.description,
       postal_code: "null",
       city: data.original_metadata?.city || "",
       state: data.original_metadata?.state || "",
       country_code: data.original_metadata?.country || "SG",
       image_count: data.image_details?.count || 0,
-      primary_destination_id: data.primary_destination_id
+      primary_destination_id: data.primary_destination_id,
+      img_baseurl: data.image_details?.prefix || null,
+      default_img_index: data.image_details?.default_image_index || null,
+      img_suffix: data.image_details?.suffix || null
     };
-
     await repo.save(hotel);
     storedHotels.push(hotel);
   }
