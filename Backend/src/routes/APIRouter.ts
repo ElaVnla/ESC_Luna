@@ -5,6 +5,14 @@ import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
 
+//import other routers
+
+import BookingRouter from './BookingRouter';
+import CustomerRouter from './CustomerRouter';
+import PaymentRouter from './PaymentRouter';
+import GuestRouter from './GuestRouter'; 
+
+
 const router = Router();
 
 router.get('/', (req, res) => {
@@ -97,6 +105,11 @@ router.get('/hotels/:id/price', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch hotel data' });
   }
 });
+
+router.use('/bookings', BookingRouter);
+router.use('/customers', CustomerRouter);
+router.use('/payments', PaymentRouter);
+router.use('/guests', GuestRouter); 
 
 
 export default router;
