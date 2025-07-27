@@ -96,22 +96,34 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
         <Col md={7}>
           <CardBody className="py-md-2 d-flex flex-column h-100 position-relative">
             <div className="d-flex justify-content-between align-items-center">
+              {/* Star rating */}
               <ul className="list-inline mb-1">
+                {/* Full stars */}
                 {Array.from(new Array(Math.floor(rating))).map((_star, idx) => (
                   <li key={idx} className="list-inline-item me-1 small">
-                    <FaStar size={15} className="text-warning" />
+                    <FaStar
+                      size={15}
+                      className="text-warning"
+                      data-testid="star-icon"
+                    />
                   </li>
                 ))}
+                {/* Half star */}
                 {!Number.isInteger(rating) && (
                   <li className="list-inline-item me-1 small">
-                    <FaStarHalfAlt size={15} className="text-warning" />
+                    <FaStarHalfAlt
+                      size={15}
+                      className="text-warning"
+                      data-testid="star-icon"
+                    />
                   </li>
                 )}
+                {/* Empty stars */}
                 {rating < 5 &&
                   Array.from(new Array(5 - Math.ceil(rating))).map(
                     (_val, idx) => (
                       <li key={idx} className="list-inline-item me-1 small">
-                        <FaStar size={15} />
+                        <FaStar size={15} data-testid="star-icon" />
                       </li>
                     )
                   )}
@@ -122,6 +134,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                     <FaHeart className="fa-fw" />
                   </Button>
                 </li>
+
                 <Dropdown className="list-inline-item dropdown">
                   <DropdownToggle
                     className="arrow-none btn btn-sm btn-light btn-round"

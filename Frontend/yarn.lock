@@ -972,7 +972,6 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/estree@^1.0.6", "@types/estree@1.0.7":
 "@types/chai@^5.2.2":
   version "5.2.2"
   resolved "https://registry.npmjs.org/@types/chai/-/chai-5.2.2.tgz"
