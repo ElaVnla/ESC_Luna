@@ -12,6 +12,9 @@ import Step3 from './MakePayment/Step3'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useForm } from 'react-hook-form'
+//tonie added this 
+import { FormProvider } from 'react-hook-form'
+
 
 const Header = () => {
 
@@ -59,11 +62,16 @@ const BookingDetails = () => {
     thumbnailImage: yup.mixed().required('Thumbnail Image is required'),
   })
 
-  const { control } = useForm({
-    resolver: yupResolver(listingSchema),
-  })
+  // const { control } = useForm({
+  //   resolver: yupResolver(listingSchema),
+  // })
+
+  const methods = useForm({ mode: 'onBlur' })
+  const { control, handleSubmit, getValues } = methods
+
 
   return (
+    <FormProvider {...methods} >
     <section>
       <Container className="bs-stepper stepper-outline">
         <Wizard header={<Header />}>
@@ -73,7 +81,7 @@ const BookingDetails = () => {
         </Wizard>
       </Container>
     </section>
+    </FormProvider>
   )
 }
-
 export default BookingDetails

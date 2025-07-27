@@ -1,13 +1,14 @@
 import { CheckFormInput, SelectFormInput, TextFormInput } from '@/components'
 import { Alert, Button, Card, CardBody, CardHeader, Col } from 'react-bootstrap'
-import { useForm } from 'react-hook-form'
+import { useForm, useFormContext, Controller } from 'react-hook-form'
 import { BsPeopleFill } from 'react-icons/bs'
 import { FaPlus } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 
+
 const SpecialRequest = ['Smoking room', 'Late check-in', 'Early check-in', 'Room on a high floor', 'Large bed', 'Airport transfer', 'Twin beds']
 const GuestDetails = () => {
-  const { control } = useForm()
+  const { control } = useFormContext()
   return (
     <Card className="shadow mb-4">
       <CardHeader className="card-header border-bottom p-4">
@@ -21,15 +22,21 @@ const GuestDetails = () => {
           <Col md={2}>
             <div className="form-size-lg">
               <label className="form-label">Title</label>
-              <SelectFormInput className="form-select js-choice">
-                <option value={-1}>Title</option>
-                <option>Mr</option>
-                <option>Mrs</option>
-              </SelectFormInput>
+              <Controller
+                name="customer.salutation"
+                control={control}
+                render={({ field }) => (
+                <SelectFormInput {...field} className="form-select js-choice">
+                  <option value="">Title</option>
+                  <option value="Mr">Mr</option>
+                  <option value="Mrs">Mrs</option>
+                </SelectFormInput>
+              )}
+            />
             </div>
           </Col>
           <TextFormInput
-            name="fName"
+            name="customer.first_name"
             type="text"
             label="First Name"
             control={control}
@@ -38,7 +45,7 @@ const GuestDetails = () => {
             containerClass="col-md-3"
           />
           <TextFormInput
-            name="lName"
+            name="customer.last_name"
             label="Last Name"
             type="text"
             control={control}
@@ -47,26 +54,26 @@ const GuestDetails = () => {
             containerClass="col-md-3"
           />
           <TextFormInput
-            name="Country"
-            label="Country"
+            name="customer.billing_address"
+            label="Billing Address"
             type="text"
             control={control}
-            placeholder="Enter your country"
+            placeholder="Enter your Billing Address"
             className="form-control-lg"
             containerClass="col-md-4"
           />
           <Col md={6}>
-            <TextFormInput name="email" label="Email id" type="text" control={control} placeholder="Enter your email" className="form-control-lg" />
+            <TextFormInput name="customer.email" label="Email id" type="text" control={control} placeholder="Enter your email" className="form-control-lg" />
             <div id="emailHelp" className="form-text">
               (Booking confirmation will be sent to this email)
             </div>
           </Col>
           <TextFormInput
-            name="mobileNo"
-            label="Mobile number"
+            name="customer.phone_number"
+            label="Phone number"
             type="text"
             control={control}
-            placeholder="Enter your mobile number"
+            placeholder="Enter your phone number"
             className="form-control-lg"
             containerClass="col-md-6"
           />
