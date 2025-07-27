@@ -45,10 +45,20 @@ function processAmenities(amenities: Record<string,boolean>) : string[] {
     .map(([key]) => keyMap[key] || key);
 }
 
-export async function getHotelsByCity(city: string) {
+export async function getHotelsByCity(city: string, state?: string) {
   // Retrieve all hotels based on destination city
   const hotelsRepo = Database.getRepository(Hotel);
-  const hotels = await hotelsRepo.findBy({ city });
+
+  // Build query object dynamically
+  const query: any = {
+    city
+  };
+
+  if (state) {
+    query.state = state;
+  }
+
+  const hotels = await hotelsRepo.findBy(query);
   return hotels;
 }
 
@@ -88,18 +98,37 @@ export async function storeHotels(hotelsData: any[]) {
 
 export async function getFilteredHotels(filters: any) {
   const repo = Database.getRepository(Hotel);
-  
-  const query: any = {};
-
-  if (filters.rating) {
-    query.rating = filters.rating;
-  }
+  const qb = repo.createQueryBuilder("hotel");
 
   if (filters.city) {
-    query.city = filters.city;
+    qb.andWhere("hotel.city = :city", { city: filters.city });
   }
 
-  return await repo.findBy(query); // or use QueryBuilder for more complex filters
+  if (filters.rating && Array.isArray(filters.rating)) {
+    qb.andWhere("hotel.rating IN (:...ratings)", { ratings: filters.rating });
+  }
+
+  if (filters.guestRating && Array.isArray(filters.guestRating)) {
+    qb.andWhere("hotel.guestRating IN (:...guestRatings)", { guestRatings: filters.guestRating });
+  }
+
+  if (filters.priceRanges && Array.isArray(filters.priceRanges)) {
+    const rangeConditions = filters.priceRanges.map((range: string, index: number) => {
+      const [min, max] = range.split('-').map(Number);
+      return `(hotel.price BETWEEN :min${index} AND :max${index})`;
+    });
+
+    const rangeParams = Object.fromEntries(
+      filters.priceRanges.flatMap((range: string, index: number) => {
+        const [min, max] = range.split('-').map(Number);
+        return [[`min${index}`, min], [`max${index}`, max]];
+      })
+    );
+
+    qb.andWhere(rangeConditions.join(' OR '), rangeParams);
+  }
+
+  return await qb.getMany();
 }
 
 // export async function syncHotelsFromAPI() {

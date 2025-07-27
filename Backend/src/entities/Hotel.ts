@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from "typeorm";
 
 @Entity("hotels")
 export class Hotel {
-    @PrimaryColumn()
+    @PrimaryColumn({ type: 'varchar', length: 10, collation: 'utf8mb4_bin' })
     id!: string;
 
     @Column({ length: 255 })
