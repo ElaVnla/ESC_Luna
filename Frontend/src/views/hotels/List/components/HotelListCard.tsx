@@ -39,6 +39,11 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
     hotel;
 
   const { dir } = useLayoutContext();
+  const normalizedAmenities = Array.isArray(amenities)
+    ? amenities
+    : typeof amenities === "string"
+    ? JSON.parse(amenities)
+    : [];
 
   const listSliderSettings: TinySliderSettings = {
     nested: "inner",
@@ -80,7 +85,26 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
             style={{ height: "250px" }}
             className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
           >
-            <TinySlider settings={listSliderSettings}>
+            {Array.isArray(images) && images.length > 0 ? (
+              <TinySlider settings={listSliderSettings}>
+                {images.map((image, idx) => (
+                  <div key={idx} className="h-100">
+                    <Image
+                      src={image}
+                      alt="Card image"
+                      className="w-100 h-100 object-fit-cover"
+                    />
+                  </div>
+                ))}
+              </TinySlider>
+            ) : (
+              <Image
+                //src="https://via.placeholder.com/800x520?text=No+Image"
+                alt="No image available"
+                className="w-100 h-100 object-fit-cover"
+              />
+            )}
+            {/* <TinySlider settings={listSliderSettings}>
               {images.map((image, idx) => (
                 <div key={idx} className="h-100">
                   <Image
@@ -90,7 +114,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   />
                 </div>
               ))}
-            </TinySlider>
+            </TinySlider> */}
           </div>
         </Col>
         <Col md={7}>
@@ -181,7 +205,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
               {address}
             </small>
             <ul className="nav nav-divider mt-3">
-              {amenities.map((amenity, idx) => (
+              {normalizedAmenities.map((amenity, idx) => (
                 <li key={idx} className="nav-item">
                   {amenity}
                 </li>

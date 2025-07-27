@@ -1,6 +1,6 @@
 import bgImg5 from '@/assets/images/bg/05.jpg'
 import { Col, Container, Row } from 'react-bootstrap'
-import AvailabilityFilter from './AvailabilityFilter'
+import AvailabilityFilter from '../../Home/components/AvailabilityFilter'
 
 const Hero = () => {
   return (

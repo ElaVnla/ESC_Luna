@@ -2,6 +2,7 @@ import Flatpicker from '@/components/Flatpicker'
 import { SelectFormInput } from '@/components/form'
 import { useState, useEffect } from 'react'
 import { Button, Card, Col, Dropdown, DropdownDivider, DropdownMenu, DropdownToggle, FormLabel, Row } from 'react-bootstrap'
+import { useNavigate } from "react-router-dom";
 
 import { BsCalendar, BsDashCircle, BsGeoAlt, BsPerson, BsPlusCircle, BsSearch } from 'react-icons/bs'
 import { parsedestinations } from '../fetchdestinations';
@@ -61,12 +62,27 @@ const AvailabilityFilter = () => {
   }, [])
   console.log('Locations:', locations);
 
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const selectedLocation = locations.find(loc => loc.uid === formValue.location);
+    if (!selectedLocation) return;
+
+    const city = selectedLocation.term;
+    const state = selectedLocation.state || "";
+
+    const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`;
+    navigate(`/hotels/list?${query}`);
+  };
+
+
   return (
     <Row>
       <Col xl={10} className="position-relative mt-n3 mt-xl-n9">
         <h6 className="d-none d-xl-block mb-3">Check Availability</h6>
 
-        <Card as="form" className="shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4">
+        <Card as="form" onSubmit={handleSubmit} className="shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4">
           <Row className="g-4 align-items-center">
             <Col lg={4}>
               <div className="form-control-border form-control-transparent form-fs-md flex-centered gap-2">
