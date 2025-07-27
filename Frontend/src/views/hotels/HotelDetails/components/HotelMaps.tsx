@@ -8,7 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import { BsEyeFill} from 'react-icons/bs'
+import { BsEyeFill, BsGeoAlt} from 'react-icons/bs'
 import { MapController } from '../controllers/MapController';
 
 
@@ -91,6 +91,7 @@ const MapComponent: React.FC<HotelMapProps> = ({latitude,longitude,address,}) =>
         <>
         <Card
             style={{borderRadius: 12, overflow:'hidden'}}>
+                
             {/* Small Map that can click to expand */}
             <div style={{ cursor: 'pointer', position: 'relative', height: 200 }}>
                 <MapContainer
@@ -112,7 +113,9 @@ const MapComponent: React.FC<HotelMapProps> = ({latitude,longitude,address,}) =>
             </div>
 
             <Card.Body>
-                <Card.Text> {address} </Card.Text>
+                
+                <Card.Text> <BsGeoAlt className=" me-2" />
+                {address}</Card.Text>
                 <Button
                 variant="primary-soft"
                 onClick={() => setExpanded(true)}

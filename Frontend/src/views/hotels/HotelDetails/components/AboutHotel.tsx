@@ -65,6 +65,8 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
 
 
   const { isOpen, toggle } = useToggle()
+  const cleanedDistText = distText.replace(/\/\s*[\d.]+\s*mi/g, '');
+
   return (
     <section className="pt-0">
       <Container data-sticky-container>
@@ -130,7 +132,14 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
           <Col as={'aside'} xl={5} className="order-xl-2">
             <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
             {/* <p>{distText}</p> */}
-            <div dangerouslySetInnerHTML={{ __html: distText }} />
+
+            <Card className="mt-3">
+              <Card.Body>
+                <Card.Title className="mb-3">Nearby Places</Card.Title>
+                <div dangerouslySetInnerHTML={{ __html: cleanedDistText }} />
+              </Card.Body>
+            </Card>
+
             {/* <PriceOverView /> */}
           </Col>
         </Row>

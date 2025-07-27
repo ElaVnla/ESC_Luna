@@ -51,8 +51,8 @@ const HotelGallery = ({hotelData}: Props) => {
                       data-bs-toggle="modal"
                       data-bs-target="#mapmodal"
                     >
-                      <BsEyeFill className="me-1" />
-                      View On Map
+                      {/* <BsEyeFill className="me-1" />
+                      View On Map */}
                     </Link>
                   </p>
                 </div>
