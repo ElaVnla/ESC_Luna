@@ -3,6 +3,7 @@ import Flatpicker from '@/components/Flatpicker'
 import { useState } from 'react'
 import { Button, Col, Dropdown, DropdownDivider, DropdownMenu, DropdownToggle, FormLabel, Row } from 'react-bootstrap'
 import { BsCalendar, BsDashCircle, BsGeoAlt, BsPerson, BsPlusCircle, BsSearch } from 'react-icons/bs'
+import { useNavigate } from "react-router-dom";
 
 type AvailabilityFormType = {
   location: string
@@ -15,8 +16,10 @@ type AvailabilityFormType = {
 }
 
 const AvailabilityFilter = () => {
+  const navigate = useNavigate();
+
   const initialValue: AvailabilityFormType = {
-    location: 'San Jacinto, USA',
+    location: 'Singapore, Singapore',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
       adults: 2,
@@ -53,8 +56,17 @@ const AvailabilityFilter = () => {
     return value
   }
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const selectedLocation = formValue.location.split(',')[0].trim();
+    console.log(selectedLocation.toString());
+
+    // Navigate to hotel list page with location as query param
+    navigate(`/hotels/list?city=${encodeURIComponent(selectedLocation)}`);
+  };
+
   return (
-    <form className="bg-mode shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4 mb-4">
+    <form onSubmit={handleSubmit} className="bg-mode shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4 mb-4">
       <Row className="g-4 align-items-center">
         <Col lg={4}>
           <div className="form-control-border form-control-transparent form-fs-md flex-centered gap-2">
@@ -62,13 +74,14 @@ const AvailabilityFilter = () => {
 
             <div className="flex-grow-1">
               <FormLabel className="form-label">Location</FormLabel>
-              <SelectFormInput>
-                <option value={-1} disabled>
+              <SelectFormInput value={formValue.location}
+                onChange={(e) => setFormValue({ ...formValue, location: e.valueOf() })}>
+                <option value="" disabled>
                   Select location
                 </option>
-                <option value="1">Central, Singapore</option>
-                <option value="2">West, Singapore</option>
-                <option value="3">East, Singapore</option>
+                <option value="Singapore">Singapore, Singapore</option>
+                <option value="Rome">Rome, Italy</option>
+                <option value="Bali">Bali, Indonesia</option>
               </SelectFormInput>
             </div>
           </div>

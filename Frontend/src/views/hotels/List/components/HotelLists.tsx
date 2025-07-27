@@ -1,6 +1,5 @@
 import { useToggle } from "@/hooks";
 import {
-  Alert,
   Button,
   Col,
   Container,
@@ -22,6 +21,11 @@ import HotelListFilter from "./HotelListFilter";
 
 import { HotelsListType } from "../data";
 import { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
+
+const useQuery = () => {
+  return new URLSearchParams(useLocation().search);
+};
 
 const HotelLists = () => {
   const { isOpen, toggle } = useToggle();
@@ -29,8 +33,12 @@ const HotelLists = () => {
   const [hotels, setHotels] = useState<HotelsListType[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const query = useQuery();
+  const city = query.get("city") || "Singapore";
+
   useEffect(() => {
-    fetch("http://localhost:3000/hotels/getHotels")
+    setLoading(true);
+    fetch(`http://localhost:3000/hotels/getHotelsByCity?city=${encodeURIComponent(city)}`)
       .then((res) => res.json())
       .then((data) => {
         const mapped = data.map((hotel: any) => ({
@@ -51,7 +59,7 @@ const HotelLists = () => {
         console.error("Failed to load hotels:", err);
         setLoading(false);
       });
-  }, []);
+  }, [city]); // re-fetch if city changes
 
   const hotelListRef = useRef<HTMLDivElement | null>(null);
 

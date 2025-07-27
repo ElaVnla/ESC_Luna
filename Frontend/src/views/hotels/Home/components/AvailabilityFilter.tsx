@@ -1,9 +1,11 @@
 import Flatpicker from '@/components/Flatpicker'
 import { SelectFormInput } from '@/components/form'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button, Card, Col, Dropdown, DropdownDivider, DropdownMenu, DropdownToggle, FormLabel, Row } from 'react-bootstrap'
 
 import { BsCalendar, BsDashCircle, BsGeoAlt, BsPerson, BsPlusCircle, BsSearch } from 'react-icons/bs'
+import { parsedestinations } from '../fetchdestinations';
+import { destinationinterface } from '../destinationinterface';
 
 type AvailabilityFormType = {
   location: string
@@ -17,7 +19,7 @@ type AvailabilityFormType = {
 
 const AvailabilityFilter = () => {
   const initialValue: AvailabilityFormType = {
-    location: 'San Jacinto, USA',
+    location: '00Hr',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
       adults: 2,
@@ -53,6 +55,11 @@ const AvailabilityFilter = () => {
     }
     return value
   }
+  const [locations, setLocations] = useState<destinationinterface[]>([])
+  useEffect(() => {
+    parsedestinations().then(setLocations)
+  }, [])
+  console.log('Locations:', locations);
 
   return (
     <Row>
@@ -67,13 +74,18 @@ const AvailabilityFilter = () => {
 
                 <div className="flex-grow-1">
                   <FormLabel className="form-label">Location</FormLabel>
-                  <SelectFormInput>
+                  <SelectFormInput
+                  value={formValue.location}
+                  onChange={(val) => setFormValue({ ...formValue, location: val })}
+                  >
                     <option value={-1} disabled>
                       Select location
                     </option>
-                    <option value="1">San Jacinto, USA</option>
-                    <option value="2">North Dakota, Canada</option>
-                    <option value="3">West Virginia, Paris</option>
+                    {locations.map((loc) => (
+                      <option key={loc.uid} value={loc.uid}>
+                        {loc.term}, {loc.state ? `, ${loc.state}` : ''}
+                      </option>
+                    ))}
                   </SelectFormInput>
                 </div>
               </div>

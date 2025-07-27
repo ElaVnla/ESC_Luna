@@ -76,3 +76,15 @@ export type Surcharge = {
   type: string;
   amount: number;
 };
+
+export type HotelsRoomCardType = {
+  id: number
+  name: string
+  sale?: string
+  images: RoomImage[]
+  features: string
+  price: number
+  ammenities: string[]
+  schemes?: string[]
+  count: number
+}

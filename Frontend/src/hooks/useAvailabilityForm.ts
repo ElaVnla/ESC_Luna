@@ -12,7 +12,7 @@ export type AvailabilityFormType = {
 
 export function useAvailabilityForm() {
   const initialValue: AvailabilityFormType = {
-    location: 'San Jacinto, USA',
+    location: 'Singapore, Singapore',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
       adults: 2,

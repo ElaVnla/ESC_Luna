@@ -23,7 +23,13 @@ const HotelGallery = ({hotelData}: Props) => {
   if (!hotelData) return null;
 
   const { isOpen, toggle } = useToggle()
+  const image1 = "https://d2ey9sqrvkqdfs.cloudfront.net/atH8/0.jpg"
+  const imgPrefix = hotelData.image_details.prefix
+  const imgSuffix = hotelData.image_details.suffix
 
+  function getUrl(prefix:string, suffix:string, num:string){
+    return prefix + num + suffix
+  }
   // const { isOpen: alertVisible, hide: hideAlert } = useToggle(true)
 
   return (
@@ -50,68 +56,9 @@ const HotelGallery = ({hotelData}: Props) => {
                     </Link>
                   </p>
                 </div>
-                <ul className="list-inline text-end">
-                  <li className="list-inline-item">
-                    <Button variant="light" size="sm" className="px-2">
-                      <FaHeart className="fa-fw" />
-                    </Button>
-                  </li>
-                  <Dropdown className="list-inline-item dropdown">
-                    <DropdownToggle
-                      className="btn btn-sm btn-light px-2 arrow-none"
-                      role="button"
-                      id="dropdownShare"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <FaShareAlt className="fa-fw" />
-                    </DropdownToggle>
-                    <DropdownMenu className="dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare">
-                      
-                        <DropdownItem href="">
-                          <FaTwitterSquare className="me-2" />
-                          Twitter
-                        </DropdownItem>
-                 
-                        <DropdownItem href="">
-                          <FaFacebookSquare className="me-2" />
-                          Facebook
-                        </DropdownItem>
-                   
-                        <DropdownItem href="">
-                          <FaLinkedin className="me-2" />
-                          LinkedIn
-                        </DropdownItem>
-                    
-                        <DropdownItem href="">
-                          <FaCopy className="me-2" />
-                          Copy link
-                        </DropdownItem>
-                  
-                    </DropdownMenu>
-                  </Dropdown>
-                </ul>
               </div>
             </Col>
           </Row>
-          {/* <Alert
-            show={alertVisible}
-            variant="danger"
-            className="d-flex justify-content-between align-items-center rounded-3 fade show mb-4 mb-0 pe-2 py-3"
-            role="alert"
-          >
-            <div className="items-center">
-              <span className="alert-heading h5 mb-0 me-2">
-                <BsExclamationOctagonFill />
-              </span>
-              <span>
-                <strong className="alert-heading me-2">Covid Policy:</strong>You may require to present an RT-PCR negative test report at the hotel
-              </span>
-            </div>
-            <Button variant="link" onClick={hideAlert} type="button" className="pb-0 pt-1 text-end" data-bs-dismiss="alert" aria-label="Close">
-              <BsXLg className=" text-dark" />
-            </Button>
-          </Alert> */}
         </Container>
       </section>
 
@@ -119,10 +66,10 @@ const HotelGallery = ({hotelData}: Props) => {
         <Container>
           <Row className="g-2">
             <Col md={6}>
-              <GlightBox data-glightbox data-gallery="gallery" image={gallery14}>
+              <GlightBox data-glightbox data-gallery="gallery" image={getUrl(imgPrefix, imgSuffix, "0")}>
                 <Card
                   className="card-grid-lg card-element-hover card-overlay-hover overflow-hidden"
-                  style={{ backgroundImage: `url(${gallery14})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
+                  style={{ backgroundImage: `url(${getUrl(imgPrefix, imgSuffix, "0")})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
                 >
                   <div className="hover-element position-absolute w-100 h-100">
                     <BsFullscreen
@@ -136,10 +83,10 @@ const HotelGallery = ({hotelData}: Props) => {
             <Col md={6}>
               <Row className="g-2">
                 <Col xs={12}>
-                  <GlightBox data-glightbox data-gallery="gallery" image={gallery13}>
+                  <GlightBox data-glightbox data-gallery="gallery" image={getUrl(imgPrefix, imgSuffix, "1")}>
                     <Card
                       className="card-grid-sm card-element-hover card-overlay-hover overflow-hidden"
-                      style={{ backgroundImage: `url(${gallery13})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
+                      style={{ backgroundImage: `url(${getUrl(imgPrefix, imgSuffix, "1")})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
                     >
                       <div className="hover-element position-absolute w-100 h-100">
                         <BsFullscreen
@@ -151,10 +98,10 @@ const HotelGallery = ({hotelData}: Props) => {
                   </GlightBox>
                 </Col>
                 <Col md={6}>
-                  <GlightBox data-glightbox data-gallery="gallery" image={gallery12}>
+                  <GlightBox data-glightbox data-gallery="gallery" image={getUrl(imgPrefix, imgSuffix, "2")}>
                     <Card
                       className="card-grid-sm card-element-hover card-overlay-hover overflow-hidden"
-                      style={{ backgroundImage: `url(${gallery12})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
+                      style={{ backgroundImage: `url(${getUrl(imgPrefix, imgSuffix, "2")})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
                     >
                       <div className="hover-element position-absolute w-100 h-100">
                         <BsFullscreen
@@ -166,17 +113,42 @@ const HotelGallery = ({hotelData}: Props) => {
                   </GlightBox>
                 </Col>
                 <Col md={6}>
+                {hotelData.hires_image_index
+                  .split(",")
+                  .slice(4) // assuming first 4 images are already shown
+                  .map((idx: string) => (
+                    <GlightBox
+                      key={idx}
+                      data-glightbox
+                      data-gallery="gallery"
+                      image={getUrl(imgPrefix, imgSuffix, idx)}
+                    />
+                ))}
                   <Card
                     className="card-grid-sm overflow-hidden"
-                    style={{ backgroundImage: `url(${gallery11})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
+                    style={{ backgroundImage: `url(${getUrl(imgPrefix, imgSuffix, "3")})`, backgroundPosition: 'center left', backgroundSize: 'cover' }}
                   >
                     <div className="bg-overlay bg-dark opacity-7" />
-                    <GlightBox data-glightbox data-gallery="gallery" image={gallery11} className="stretched-link z-index-9" />
-                    <GlightBox data-glightbox data-gallery="gallery" image={gallery15} />
-                    <GlightBox data-glightbox data-gallery="gallery" image={gallery16} />
+                    
+                    {/* {hotelData.hires_image_index.split(",").slice(4).map((idx: string)=>{
+                      (
+                      <GlightBox data-glightbox data-gallery="gallery" image={getUrl(imgPrefix, imgSuffix, idx)} className="stretched-link z-index-9" />
+                    )
+                    })} */}
+                    
+                    {/* <GlightBox data-glightbox data-gallery="gallery" image={gallery15} />
+                    <GlightBox data-glightbox data-gallery="gallery" image={gallery16} /> */}
                     <div className="card-img-overlay d-flex h-100 w-100">
                       <h6 className="card-title m-auto fw-light text-decoration-underline">
-                        <Link to="" className="text-white">
+                        <Link to="" 
+                          className="text-white"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const firstImage = document.querySelector('[data-gallery="gallery"]');
+                            if (firstImage) {
+                              (firstImage as HTMLElement).click();
+                            }
+                          }}>
                           View all
                         </Link>
                       </h6>
@@ -189,7 +161,7 @@ const HotelGallery = ({hotelData}: Props) => {
         </Container>
       </section>
 
-      <Modal size="lg" centered show={isOpen} onHide={toggle} className="fade">
+      {/* <Modal size="lg" centered show={isOpen} onHide={toggle} className="fade">
         <ModalHeader>
           <h5 className="modal-title" id="mapmodalLabel">
             View Our Hotel Location
@@ -213,7 +185,7 @@ const HotelGallery = ({hotelData}: Props) => {
             View In Google Map
           </button>
         </div>
-      </Modal>
+      </Modal> */}
     </>
   )
 }

@@ -1,46 +1,66 @@
 import { useToggle } from '@/hooks'
 import { Fragment } from 'react'
-import { Card, CardBody, CardHeader, Col, Collapse, Container, OverlayTrigger, Row, Tooltip } from 'react-bootstrap'
-import { BsPatchCheckFill, BsSafe, BsShieldFillCheck } from 'react-icons/bs'
+import { Card, CardBody, CardHeader, Col, Collapse, Container, OverlayTrigger, ProgressBar, Row, Tooltip } from 'react-bootstrap'
+import { BsShieldFillCheck } from 'react-icons/bs'
 import { FaCheckCircle, FaConciergeBell, FaSwimmingPool, FaVolumeUp } from 'react-icons/fa'
 import { FaAngleDown, FaAngleUp, FaSnowflake, FaWifi } from 'react-icons/fa6'
 import MapComponent from './HotelMaps'
-import CustomerReview from './CustomerReview'
 import HotelPolicies from './HotelPolicies'
 import PriceOverView from './PriceOverView'
-import RoomOptions from './RoomOptions'
-
-import { amenities } from '../data'
 import { HotelData } from '@/models/HotelDetailsApi'
-
-import { PiHairDryer } from "react-icons/pi";
-import { TbIroning } from "react-icons/tb";
-import { MdOutlineRoomService } from "react-icons/md";
-import {AirVent, BriefcaseBusinessIcon, Cable, Presentation, Shirt, Square, SquareParking, Tv, Vault, Voicemail, WavesLadder, } from 'lucide-react'
 import { RoomData } from '@/models/RoomDetailsApi'
+
+
+import RoomOptions from './RoomOptions'
 type Props = {
   hotelData : HotelData;
   roomData: RoomData;
 };
-const amenityIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  airCondtioning : AirVent,
-  businessCenter: BriefcaseBusinessIcon, 
-  clothingIron: TbIroning,
-  dataPorts: Cable,
-  dryCleaning: Shirt,
-  hairDryer: PiHairDryer,
-  meetingRooms: Presentation,
-  outdoorPool : WavesLadder,
-  parkingGarage: SquareParking,
-  roomService : MdOutlineRoomService,
-  safe : Vault,
-  tVInRoom : Tv,
-  voiceMail: Voicemail,
-};
+
+const amenityNames = new Map<string, string>(
+  [["airCondtioning" , "Air Conditioning"],
+  ["businessCenter", "Business Center"], 
+  ["clothingIron", "Clothing Iron"],
+  ["dataPorts", "Data Ports"],
+  ["dryCleaning", "Dry Cleaning"],
+  ["miniBarInRoom", "Mini Bar In Room"],
+  ["hairDryer", "Hair Dryer"],
+  ["meetingRooms", "Meetin Rooms"],
+  ["outdoorPool" , "Outdoor Pool"],
+  ["parkingGarage", "Parking Garage"],
+  ["roomService" , "Room Service"],
+  ["safe" , "Safe"],
+  ["tVInRoom" , "TV in Room"],
+  ["voiceMail", "Voicemail"],
+  ["fitnessFacility", "Fitness Facilty"],
+  ["nonSmokingRooms", "Non Smoking Rooms"]
+]
+)
+
 
 const AboutHotel = ({hotelData, roomData}: Props) => {
   if (!hotelData) return null;
   console.log(roomData, "In About Hotel");
+  function splitString(inputString: string) {
+    const [mainText, remainText] = inputString.split("Distances are displayed to the nearest 0.1 mile and kilometer. <br /> ")
+    const stringSplitter = "The nearest airports are:"
+    var [distText, extraText] = remainText.split(stringSplitter)
+    extraText = stringSplitter + extraText
+    return {mainText, distText, extraText} 
+  }
+
+  const {mainText, distText, extraText} = splitString(hotelData.description)
+  // console.log(extraText, "textetxte extra", distText)
+
+
+  function camelCaseToString(camel: string) {
+    // Add a space before each uppercase letter that is not at the beginning of the string
+    let result = camel.replace(/([A-Z])/g, ' $1');
+    // Capitalize the first letter of the resulting string
+    result = result.charAt(0).toUpperCase() + result.slice(1);
+
+    return result;
+  }
 
 
 
@@ -79,32 +99,16 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                       </div>
                     </OverlayTrigger>
                   </div>
-                  {/* <p>{hotelData.description}</p> */}
-                  <div dangerouslySetInnerHTML={{ __html: hotelData.description }} />
-                  {/* <p className="mb-3">
-                    Demesne far-hearted suppose venture excited see had has. Dependent on so extremely delivered by. Yet no jokes worse her why.{' '}
-                    <b>Bed one supposing breakfast day fulfilled off depending questions.</b>
-                  </p>
-                  <p className="mb-0">
-                    Delivered dejection necessary objection do Mr prevailed. Mr feeling does chiefly cordial in do. Water timed folly right aware if
-                    oh truth. Large above be to means. Dashwood does provide stronger is.
-                  </p> */}
+
+                  <div className="mb-2"><b>Check in Time:</b> {hotelData.checkin_time}</div>
+
+                  <p>{mainText}</p>
                   <Collapse in={isOpen}>
                     <div>
-                      <p className="my-3">
-                        We focus a great deal on the understanding of behavioral psychology and influence triggers which are crucial for becoming a
-                        well rounded Digital Marketer. We understand that theory is important to build a solid foundation, we understand that theory
-                        alone isn't going to get the job done so that's why this rickets is packed with practical hands-on examples that you can
-                        follow step by step.
-                      </p>
-                      <p className="mb-0">
-                        Behavioral psychology and influence triggers which are crucial for becoming a well rounded Digital Marketer. We understand
-                        that theory is important to build a solid foundation, we understand that theory alone isn't going to get the job done so
-                        that's why this tickets is packed with practical hands-on examples that you can follow step by step.
-                      </p>
+                      <div dangerouslySetInnerHTML={{ __html: extraText }} />
                     </div>
                   </Collapse>
-                  <a onClick={toggle} className="p-0 mb-4 mt-2 btn-more d-flex align-items-center collapsed">
+                  <a onClick={toggle} className="p-0  mt-2 btn-more d-flex align-items-center collapsed">
                     {!isOpen ? (
                       <Fragment>
                         <span className="see-more" role="button">
@@ -119,123 +123,61 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
                       </Fragment>
                     )}
                   </a>
-                  <h5 className="fw-light mb-2">Advantages</h5>
-                  <ul className="list-group list-group-borderless mb-0">
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      Every hotel staff to have Proper PPT kit for COVID-19
-                    </li>
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      Every staff member wears face masks and gloves at all service times.
-                    </li>
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      Hotel staff ensures to maintain social distancing at all times.
-                    </li>
-                    <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
-                      <BsPatchCheckFill className=" text-success me-2" />
-                      The hotel has In-Room Dining options available{' '}
-                    </li>
-                  </ul>
                 </CardBody>
               </Card>
-              <Card className="bg-transparent">
-                <CardHeader className="border-bottom bg-transparent px-0 pt-0">
-                  <h3 className="card-title mb-0">Amenities Mapped</h3>
-                </CardHeader>
-                <CardBody>
-
-                </CardBody>
-              </Card>
-              <CardBody className="flex flex-wrap gap-4">
-                {Object.entries(hotelData.amenities).map(([key, value]) => {
-                  if (value && amenityIconMap[key]) {
-                    const Icon = amenityIconMap[key];
-                    return (
-                      <div key={key} className="flex items-center gap-2">
-                        <Icon className="w-5 h-5" />
-                        <span className="capitalize">{key}</span>
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </CardBody>
-              <Card className="bg-transparent">
-                <CardHeader className="border-bottom bg-transparent px-0 pt-0">
-                  <h3 className="card-title mb-0">Amenities</h3>
-                </CardHeader>
-                <CardBody className="pt-4 p-0">
-                  <Row className="g-4">
-                    {amenities.map((item, idx) => {
-                      const Icon = item.icon
-                      return (
-                        <Col sm={6} key={idx}>
-                          <h6>
-                            <Icon size={18} className="me-2" />
-                            {item.label}
-                          </h6>
-                          <ul className="list-group list-group-borderless mt-2 mb-0">
-                            {item.name.map((item, idx) => {
-                              return (
-                                <li key={idx} className="list-group-item pb-0 items-center">
-                                  <FaCheckCircle className="text-success me-2" />
-                                  {item}
-                                </li>
-                              )
-                            })}
-                          </ul>
-                        </Col>
-                      )
-                    })}
-                    <div className="col-sm-6">
-                      <h6 className="items-center">
-                        <BsShieldFillCheck className=" me-2" />
-                        Safety &amp; Security
-                      </h6>
-                      <ul className="list-group list-group-borderless mt-2 mb-4 mb-sm-5">
-                        <li className="list-group-item pb-0 items-center">
-                          <FaCheckCircle className="text-success me-2" />
-                          Doctor on Call
-                        </li>
-                      </ul>
-                      <h6>
-                        <FaVolumeUp className="me-2" />
-                        Staff Language
-                      </h6>
-                      <ul className="list-group list-group-borderless mt-2 mb-0">
-                        <li className="list-group-item pb-0 items-center">
-                          <FaCheckCircle className="text-success me-2" />
-                          English
-                        </li>
-                        <li className="list-group-item pb-0 items-center">
-                          <FaCheckCircle className="text-success me-2" />
-                          Spanish
-                        </li>
-                        <li className="list-group-item pb-0 items-center">
-                          <FaCheckCircle className="text-success me-2" />
-                          Hindi
-                        </li>
-                      </ul>
-                    </div>
-                  </Row>
-                </CardBody>
-              </Card>
-
-              <RoomOptions roomData = {roomData}/>
-
-              <CustomerReview />
-
-              <HotelPolicies />
             </div>
           </Col>
           <Col as={'aside'} xl={5} className="order-xl-2">
-            <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} address1={hotelData.address1}/>
-            <PriceOverView />
+            <MapComponent  latitude={hotelData.latitude} longitude={hotelData.longitude} address={hotelData.address} />
+            {/* <p>{distText}</p> */}
+            <div dangerouslySetInnerHTML={{ __html: distText }} />
+            {/* <PriceOverView /> */}
           </Col>
         </Row>
+        <Card className="bg-transparent">
+          <CardHeader className="border-bottom bg-transparent px-0 pt-0">
+            <h3 className="card-title mb-0">Amenities</h3>
+          </CardHeader>
+          <CardBody className="flex flex-wrap gap-4">
+            <Row>
+              <Col>
+                {
+                  Object.keys(hotelData.amenities).map((amenity, idx: number)=>{
+                    return (
+                      <div key={idx} className="flex items-center gap-2">
+                        <FaCheckCircle className="text-success me-2" />
+                        {amenityNames.get(amenity) || camelCaseToString(amenity)}
+                      </div>
+                    );
+                  }
+                  )
+                }
+              </Col>
+              <Col>
+                {/* {hotelData.amenities_ratings?(<h5>Amenities Ratings</h5>):null} */}
+                {hotelData.amenities_ratings? (hotelData.amenities_ratings.map((amenity,__)=>{
+                    return(
+                    <div className=' d-flex align-items-center pb-1' style={{minHeight:"25px"}}>
+                      <span className='' style={{ minWidth:"20%"}}>{amenity.name}</span>
+                      <ProgressBar className='flex-grow-1' now={amenity.score} variant="success" style={{minHeight:"1.2rem", maxWidth:"400px"}}/>
+                      <span className='mx-2 pe-4 ps-3'>{amenity.score}</span>
+                    </div>
+                    )
+                  })): null}
+              
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+
+        <RoomOptions roomData = {roomData}/> 
+
+        {/* <CustomerReview /> */}
+
+        <HotelPolicies roomPolicies = {roomData.rooms[0].roomAdditionalInfo} />
+
       </Container>
+      
     </section>
   )
 }

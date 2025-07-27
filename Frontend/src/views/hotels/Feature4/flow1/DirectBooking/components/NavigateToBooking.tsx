@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import { Button, Card, CardBody, CardFooter, Col, Image, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { HotelData } from '@/models/HotelDetailsApi'
+import { useNavigate } from 'react-router-dom';
+
 
 const NavigateToBooking = () => {
-
+    const navigate = useNavigate();
     const [hotelData, setHotelData] = useState<HotelData>();
     
       useEffect(() => {
@@ -27,7 +29,7 @@ const NavigateToBooking = () => {
       console.log(hotelData?.amenities);
 
     const CallHotelApiToStore = () =>{
-
+      navigate('/hotels/review-booking')
     }
 
     

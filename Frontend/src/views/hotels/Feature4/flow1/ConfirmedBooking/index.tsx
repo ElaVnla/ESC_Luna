@@ -47,9 +47,6 @@ const ConfirmedBooking = () => {
             </div>
         </Container>
       </main>
-
-      <FooterWithLinks />
-      <Footer />
     </>
   )
 }

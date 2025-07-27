@@ -17,8 +17,6 @@ const VerifyPayment = () => {
         <PaynebtSuccessCard />
       </main>
 
-      <FooterWithLinks />
-      <Footer />
     </>
   )
 }
