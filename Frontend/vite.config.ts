@@ -1,24 +1,21 @@
-// vitest.config.ts
-import { defineConfig } from 'vitest/config'
-import path from 'path'
+// Frontend/vite.config.ts
+import { defineConfig } from 'vitest/config';
+import react      from '@vitejs/plugin-react';
+import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
-      // now `@/…` maps to `<root>/src`
-      '@': path.resolve(__dirname, 'src'),
-    },
+      // <-- THIS
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
   },
   test: {
-    // make sure Hooks run in a browser‐like env
-    environment: 'jsdom',
-    // allow global describe/it/expect
     globals: true,
-    // inline React so there’s only one copy (avoids invalid‐hook calls)
-    deps: {
-      inline: ['react', 'react-dom'],
-      
-    },
-     setupFiles: ['./src/setupTests.ts'],
-  },
-})
+    environment: 'jsdom',
+    setupFiles: 'vitest.setup.ts',
+    // (no need to repeat alias here if your config is picked up)
+  }
+  
+});

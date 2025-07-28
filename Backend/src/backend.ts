@@ -26,7 +26,10 @@ const app = express();
 // handles client side
 app.use(express.static(path.join(__dirname, 'public')));
 // Address security issues
-app.use(cors()); // Manage and control web security
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+})); // Manage and control web security
 // Parsing JSON data from incoming HTTP requests
 app.use(express.json());
 
