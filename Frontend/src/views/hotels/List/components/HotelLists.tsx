@@ -36,9 +36,10 @@ const HotelLists = () => {
   const query = useQuery();
   const city = query.get("city") || "Singapore, Singapore";
   const state = query.get("state") || "";
-  const guests = query.get("guests");
-  const checkin = query.get("checkin")?.split("T")[0];
-  const checkout = query.get("checkout")?.split("T")[0];
+  const guests = query.get("guests") || "1";
+  const checkin = query.get("checkin")?.split("T")[0] || "";
+  const checkout = query.get("checkout")?.split("T")[0] || "";
+  console.log(guests);
   console.log(checkin, checkout);
 
 
@@ -50,6 +51,8 @@ const HotelLists = () => {
       try {
         let searchQuery = `city=${encodeURIComponent(city)}`;
         if (state) searchQuery += `&state=${encodeURIComponent(state)}`;
+        searchQuery += `&guests=${encodeURIComponent(guests)}
+        &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`;
 
         // Step 1: Sync with external API
         const syncRes = await fetch(`http://localhost:3000/api/hotels/syncByCity?${searchQuery}`);
