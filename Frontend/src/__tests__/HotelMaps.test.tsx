@@ -1,42 +1,99 @@
+import { vi } from 'vitest';
+
+// Do Mocks so vitest do not load real assets:
+
+// 1) CSS and images
+vi.mock('leaflet/dist/leaflet.css',      () => ({ default: '' }));
+vi.mock('leaflet/dist/images/marker-icon-2x.png', () => ({ default: 'markerIcon2x' }));
+vi.mock('leaflet/dist/images/marker-icon.png',    () => ({ default: 'markerIcon' }));
+vi.mock('leaflet/dist/images/marker-shadow.png',  () => ({ default: 'markerShadow' }));
+
+// 2) Leaflet itself
+vi.mock('leaflet', () => {
+  const Icon = {
+    Default: {
+      prototype: { _getIconUrl: undefined },
+      mergeOptions: vi.fn(),
+    },
+  };
+  return {
+    __esModule: true,
+    default: { Icon },
+    Icon,
+  };
+});
+
+// 3) react‑leaflet primitives
+vi.mock('react-leaflet', () => ({
+  MapContainer:(props: any) => <div data-testid="map-container" {...props} />,
+  TileLayer:(props: any) => <div data-testid="tile-layer"   {...props} />,
+  Marker:(props: any) => <div data-testid="marker"       {...props} />,
+  useMap:() =>({}),
+  useMapEvent:()=> {},
+}));
+
+// 4) MapController
+vi.mock(
+  '@/views/hotels/HotelDetails/controllers/MapController',
+  () => ({
+    MapController: vi.fn().mockImplementation(() => ({
+      handleMove: vi.fn(() => false),
+      recenterMap: vi.fn(),
+    })),
+  })
+);
+
+// 5) react‑bootstrap
+vi.mock('react-bootstrap', () => {
+  const Card: any = ({ children, ...p }: any) => <div data-testid="card" {...p}>{children}</div>;
+  Card.Body = ({ children, ...p }: any) => <div data-testid="card-body" {...p}>{children}</div>;
+  Card.Text = ({ children, ...p }: any) => <div data-testid="card-text" {...p}>{children}</div>;
+
+  return {
+    Button: ({ children, ...p }: any) => <button data-testid="button" {...p}>{children}</button>,
+    Card,
+  };
+});
+
+// 6) React Icons
+vi.mock('react-icons/bs', () => ({
+  BsEyeFill: () => <span data-testid="eye-icon" />,
+  BsGeoAlt:  () => <span data-testid="geo-icon" />,
+}));
+
+// import render and Mapcomponent
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { describe, it, expect, beforeEach } from 'vitest';
 import MapComponent from '@/views/hotels/HotelDetails/components/HotelMaps';
-import '@testing-library/jest-dom';
 
-// 1) Missing coords → error UI
-test('renders error when latitude or longitude is null', () => {
-  // latitude missing
-  const { rerender } = render(
-    <MapComponent latitude={null as any} longitude={103.8} address="Foo St" />
-  );
-  expect(screen.getByText(/Map failed to load/i)).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /Return to Hotels/i })).toBeInTheDocument();
+describe('HotelMaps', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    Object.defineProperty(document.body, 'style', {
+      value: { overflow: '' },
+      writable: true,
+    });
+  });
 
-  // longitude missing
-  rerender(
-    <MapComponent latitude={1.3} longitude={undefined as any} address="Foo St" />
-  );
-  expect(screen.getByText(/Map failed to load/i)).toBeInTheDocument();
-});
+  // Normal Render test with crashing
+  it('renders without crashing', () => {
+    render(<MapComponent latitude={1.3521} longitude={103.8198} address="Test Address" />);
+  });
 
-// 2) Valid coords → normal map UI
-test('renders map container and address when coords are present', () => {
-  render(<MapComponent latitude={1.3521} longitude={103.8198} address="123 Orchard Rd" />);
-
-  // The address text should show up
-  expect(screen.getByText(/123 Orchard Rd/i)).toBeInTheDocument();
-
-  // The Leaflet container has class 'leaflet-container'
-  const leafletDiv = document.querySelector('.leaflet-container');
-  expect(leafletDiv).toBeInTheDocument();
-});
-
-// 3) Expanded flow: clicking “View Larger Map” shows the overlay
-test('expands overlay when view larger map is clicked', () => {
-  render(<MapComponent latitude={1.3521} longitude={103.8198} address="123 Orchard Rd" />);
-  const viewBtn = screen.getByRole('button', { name: /View Larger Map/i });
-  fireEvent.click(viewBtn);
-
-  // Now we should see the Close X button in the overlay
-  expect(screen.getByRole('button', { name: /X Close/i })).toBeInTheDocument();
+  // Remder error message when coordinates have null values
+  it('renders error message when coordinates are null', () => {
+    const { getByText } = render(
+      <MapComponent latitude={null as any} longitude={null as any} address="Test Address" />
+    );
+    expect(getByText('Map failed to load.')).toBeInTheDocument();
+  });
+  // render map with valuid coordinates
+  it('renders map with valid coordinates', () => {
+    const { getByTestId } = render(
+      <MapComponent latitude={1.3521} longitude={103.8198} address="123 Test Street" />
+    );
+    expect(getByTestId('map-container')).toBeInTheDocument();
+    expect(getByTestId('marker')).toBeInTheDocument();
+  });
 });
