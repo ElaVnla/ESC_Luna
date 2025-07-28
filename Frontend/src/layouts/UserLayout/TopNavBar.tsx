@@ -43,15 +43,16 @@ const themeModes: ThemeModeType[] = [
     icon: BsMoonStars,
     theme: 'dark',
   },
-  {
-    icon: BsCircleHalf,
-    theme: 'auto',
-  },
+  // {
+  //   icon: BsCircleHalf,
+  //   theme: 'auto',
+  // },
 ]
 
 const TopNavBar = () => {
   const { scrollY } = useScrollEvent()
   const { isOpen, toggle } = useToggle()
+  const { theme, updateTheme } = useLayoutContext()
 
   return (
     <header className={clsx('navbar-light header-sticky', { 'header-sticky-on': scrollY >= 400 })}>
@@ -88,6 +89,28 @@ const TopNavBar = () => {
                 My Booking
               </Link>
             </li>
+            <li className="nav-item d-flex align-items-center ms-3">
+                <div className="d-flex gap-2">
+                  {themeModes.map((mode, idx) => {
+                    const Icon = mode.icon
+                    return (
+                      <OverlayTrigger key={mode.theme + idx} overlay={<Tooltip>{toSentenceCase(mode.theme)}</Tooltip>}>
+                        <button
+                          onClick={() => updateTheme(mode.theme)}
+                          type="button"
+                          className={clsx('btn btn-sm btn-light text-primary-hover', {
+                            active: theme === mode.theme,
+                            'border-primary': theme === mode.theme,
+                          })}
+                        >
+                          <Icon />
+                        </button>
+                      </OverlayTrigger>
+                    )
+                  })}
+                </div>
+              </li>
+
           </ul>
         </Container>
       </Navbar>

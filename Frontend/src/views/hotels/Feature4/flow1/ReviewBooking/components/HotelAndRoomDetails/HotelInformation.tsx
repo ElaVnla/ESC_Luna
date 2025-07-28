@@ -8,10 +8,12 @@ import { FaCheckCircle } from 'react-icons/fa'
 import { splitArray } from '@/utils'
 import Flatpicker from '@/components/Flatpicker'
 import { useToggle } from '@/hooks'
-import { useState } from 'react'
+import { useState, createContext, useContext } from 'react'
 import { BsDashCircle, BsPencilSquare, BsPlusCircle, BsSearch } from 'react-icons/bs'
 import { useAvailabilityForm } from '@/hooks/useAvailabilityForm'
 import { format, differenceInDays } from 'date-fns'
+import { useGuestCount } from '../../contexts/GuestCountContext';
+
 
 const amenities: string[] = ['Swimming Pool', 'Spa', 'Kids Play Area', 'Gym', 'Tv', 'Mirror', 'Ac', 'Slippers']
 const chunk_size = 2
@@ -26,20 +28,27 @@ const HotelInformation = () => {
       rooms: 1,
     },
   })
+  const { setGuests } = useGuestCount();
 
-  const updateGuests = (type: 'rooms' | 'adults' | 'children', increment = true) => {
-    setFormValue((prev) => {
-      const currentValue = prev.guests[type]
-      const newValue = increment ? currentValue + 1 : Math.max(currentValue - 1, 0)
-      return {
-        ...prev,
-        guests: {
-          ...prev.guests,
-          [type]: newValue,
-        },
-      }
-    })
-  }
+const updateGuests = (type: 'rooms' | 'adults' | 'children', increment = true) => {
+  setFormValue((prev) => {
+    const currentValue = prev.guests[type];
+    const newValue = increment ? currentValue + 1 : Math.max(currentValue - 1, 0);
+    const newGuests = {
+      ...prev.guests,
+      [type]: newValue,
+    };
+
+    // Update global guest count context
+    setGuests({ adults: newGuests.adults, children: newGuests.children });
+
+    return {
+      ...prev,
+      guests: newGuests,
+    };
+  });
+};
+
 
   const checkIn = formValue.stayFor[0]
   const checkOut = formValue.stayFor[1]

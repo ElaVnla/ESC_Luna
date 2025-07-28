@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from "typeorm";
 
 @Entity("hotels")
 export class Hotel {
-    @PrimaryColumn()
+    @PrimaryColumn({ type: 'varchar', length: 10, collation: 'utf8mb4_bin' })
     id!: string;
 
     @Column({ length: 255 })
@@ -52,4 +52,15 @@ export class Hotel {
 
     @Column({ length: 10, nullable: true })
     primary_destination_id!: string;
+    
+    @Column({ length: 100, nullable: true })
+    img_baseurl!: string;
+
+    @Column({ type: "int", nullable: true })
+    default_img_index!: number;
+
+    @Column({ length: 5, nullable: true })
+    img_suffix!: string;
+    
+
 }

@@ -1,17 +1,46 @@
 import { useToggle } from '@/hooks'
+import { useState } from 'react';
 import { currency } from '@/states'
 import { Card, CardBody, Col, Collapse } from 'react-bootstrap'
 import { BsStarFill } from 'react-icons/bs'
 import { FaAngleDown } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 
-const HotelListFilter = () => {
-  const { isOpen: hotelTypeIsOpen, toggle: hotelTypeToggle } = useToggle()
-  const { isOpen: hotelAmenitiesIsOpen, toggle: hotelAmenitiesToggle } = useToggle()
+// temporary, will move to proper file later
+type HotelListFilterProps = {
+  onFilterChange: (filters: {
+    priceRanges: string[];
+    guestRatings: string[];
+    starRatings: string[];
+  }) => void;
+};
+
+
+const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => {
+  //const { isOpen: hotelTypeIsOpen, toggle: hotelTypeToggle } = useToggle()
+  //const { isOpen: hotelAmenitiesIsOpen, toggle: hotelAmenitiesToggle } = useToggle()
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
+  const [selectedStars, setSelectedStars] = useState<string[]>([]);
+
+  const handleCheckboxChange = (id: string, list: string[], setter: (val: string[]) => void) => {
+    const updated = list.includes(id)
+      ? list.filter(item => item !== id)
+      : [...list, id];
+    setter(updated);
+  };
+
+  const handleApplyFilters = () => {
+    onFilterChange({
+      priceRanges: selectedPriceRanges,
+      guestRatings: selectedRatings,
+      starRatings: selectedStars,
+    });
+  };
 
   return (
     <form className="rounded-3 shadow">
-      <Card as={CardBody} className="rounded-0 rounded-top p-4">
+      {/* <Card as={CardBody} className="rounded-0 rounded-top p-4">
         <h6 className="mb-2">Hotel Type</h6>
         <Col xs={12}>
           <div className="form-check">
@@ -48,9 +77,9 @@ const HotelListFilter = () => {
             <input className="form-check-input" type="checkbox" id="hotelType6" />
             <label className="form-check-label" htmlFor="hotelType6">
               Lodge
-            </label>
+            </label>}
           </div>
-          <Collapse in={hotelTypeIsOpen}>
+          {<Collapse in={hotelTypeIsOpen}>
             <div className="multi-collapse" id="hotelType">
               <div className="form-check">
                 <input className="form-check-input" type="checkbox" id="hotelType7" />
@@ -77,8 +106,8 @@ const HotelListFilter = () => {
                 </label>
               </div>
             </div>
-          </Collapse>
-          <Link
+          </Collapse>}
+          {<Link
             onClick={hotelTypeToggle}
             to=""
             className="p-0 mb-0 mt-2 btn-more d-flex align-items-center collapsed"
@@ -90,101 +119,30 @@ const HotelListFilter = () => {
             <FaAngleDown className="ms-2" />
           </Link>
         </Col>
-      </Card>
+      </Card>*/}
       <hr className="my-0" />
       <div className="card card-body rounded-0 p-4">
-        <h6 className="mb-2">Price range</h6>
-        <div className="col-12">
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="priceRange1" />
-            <label className="form-check-label" htmlFor="priceRange1">
-              Up to {currency}500
-            </label>
-          </div>
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="priceRange2" />
-            <label className="form-check-label" htmlFor="priceRange2">
-              {currency}500 - {currency}1000
-            </label>
-          </div>
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="priceRange3" />
-            <label className="form-check-label" htmlFor="priceRange3">
-              {currency}1000 - {currency}1500
-            </label>
-          </div>
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="priceRange4" />
-            <label className="form-check-label" htmlFor="priceRange4">
-              {currency}1500 - {currency}2000
-            </label>
-          </div>
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="priceRange5" />
-            <label className="form-check-label" htmlFor="priceRange5">
-              {currency}2000+
-            </label>
-          </div>
-        </div>
-      </div>
-      <hr className="my-0" />
-      <div className="card card-body rounded-0 p-4">
-        <h6 className="mb-2">Popular Type</h6>
-        <div className="col-12">
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="popolarType1" />
-            <label className="form-check-label" htmlFor="popolarType1">
-              Free Breakfast Included
-            </label>
-          </div>
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="popolarType2" />
-            <label className="form-check-label" htmlFor="popolarType2">
-              Pay At Hotel Available
-            </label>
-          </div>
-          <div className="form-check">
-            <input className="form-check-input" type="checkbox" id="popolarType3" />
-            <label className="form-check-label" htmlFor="popolarType3">
-              Free Cancellation Available
-            </label>
-          </div>
-        </div>
-      </div>
-      <hr className="my-0" />
-      <div className="card card-body rounded-0 p-4">
-        <h6 className="mb-2">Customer Rating</h6>
+        <h6 className="mb-2">Star Rating</h6>
         <ul className="list-inline mb-0 g-3">
-          <li className="list-inline-item mb-0">
-            <input type="checkbox" className="btn-check" id="btn-check-c1" />
-            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c1">
-              3+
-            </label>
-          </li>
-          <li className="list-inline-item mb-0">
-            <input type="checkbox" className="btn-check" id="btn-check-c2" />
-            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c2">
-              3.5+
-            </label>
-          </li>
-          <li className="list-inline-item mb-0">
-            <input type="checkbox" className="btn-check" id="btn-check-c3" />
-            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c3">
-              4+
-            </label>
-          </li>
-          <li className="list-inline-item mb-0">
-            <input type="checkbox" className="btn-check" id="btn-check-c4" />
-            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c4">
-              4.5+
-            </label>
-          </li>
+          {['1', '2', '3', '4', '5'].map(star => (
+            <li className="list-inline-item mb-0" key={star}>
+              <input
+                type="checkbox"
+                className="btn-check"
+                id={`star-${star}`}
+                checked={selectedStars.includes(star)}
+                onChange={() => handleCheckboxChange(star, selectedStars, setSelectedStars)}
+              />
+              <label
+                className="btn btn-sm btn-light btn-primary-soft-check items-center"
+                htmlFor={`star-${star}`}
+              >
+                {star}<BsStarFill />
+              </label>
+            </li>
+          ))}
         </ul>
-      </div>
-      <hr className="my-0" />
-      <div className="card card-body rounded-0 p-4">
-        <h6 className="mb-2">Rating Star</h6>
-        <ul className="list-inline mb-0 g-3">
+        {/* <ul className="list-inline mb-0 g-3">
           <li className="list-inline-item mb-0">
             <input type="checkbox" className="btn-check" id="btn-check-6" />
             <label className="btn btn-sm btn-light btn-primary-soft-check items-center" htmlFor="btn-check-6">
@@ -215,9 +173,140 @@ const HotelListFilter = () => {
               5<BsStarFill />
             </label>
           </li>
-        </ul>
+        </ul> */}
       </div>
+
       <hr className="my-0" />
+      <div className="card card-body rounded-0 p-4">
+        <h6 className="mb-2">Guest Rating</h6>
+        <ul className="list-inline mb-0 g-3">
+          {['3', '3.5', '4', '4.5'].map(rating => (
+            <li className="list-inline-item mb-0" key={rating}>
+              <input
+                type="checkbox"
+                className="btn-check"
+                id={`guestRating-${rating}`}
+                checked={selectedRatings.includes(rating)}
+                onChange={() => handleCheckboxChange(rating, selectedRatings, setSelectedRatings)}
+              />
+              <label
+                className="btn btn-sm btn-light btn-primary-soft-check"
+                htmlFor={`guestRating-${rating}`}
+              >
+                {rating}+
+              </label>
+            </li>
+          ))}
+        </ul>
+        {/* <ul className="list-inline mb-0 g-3">
+          <li className="list-inline-item mb-0">
+            <input type="checkbox" className="btn-check" id="btn-check-c1" />
+            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c1">
+              3+
+            </label>
+          </li>
+          <li className="list-inline-item mb-0">
+            <input type="checkbox" className="btn-check" id="btn-check-c2" />
+            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c2">
+              3.5+
+            </label>
+          </li>
+          <li className="list-inline-item mb-0">
+            <input type="checkbox" className="btn-check" id="btn-check-c3" />
+            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c3">
+              4+
+            </label>
+          </li>
+          <li className="list-inline-item mb-0">
+            <input type="checkbox" className="btn-check" id="btn-check-c4" />
+            <label className="btn btn-sm btn-light btn-primary-soft-check" htmlFor="btn-check-c4">
+              4.5+
+            </label>
+          </li>
+        </ul> */}
+      </div>
+
+      <hr className="my-0" />
+      <div className="card card-body rounded-0 p-4">
+        <h6 className="mb-2">Price range</h6>
+        <div className="col-12">
+          {[
+            { id: '1', label: `Up to ${currency}500` },
+            { id: '2', label: `${currency}500 - ${currency}1000` },
+            { id: '3', label: `${currency}1000 - ${currency}1500` },
+            { id: '4', label: `${currency}1500 - ${currency}2000` },
+            { id: '5', label: `${currency}2000+` }
+          ].map(({ id, label }) => (
+            <div className="form-check" key={id}>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id={`priceRange${id}`}
+                checked={selectedPriceRanges.includes(id)}
+                onChange={() => handleCheckboxChange(id, selectedPriceRanges, setSelectedPriceRanges)}
+              />
+              <label className="form-check-label" htmlFor={`priceRange${id}`}>
+                {label}
+              </label>
+            </div>
+          ))}
+          {/* <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="priceRange1" />
+            <label className="form-check-label" htmlFor="priceRange1">
+              Up to {currency}500
+            </label>
+          </div>
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="priceRange2" />
+            <label className="form-check-label" htmlFor="priceRange2">
+              {currency}500 - {currency}1000
+            </label>
+          </div>
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="priceRange3" />
+            <label className="form-check-label" htmlFor="priceRange3">
+              {currency}1000 - {currency}1500
+            </label>
+          </div>
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="priceRange4" />
+            <label className="form-check-label" htmlFor="priceRange4">
+              {currency}1500 - {currency}2000
+            </label>
+          </div>
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="priceRange5" />
+            <label className="form-check-label" htmlFor="priceRange5">
+              {currency}2000+
+            </label>
+          </div> */}
+        </div>
+      </div>
+      {/* <hr className="my-0" /> */}
+      {/* <div className="card card-body rounded-0 p-4">
+        <h6 className="mb-2">Popular Type</h6>
+        <div className="col-12">
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="popolarType1" />
+            <label className="form-check-label" htmlFor="popolarType1">
+              Free Breakfast Included
+            </label>
+          </div>
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="popolarType2" />
+            <label className="form-check-label" htmlFor="popolarType2">
+              Pay At Hotel Available
+            </label>
+          </div>
+          <div className="form-check">
+            <input className="form-check-input" type="checkbox" id="popolarType3" />
+            <label className="form-check-label" htmlFor="popolarType3">
+              Free Cancellation Available
+            </label>
+          </div>
+        </div>
+      </div> */}
+      {/* <hr className="my-0" />
       <div className="card card-body rounded-0 rounded-bottom p-4">
         <h6 className="mb-2">Amenities</h6>
         <div className="col-12">
@@ -297,7 +386,7 @@ const HotelListFilter = () => {
             <FaAngleDown className="ms-2" />
           </Link>
         </div>
-      </div>
+      </div> */}
     </form>
   )
 }

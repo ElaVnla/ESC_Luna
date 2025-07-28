@@ -1,34 +1,65 @@
-import { TinySlider } from '@/components'
-import { currency, useLayoutContext } from '@/states'
-import { Fragment } from 'react'
-import { Button, Card, CardBody, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Image, Row } from 'react-bootstrap'
-import { renderToString } from 'react-dom/server'
-import { BsArrowLeft, BsArrowRight, BsGeoAlt, BsPatchCheckFill } from 'react-icons/bs'
-import { FaFacebookSquare, FaLinkedin, FaShareAlt, FaStarHalfAlt, FaTwitterSquare } from 'react-icons/fa'
-import { FaCopy, FaHeart, FaStar } from 'react-icons/fa6'
-import { type TinySliderSettings } from 'tiny-slider'
-import { type HotelsListType } from '../data'
+import { TinySlider } from "@/components";
+import { currency, useLayoutContext } from "@/states";
+import { Fragment } from "react";
+import {
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Image,
+  Row,
+} from "react-bootstrap";
+import { renderToString } from "react-dom/server";
+import {
+  BsArrowLeft,
+  BsArrowRight,
+  BsGeoAlt,
+  BsPatchCheckFill,
+} from "react-icons/bs";
+import {
+  FaFacebookSquare,
+  FaLinkedin,
+  FaShareAlt,
+  FaStarHalfAlt,
+  FaTwitterSquare,
+} from "react-icons/fa";
+import { FaCopy, FaHeart, FaStar } from "react-icons/fa6";
+import { type TinySliderSettings } from "tiny-slider";
+import { type HotelsListType } from "../data";
 
-import 'tiny-slider/dist/tiny-slider.css'
-import { Link } from 'react-router-dom'
+import "tiny-slider/dist/tiny-slider.css";
+import { Link } from "react-router-dom";
 
 const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
-  const { address, features, images, name, price, rating, sale, schemes } = hotel
+  const { address, amenities, images, name, price, rating, sale, schemes } =
+    hotel;
 
-  const { dir } = useLayoutContext()
+  const { dir } = useLayoutContext();
+  const normalizedAmenities = Array.isArray(amenities)
+    ? amenities
+    : typeof amenities === "string"
+    ? JSON.parse(amenities)
+    : [];
 
   const listSliderSettings: TinySliderSettings = {
-    nested: 'inner',
+    nested: "inner",
     autoplay: false,
     controls: true,
     autoplayButton: false,
     autoplayButtonOutput: false,
-    controlsText: [renderToString(<BsArrowLeft size={16} />), renderToString(<BsArrowRight size={16} />)],
+    controlsText: [
+      renderToString(<BsArrowLeft size={16} />),
+      renderToString(<BsArrowRight size={16} />),
+    ],
     arrowKeys: true,
     items: 1,
-    autoplayDirection: dir === 'ltr' ? 'forward' : 'backward',
+    autoplayDirection: dir === "ltr" ? "forward" : "backward",
     nav: false,
-  }
+  };
 
   return (
     <Card className="shadow p-2">
@@ -40,7 +71,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
             </div>
           )}
 
-          <div className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2">
+          {/* <div className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2">
             <TinySlider settings={listSliderSettings}>
               {images.map((image, idx) => (
                 <div key={idx}>
@@ -48,28 +79,78 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                 </div>
               ))}
             </TinySlider>
+          </div> */}
+
+          <div
+            style={{ height: "250px" }}
+            className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
+          >
+            {Array.isArray(images) && images.length > 0 ? (
+              <TinySlider settings={listSliderSettings}>
+                {images.map((image, idx) => (
+                  <div key={idx} className="h-100">
+                    <Image
+                      src={image}
+                      alt="Card image"
+                      className="w-100 h-100 object-fit-cover"
+                    />
+                  </div>
+                ))}
+              </TinySlider>
+            ) : (
+              <Image
+                //src="https://via.placeholder.com/800x520?text=No+Image"
+                alt="No image available"
+                className="w-100 h-100 object-fit-cover"
+              />
+            )}
+            {/* <TinySlider settings={listSliderSettings}>
+              {images.map((image, idx) => (
+                <div key={idx} className="h-100">
+                  <Image
+                    src={image}
+                    alt="Card image"
+                    className="w-100 h-100 object-fit-cover"
+                  />
+                </div>
+              ))}
+            </TinySlider> */}
           </div>
         </Col>
         <Col md={7}>
           <CardBody className="py-md-2 d-flex flex-column h-100 position-relative">
             <div className="d-flex justify-content-between align-items-center">
+              {/* Star rating */}
               <ul className="list-inline mb-1">
+                {/* Full stars */}
                 {Array.from(new Array(Math.floor(rating))).map((_star, idx) => (
                   <li key={idx} className="list-inline-item me-1 small">
-                    <FaStar size={15} className="text-warning" />
+                    <FaStar
+                      size={15}
+                      className="text-warning"
+                      data-testid="star-icon"
+                    />
                   </li>
                 ))}
+                {/* Half star */}
                 {!Number.isInteger(rating) && (
                   <li className="list-inline-item me-1 small">
-                    <FaStarHalfAlt size={15} className="text-warning" />
+                    <FaStarHalfAlt
+                      size={15}
+                      className="text-warning"
+                      data-testid="star-icon"
+                    />
                   </li>
                 )}
+                {/* Empty stars */}
                 {rating < 5 &&
-                  Array.from(new Array(5 - Math.ceil(rating))).map((_val, idx) => (
-                    <li key={idx} className="list-inline-item me-1 small">
-                      <FaStar size={15} />
-                    </li>
-                  ))}
+                  Array.from(new Array(5 - Math.ceil(rating))).map(
+                    (_val, idx) => (
+                      <li key={idx} className="list-inline-item me-1 small">
+                        <FaStar size={15} data-testid="star-icon" />
+                      </li>
+                    )
+                  )}
               </ul>
               <ul className="list-inline mb-0 z-index-2">
                 <li className="list-inline-item">
@@ -77,38 +158,41 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                     <FaHeart className="fa-fw" />
                   </Button>
                 </li>
+
                 <Dropdown className="list-inline-item dropdown">
                   <DropdownToggle
                     className="arrow-none btn btn-sm btn-light btn-round"
                     role="button"
                     id="dropdownShare"
+                    aria-label="Share hotel"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
                     <FaShareAlt className="fa-fw" />
                   </DropdownToggle>
-                  <DropdownMenu className="dropdown-menu-end min-w-auto shadow rounded" aria-labelledby="dropdownShare">
-              
-                      <DropdownItem href="">
-                        <FaTwitterSquare className="me-2" />
-                        Twitter
-                      </DropdownItem>
+                  <DropdownMenu
+                    className="dropdown-menu-end min-w-auto shadow rounded"
+                    aria-labelledby="dropdownShare"
+                  >
+                    <DropdownItem href="">
+                      <FaTwitterSquare className="me-2" />
+                      Twitter
+                    </DropdownItem>
 
-                      <DropdownItem href="">
-                        <FaFacebookSquare className="me-2" />
-                        Facebook
-                      </DropdownItem>
+                    <DropdownItem href="">
+                      <FaFacebookSquare className="me-2" />
+                      Facebook
+                    </DropdownItem>
 
-                      <DropdownItem href="">
-                        <FaLinkedin className="me-2" />
-                        LinkedIn
-                      </DropdownItem>
+                    <DropdownItem href="">
+                      <FaLinkedin className="me-2" />
+                      LinkedIn
+                    </DropdownItem>
 
-                      <DropdownItem href="">
-                        <FaCopy className="me-2" />
-                        Copy link
-                      </DropdownItem>
-  
+                    <DropdownItem href="">
+                      <FaCopy className="me-2" />
+                      Copy link
+                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </ul>
@@ -121,9 +205,9 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
               {address}
             </small>
             <ul className="nav nav-divider mt-3">
-              {features.map((feature, idx) => (
+              {normalizedAmenities.map((amenity, idx) => (
                 <li key={idx} className="nav-item">
-                  {feature}
+                  {amenity}
                 </li>
               ))}
             </ul>
@@ -132,11 +216,14 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                 <Fragment>
                   {schemes.map((scheme, idx) => {
                     return (
-                      <li key={idx} className="list-group-item d-flex text-success p-0 items-center">
+                      <li
+                        key={idx}
+                        className="list-group-item d-flex text-success p-0 items-center"
+                      >
                         <BsPatchCheckFill className="me-2" />
                         {scheme}
                       </li>
-                    )
+                    );
                   })}
                 </Fragment>
               ) : (
@@ -153,7 +240,11 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   {price}
                 </h5>
                 <span className="mb-0 me-2">/day</span>
-                {sale && <span className="text-decoration-line-through mb-0">{currency}1000</span>}
+                {sale && (
+                  <span className="text-decoration-line-through mb-0">
+                    {currency}1000
+                  </span>
+                )}
               </div>
               <div className="mt-3 mt-sm-0">
                 <Button variant="dark" size="sm" className="mb-0 w-100">
@@ -165,7 +256,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
         </Col>
       </Row>
     </Card>
-  )
-}
+  );
+};
 
-export default HotelListCard
+export default HotelListCard;
