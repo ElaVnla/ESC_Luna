@@ -4,12 +4,17 @@ import { Database } from '../Database';
 // customer = CustomerModel
 // payment = PaymentModel
 // guests = GuestModel[] ← new param!
-export async function createBooking(booking: any, customer: any, payment: any, guests: any[]) {
+export async function createBooking(
+  booking: any,
+  customer: any,
+  payment: any,
+  guests: any[] = [] // ✅ fallback to empty array
+) {
   const db = Database;
 
   // 1. Insert booking
-  await db.query(`
-    INSERT INTO bookings (
+  await db.query(
+    `INSERT INTO bookings (
       id, destination_id, hotel_id, room_id,
       start_date, end_date, adults, children,
       message_to_hotel, num_nights, price
@@ -30,8 +35,8 @@ export async function createBooking(booking: any, customer: any, payment: any, g
   );
 
   // 2. Insert main customer
-  await db.query(`
-    INSERT INTO customers (
+  await db.query(
+    `INSERT INTO customers (
       salutation, first_name, last_name,
       phone_number, email, booking_id, billing_address
     ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -47,8 +52,8 @@ export async function createBooking(booking: any, customer: any, payment: any, g
   );
 
   // 3. Insert payment
-  await db.query(`
-    INSERT INTO payments (
+  await db.query(
+    `INSERT INTO payments (
       booking_id, payment_reference, masked_card_number
     ) VALUES (?, ?, ?)`,
     [
@@ -60,8 +65,8 @@ export async function createBooking(booking: any, customer: any, payment: any, g
 
   // 4. Insert guests
   for (const guest of guests) {
-    await db.query(`
-      INSERT INTO guests (
+    await db.query(
+      `INSERT INTO guests (
         booking_id, guest_type, salutation, first_name,
         last_name, phone_number, email, country
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
