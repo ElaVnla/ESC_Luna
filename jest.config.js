@@ -1,33 +1,19 @@
-const { createDefaultPreset } = require("ts-jest");
-const tsJestTransformCfg = createDefaultPreset().transform;
-
+// Frontend/jest.config.js
 module.exports = {
-  testEnvironment: "node",
-  transform: {
-    ...tsJestTransformCfg,
-    "^.+\\.js$": "ts-jest"
-  },
-  transformIgnorePatterns: [
-    "node_modules/(?!@ngrx|deck\\.gl|ng-dynamic)"
-  ],
-  moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/frontend/src/$1"
-  },
-  globals: {
-    "ts-jest": {
-      tsconfig: "frontend/tsconfig.app.json",
-      allowJs: true
-    }
-  },
-  setupFilesAfterEnv: ["<rootDir>/frontend/src/setupTests.ts"],
-  testMatch: [
-    "**/__tests__/**/*.+(ts|tsx|js)",
-    "**/?(*.)+(spec|test).+(ts|tsx|js)"
-  ],
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
 
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  transform: {
-    '^.+\\.jsx?$': require.resolve('babel-jest'),
-    '^.+\\.tsx?$': 'ts-jest'
+  // alias your @/... imports to src/…
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+
+    // CSS modules & styles → identity proxy
+    '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
+
+    // images/fonts → stub out as empty string
+    '\\.(png|jpg|jpeg|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
   },
+
+  // automatically clear mock calls between tests
+  clearMocks: true,
 };

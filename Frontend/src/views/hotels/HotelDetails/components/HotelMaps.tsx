@@ -1,9 +1,7 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvent } from 'react-leaflet';
 import { Button, Card } from 'react-bootstrap'
-
-import L from 'leaflet';
+import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -69,8 +67,12 @@ const RecenterButton: React.FC<{initialPosition: [number, number];show: boolean;
 
 const MapComponent: React.FC<HotelMapProps> = ({latitude,longitude,address,}) => {
     // State to track expanded mode
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [expanded,setExpanded] = useState(false);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [offcenter,setOffCenter] = useState(false);
+    console.log('React:', React);
+    console.log('useState:', React?.useState);
 
     if (latitude == null || longitude == null) {
     return (
@@ -86,6 +88,7 @@ const MapComponent: React.FC<HotelMapProps> = ({latitude,longitude,address,}) =>
     //Coordinates 
     const position: [number, number] = [latitude ?? 1.3521, longitude ?? 103.8198];
     
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {document.body.style.overflow = expanded ? "hidden" : "auto";}, [expanded]);
     return(
         <>
@@ -97,8 +100,8 @@ const MapComponent: React.FC<HotelMapProps> = ({latitude,longitude,address,}) =>
                 <MapContainer
                     center={position}
                     zoom = {13}
-                    position = 'relative'
-                    style={{ height: '100%', width: '100%' }}
+
+                    style={{ height: '100%', width: '100%',position:'relative' }}
                     scrollWheelZoom={false}
                 >
                 <TileLayer
@@ -184,7 +187,7 @@ const MapComponent: React.FC<HotelMapProps> = ({latitude,longitude,address,}) =>
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
-                    <Marker position={position}> </Marker>
+                    <Marker position={position} /> 
                     <MapEventsHandler initialPosition={position} setOffCenter={setOffCenter} />
                     <RecenterButton initialPosition={position} show={offcenter} />    
                 </MapContainer>

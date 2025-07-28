@@ -9,7 +9,7 @@ export type RoutesProps = {
 }
 
 const HotelsHome = lazy(() => import('@/views/hotels/Home'))
-const HotelsChain = lazy(() => import('@/views/hotels/Chain'))
+// const HotelsChain = lazy(() => import('@/views/hotels/Chain'))
 // const HotelsResort = lazy(() => import('@/views/hotels/Resort'))
 const HotelsGrid = lazy(() => import('@/views/hotels/Grid'))
 const HotelsList = lazy(() => import('@/views/hotels/List'))
@@ -20,7 +20,7 @@ const HotelBooking = lazy(() => import('@/views/hotels/Booking'))
 // const FlightHome = lazy(() => import('@/views/flights/Home'))
 // const FlightList = lazy(() => import('@/views/flights/List'))
 // const FlightDetail = lazy(() => import('@/views/flights/Detail'))
-// // const FlightBooking = lazy(() => import('@/views/flights/Booking'))
+// const FlightBooking = lazy(() => import('@/views/flights/Booking'))
 
 // const TourHome = lazy(() => import('@/views/tours/Home'))
 // const TourGrid = lazy(() => import('@/views/tours/Grid'))
@@ -68,13 +68,13 @@ const TwoFactorAuth = lazy(() => import('@/views/auth/TwoFactorAuth'))
 // const HelpPrivacyPolicy = lazy(() => import('@/views/help/PrivacyPolicy'))
 // const HelpService = lazy(() => import('@/views/help/TermsOfService'))
 
-const UserProfile = lazy(() => import('@/views/user/Profile'))
-const UserTravelers = lazy(() => import('@/views/user/Travelers'))
-const UserBooking = lazy(() => import('@/views/user/Bookings'))
-const UserPaymentDetail = lazy(() => import('@/views/user/PaymentDetails'))
-const UserWishlist = lazy(() => import('@/views/user/Wishlist'))
-const UserSettings = lazy(() => import('@/views/user/Settings'))
-const UserDeleteProfile = lazy(() => import('@/views/user/DeleteProfile'))
+// const UserProfile = lazy(() => import('@/views/user/Profile'))
+// const UserTravelers = lazy(() => import('@/views/user/Travelers'))
+// const UserBooking = lazy(() => import('@/views/user/Bookings'))
+// const UserPaymentDetail = lazy(() => import('@/views/user/PaymentDetails'))
+// const UserWishlist = lazy(() => import('@/views/user/Wishlist'))
+// const UserSettings = lazy(() => import('@/views/user/Settings'))
+// const UserDeleteProfile = lazy(() => import('@/views/user/DeleteProfile'))
 
 // const AgentDashboard = lazy(() => import('@/views/agent/Dashboard'))
 // const AgentListings = lazy(() => import('@/views/agent/Listings'))
@@ -97,7 +97,8 @@ const UserDeleteProfile = lazy(() => import('@/views/user/DeleteProfile'))
 
 const Pricing = lazy(() => import('@/views/Pricing'))
 // const FAQs = lazy(() => import('@/views/FAQs'))
-const NotFoundPage = lazy(() => import('@/views/NotFound'))
+
+// const NotFoundPage = lazy(() => import('@/views/NotFound'))
 // const ComingSoon = lazy(() => import('@/views/ComingSoon'))
 
 //Feature 4 - Erika and Toni ==========================================
@@ -126,11 +127,12 @@ const hotelRoutes: RoutesProps[] = [
     name: 'hotels.index',
     element: <HotelsHome />,
   },
-  {
-    path: '/hotels/chain',
-    name: 'hotels.chain',
-    element: <HotelsChain />,
-  },
+
+  // {
+  //   path: '/hotels/chain',
+  //   name: 'hotels.chain',
+  //   element: <HotelsChain />,
+  // },
   // {
   //   path: '/hotels/resort',
   //   name: 'hotels.resort',
@@ -438,43 +440,43 @@ export const authRoutes: RoutesProps[] = [
 //   },
 // ]
 
-export const userRoutes: RoutesProps[] = [
-  {
-    path: '/user/profile',
-    name: 'account.user.profile',
-    element: <UserProfile />,
-  },
-  {
-    path: '/user/bookings',
-    name: 'account.user.booking',
-    element: <UserBooking />,
-  },
-  {
-    path: '/user/travelers',
-    name: 'account.user.travellers',
-    element: <UserTravelers />,
-  },
-  {
-    path: '/user/payment-details',
-    name: 'account.user.payment-detail',
-    element: <UserPaymentDetail />,
-  },
-  {
-    path: '/user/wishlist',
-    name: 'account.user.wishlist',
-    element: <UserWishlist />,
-  },
-  {
-    path: '/user/settings',
-    name: 'account.user.settings',
-    element: <UserSettings />,
-  },
-  {
-    path: '/user/delete-profile',
-    name: 'account.user.delete-profile',
-    element: <UserDeleteProfile />,
-  },
-]
+// export const userRoutes: RoutesProps[] = [
+//   {
+//     path: '/user/profile',
+//     name: 'account.user.profile',
+//     element: <UserProfile />,
+//   },
+//   {
+//     path: '/user/bookings',
+//     name: 'account.user.booking',
+//     element: <UserBooking />,
+//   },
+//   {
+//     path: '/user/travelers',
+//     name: 'account.user.travellers',
+//     element: <UserTravelers />,
+//   },
+//   {
+//     path: '/user/payment-details',
+//     name: 'account.user.payment-detail',
+//     element: <UserPaymentDetail />,
+//   },
+//   {
+//     path: '/user/wishlist',
+//     name: 'account.user.wishlist',
+//     element: <UserWishlist />,
+//   },
+//   {
+//     path: '/user/settings',
+//     name: 'account.user.settings',
+//     element: <UserSettings />,
+//   },
+//   {
+//     path: '/user/delete-profile',
+//     name: 'account.user.delete-profile',
+//     element: <UserDeleteProfile />,
+//   },
+// ]
 
 // export const agentRoutes: RoutesProps[] = [
 //   {
@@ -514,85 +516,65 @@ export const userRoutes: RoutesProps[] = [
 //   },
 // ]
 
-export const adminRoutes: RoutesProps[] = [
-  // {
-  //   path: '/admin/dashboard',
-  //   name: 'admin.dashboard',
-  //   element: <AdminDashboard />,
-  // },
-  // {
-  //   path: '/admin/bookings/list',
-  //   name: 'admin.bookings.list',
-  //   element: <AdminBookingsList />,
-  // },
-  // {
-  //   path: '/admin/bookings/detail',
-  //   name: 'admin.bookings.detail',
-  //   element: <AdminBookingsDetail />,
-  // },
-  // {
-  //   path: '/admin/guests/list',
-  //   name: 'admin.guests.list',
-  //   element: <AdminGuestsList />,
-  // },
-  // {
-  //   path: '/admin/guests/detail',
-  //   name: 'admin.guests.detail',
-  //   element: <AdminGuestsDetail />,
-  // },
-  // {
-  //   path: '/admin/agents/list',
-  //   name: 'admin.agents.list',
-  //   element: <AdminAgentsList />,
-  // },
-  // {
-  //   path: '/admin/agents/detail',
-  //   name: 'admin.agents.detail',
-  //   element: <AdminAgentsDetail />,
-  // },
-  // {
-  //   path: '/admin/reviews',
-  //   name: 'admin.reviews',
-  //   element: <AdminReviews />,
-  // },
-  // {
-  //   path: '/admin/earnings',
-  //   name: 'admin.earnings',
-  //   element: <AdminEarnings />,
-  // },
-  // {
-  //   path: '/admin/settings',
-  //   name: 'admin.settings',
-  //   element: <AdminSettings />,
-  // },
-]
+// export const adminRoutes: RoutesProps[] = [
+//   {
+//     path: '/admin/dashboard',
+//     name: 'admin.dashboard',
+//     element: <AdminDashboard />,
+//   },
+//   {
+//     path: '/admin/bookings/list',
+//     name: 'admin.bookings.list',
+//     element: <AdminBookingsList />,
+//   },
+//   {
+//     path: '/admin/bookings/detail',
+//     name: 'admin.bookings.detail',
+//     element: <AdminBookingsDetail />,
+//   },
+//   {
+//     path: '/admin/guests/list',
+//     name: 'admin.guests.list',
+//     element: <AdminGuestsList />,
+//   },
+//   {
+//     path: '/admin/guests/detail',
+//     name: 'admin.guests.detail',
+//     element: <AdminGuestsDetail />,
+//   },
+//   {
+//     path: '/admin/agents/list',
+//     name: 'admin.agents.list',
+//     element: <AdminAgentsList />,
+//   },
+//   {
+//     path: '/admin/agents/detail',
+//     name: 'admin.agents.detail',
+//     element: <AdminAgentsDetail />,
+//   },
+//   {
+//     path: '/admin/reviews',
+//     name: 'admin.reviews',
+//     element: <AdminReviews />,
+//   },
+//   {
+//     path: '/admin/earnings',
+//     name: 'admin.earnings',
+//     element: <AdminEarnings />,
+//   },
+//   {
+//     path: '/admin/settings',
+//     name: 'admin.settings',
+//     element: <AdminSettings />,
+//   },
+// ]
 
 const otherRoutes: RoutesProps[] = [
   {
     path: '/pricing',
     name: 'pricing',
     element: <Pricing />,
-  },
-  // {
-  //   path: '/faqs',
-  //   name: 'faqs',
-  //   element: <FAQs />,
-  // },
-  {
-    path: '/not-found',
-    name: 'not-found',
-    element: <NotFoundPage />,
-  },
-  {
-    path: '*',
-    name: 'match-all',
-    element: <NotFoundPage />,
-  },
-  // {
-  //   path: '/coming-soon',
-  //   name: 'coming-soon',
-  //   element: <ComingSoon />,
-  // },
+  }
 ]
 
 
@@ -600,14 +582,8 @@ const otherRoutes: RoutesProps[] = [
 export const appRoutes = [
   ...hotelRoutes,
   ...listingRoutes,
-  // ...flightsRoutes,
-  // ...toursRoutes,
-  // ...cabsRoutes,
   ...directoriesRoutes,
   ...heroRoutes,
   ...listingPagesRoutes,
-  // ...aboutUsRoutes,
-  // ...contactUsRoutes,
-  // ...blogsRoutes,
   ...otherRoutes,
 ]
