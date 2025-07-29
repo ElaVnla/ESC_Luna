@@ -10,13 +10,20 @@
     import { type TinySliderSettings } from 'tiny-slider'
     import { Fragment, useState } from 'react'
     import 'tiny-slider/dist/tiny-slider.css'
-    import { HotelsRoomCardType } from '@/models/RoomDetailsApi'
+    import { HotelsRoomCardType, Rooms } from '@/models/RoomDetailsApi'
+    import { HotelData } from '@/models/HotelDetailsApi';
+    import { useNavigate } from 'react-router-dom'
 
+    interface RoomCardProps extends HotelsRoomCardType {
+    hotelData: HotelData;
+    roomDataf4: Rooms;
+    }
     
-    const RoomCard = ({ features, images, name, price, ammenities, schemes, count }: HotelsRoomCardType) => {
+    const RoomCard = ({ features, images, name, price, ammenities, schemes, count, hotelData, roomDataf4 }: RoomCardProps ) => {
     const { isOpen, toggle } = useToggle();
     const [isExpand, setExpand] = useState<boolean>(false);
     const [isExpand2, setExpand2] = useState<boolean>(false);
+    const navigate = useNavigate()
 
     const toggleExpand = () =>{
         setExpand(!isExpand)
@@ -24,6 +31,15 @@
     const toggleExpand2 = () =>{
         setExpand2(!isExpand2)
     }
+
+    const handleSelectRoom = () => {
+    navigate('/hotels/review-booking', {
+      state: {
+        hotelData,
+        roomDataf4
+      }
+    });
+  }
 
     const { dir } = useLayoutContext()
 
@@ -145,7 +161,7 @@
                 
                 <div className=' mt-auto text-end pe-4 pb-1'>
                     <div className="mt-3 mt-sm-0">
-                    <Button variant="primary" size="lg" className="mb-0">Select Room</Button>
+                    <Button variant="primary" size="lg" className="mb-0" onClick={handleSelectRoom}>Select Room</Button>
                     </div>
                     <Link to="" className="text-decoration-underline p-0 mb-0 mt-1" onClick={toggle}>
                         <BsEyeFill className=" me-1" />

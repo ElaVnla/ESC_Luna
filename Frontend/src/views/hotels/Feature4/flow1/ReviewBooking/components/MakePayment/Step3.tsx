@@ -3,12 +3,13 @@ import OfferAndDiscounts from '../HotelAndRoomDetails/OfferAndDiscounts';
 import PriceSummary from '../HotelAndRoomDetails/PriceSummary';
 import PaymentOptions from './PaymentOptions';
 import { Button, Col, Row } from 'react-bootstrap';
-import type { StepProps } from '../types';
+import type { Step1Props } from '../types';
 import { useNavigate } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
 import { useGuestCount } from '../../contexts/GuestCountContext';
 
-const Step3 = ({ control }: StepProps) => {
+
+const Step3 = ({ control }: Step1Props) => {
   const { previousStep } = useWizard();
   const { getValues } = useFormContext();
   const { guests } = useGuestCount();
