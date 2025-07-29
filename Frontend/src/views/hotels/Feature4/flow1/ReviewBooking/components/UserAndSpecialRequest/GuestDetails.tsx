@@ -10,7 +10,9 @@ const GuestDetails = () => {
 
   const renderGuestForm = (type: 'adult' | 'child', index: number) => {
     const label = type === 'adult' ? `Adult ${index + 1}` : `Child ${index + 1}`;
-    const prefix = `guests.${type}[${index}]`; // dynamic field name
+    // const prefix = `guests.${type}[${index}]`; // dynamic field name
+    const prefix = `guests.${type === 'adult' ? 'adults' : 'children'}[${index}]`;
+
 
     return (
       <Card className="mb-4" key={`${type}-${index}`}>

@@ -13,4 +13,5 @@ export class Payment {
 
     @Column({ length: 20 })
     masked_card_number!: string;
+
 }

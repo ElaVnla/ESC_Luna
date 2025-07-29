@@ -19,6 +19,12 @@ import PaymentRouter from './routes/PaymentRouter';
 import APIRouter from './routes/APIRouter';
 import ForTestingRouter from './routes/ForTestingRouter';
 
+import OTPRouter from './routes/OTPRouter';
+import TestEmailRouter from './routes/TestEmailRouter';
+import GuestRouter from './routes/GuestRouter';
+
+
+
 // create instance of express
 const app = express();
 
@@ -45,6 +51,11 @@ app.use('/bookings', BookingRouter);
 app.use('/payments', PaymentRouter);
 app.use('/api', APIRouter);
 app.use('/fortesting', ForTestingRouter);
+app.use('/otp', OTPRouter);
+app.use('/test-email', TestEmailRouter);
+app.use('/email', OTPRouter);
+app.use('/guest', GuestRouter)
+
 
 // Setup "/" route to serve the index.html file
 app.get('/', (req, res) => {
@@ -74,3 +85,5 @@ Database.initialize()
 //     console.log(`Server is running on port ${PORT}`);
 // });
 // 
+
+
