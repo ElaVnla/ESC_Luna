@@ -9,6 +9,7 @@ export class HotelModel {
         public phone_number: string,
         public contact_email: string,
         public fax_number: string,
+        public price: number,
         public amenities: string,
         public description: string,
         public postal_code: string,
