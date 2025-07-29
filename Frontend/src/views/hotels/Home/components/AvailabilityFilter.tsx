@@ -20,7 +20,11 @@ type AvailabilityFormType = {
 const AvailabilityFilter = () => {
   const initialValue: AvailabilityFormType = {
     location: '00Hr',
-    stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
+    //stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
+    stayFor: [
+      new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // today + 3 days
+      new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // today + 6 days
+    ],
     guests: {
       totalguests: 1,
       rooms: 1,

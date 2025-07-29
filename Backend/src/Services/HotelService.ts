@@ -49,7 +49,6 @@ export async function getHotelsByCity(city: string, state?: string) {
   // Retrieve all hotels based on destination city
   const hotelsRepo = Database.getRepository(Hotel);
 
-  // Build query object dynamically
   const query: any = {
     city
   };
@@ -62,9 +61,43 @@ export async function getHotelsByCity(city: string, state?: string) {
   return hotels;
 }
 
+export async function getCountryCode(rawCity: string, state?: string) {
+  // Retrieve all hotels based on destination city
+  const hotelsRepo = Database.getRepository(Hotel);
+
+  const city = rawCity.includes(",") ? rawCity.split(",")[0].trim() : rawCity;
+  
+  const query: any = {
+    city
+  };
+
+  if (state) {
+    query.state = state;
+  }
+
+  const hotels = await hotelsRepo.findBy(query);
+  if (!hotels || hotels.length === 0) {
+    return null; // no hotels found for city/state
+  }
+
+  console.log(city, state);
+
+  // Try to find first valid country_code
+  for (const hotel of hotels) {
+    if (hotel.country_code && hotel.country_code.trim() !== "") {
+      return hotel.country_code;
+    }
+  }
+
+  return null; // no country_code found in any hotel
+}
+
 export async function storeHotels(hotelsData: any[]) {
   const repo = Database.getRepository(Hotel);
   const storedHotels: Hotel[] = [];
+
+  let failed = 0;
+  console.log(`Attempting to store ${hotelsData.length} hotels`);
 
   for (const data of hotelsData) {
     const hotel: Hotel = {
@@ -77,6 +110,7 @@ export async function storeHotels(hotelsData: any[]) {
       phone_number: "null",
       contact_email: "null",
       fax_number: "null",
+      price: 0,
       amenities: JSON.stringify(processAmenities(data.amenities)),
       description: data.description,
       postal_code: "null",
@@ -89,11 +123,31 @@ export async function storeHotels(hotelsData: any[]) {
       default_img_index: data.image_details?.default_image_index || null,
       img_suffix: data.image_details?.suffix || null
     };
-    await repo.save(hotel);
-    storedHotels.push(hotel);
+    // await repo.save(hotel);
+    // storedHotels.push(hotel);
+    try {
+      await repo.save(hotel);
+      storedHotels.push(hotel);
+    } catch (err) {
+      failed++;
+      console.warn(`Failed to save hotel ${hotel.id}:`, err);
+    }
   }
-
+  console.log(`Stored ${storedHotels.length}, failed ${failed}`);
   return storedHotels;
+}
+
+export async function updateHotelPrices(pricesData: any[]) {
+  const repo = Database.getRepository(Hotel);
+
+  // update each hotel with its lowest price
+  for (const hotelPrice of pricesData) {
+    const { id, lowest_converted_price } = hotelPrice;
+
+    await repo.update(id, {
+      price: lowest_converted_price ?? 0, // fallback to 0 if undefined
+    });
+  }
 }
 
 export async function getFilteredHotels(filters: any) {

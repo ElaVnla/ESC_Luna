@@ -29,6 +29,9 @@ export class Hotel {
     @Column({ length: 50, nullable: true })
     fax_number!: string;
 
+    @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
+    price!: number;
+
     @Column({ type: "text", nullable: true })
     amenities!: string;
 

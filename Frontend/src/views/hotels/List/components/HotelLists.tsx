@@ -36,9 +36,10 @@ const HotelLists = () => {
   const query = useQuery();
   const city = query.get("city") || "Singapore, Singapore";
   const state = query.get("state") || "";
-  const guests = query.get("guests");
-  const checkin = query.get("checkin")?.split("T")[0];
-  const checkout = query.get("checkout")?.split("T")[0];
+  const guests = query.get("guests") || "1";
+  const checkin = query.get("checkin")?.split("T")[0] || "";
+  const checkout = query.get("checkout")?.split("T")[0] || "";
+  console.log(guests);
   console.log(checkin, checkout);
 
 
@@ -48,14 +49,20 @@ const HotelLists = () => {
     const syncAndFetchHotels = async () => {
       setLoading(true);
       try {
+        let cityQuery = `city=${encodeURIComponent(city)}`;
+        
         let searchQuery = `city=${encodeURIComponent(city)}`;
         if (state) searchQuery += `&state=${encodeURIComponent(state)}`;
+        searchQuery += `&guests=${encodeURIComponent(guests)}
+        &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`;
 
         // Step 1: Sync with external API
-        const syncRes = await fetch(`http://localhost:3000/api/hotels/syncByCity?${searchQuery}`);
+        const syncRes = await fetch(`http://localhost:3000/api/hotels/syncByCity?${cityQuery}`);
         if (!syncRes.ok) throw new Error("Sync failed");
         const syncData = await syncRes.json();
+        const destinationId = syncData.destinationId;
         console.log("Synced hotels:", syncData);
+        console.log(destinationId);
 
         // Step 2: Fetch from local DB after sync
         const dbRes = await fetch(`http://localhost:3000/hotels/getHotelsByCity?${searchQuery}`);
@@ -63,7 +70,45 @@ const HotelLists = () => {
         const dbData = await dbRes.json();
         console.log("Hotels fetched from DB:", dbData);
 
-        // Step 3: Map hotel data with better image logic
+        // Step 3: Fetch prices by destination
+        console.log({
+          city,
+          state,
+          destination_id: destinationId,
+          checkin,
+          checkout,
+          guests,
+        });
+
+        const priceParams = new URLSearchParams({
+          city: city,
+          state: state,
+          destination_id: destinationId,
+          checkin,
+          checkout,
+          guests: (guests as string).trim(),
+          rooms: '1',
+          lang: 'en_US',
+          currency: 'SGD',
+          partner_id: '1089',
+          landing_page: 'wl-acme-earn',
+          product_type: 'earn',
+        });
+        console.log("Final price URL HotelLists:", `/api/hotels/prices?${priceParams.toString()}`);
+        const priceRes = await fetch(`http://localhost:3000/api/hotels/prices?${priceParams}`);
+        if (!priceRes.ok) throw new Error("Failed to fetch prices");
+        const priceData = await priceRes.json(); // assumed to be [{ hotel_id: "...", price: 123 }, ...]
+        console.log("Fetched prices:", priceData);
+
+        // Step 4: Map prices by hotel id
+        const priceMap = new Map<string, number>();
+        for (const hotel of priceData || []) {
+          //console.log(hotel.id, hotel.lowest_converted_price);
+          priceMap.set(hotel.id, hotel.lowest_converted_price);
+        }
+        console.log(priceMap);
+
+        // Step 5: Map hotel data with better image logic
         const mapped = dbData.map((hotel: any) => {
           let images: string[] = [];
 
@@ -71,13 +116,13 @@ const HotelLists = () => {
             const maxImages = Math.min(hotel.image_count, 5);
             for (let i = 0; i < maxImages; i++) {
               const imageUrl = hotel.img_baseurl + i.toString() + hotel.img_suffix;
-              console.log(`Generated image URL: ${imageUrl}`);
+              //console.log(`Generated image URL: ${imageUrl}`);
               images.push(imageUrl);
             }
           }
 
           if (images.length === 0) {
-            console.log(`No images found for ${hotel.name}, using fallbacks`);
+            //console.log(`No images found for ${hotel.name}, using fallbacks`);
             images = [
               `https://d2ey9sqrvkqdfs.cloudfront.net/${hotel.id}/0.jpg`,
               `https://d2ey9sqrvkqdfs.cloudfront.net/0dAF/0.jpg`,
@@ -88,13 +133,14 @@ const HotelLists = () => {
           }
 
           return {
-            id: parseInt(hotel.id),
+            id: hotel.id,
             name: hotel.name,
             address: hotel.address,
             images,
             rating: hotel.rating || 0,
             amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
-            price: Math.floor(Math.random() * 1000) + 100,
+            //price: Math.floor(Math.random() * 1000) + 100,
+            price: priceMap.get(hotel.id) || 0, // fallback if no price
           };
         });
 
