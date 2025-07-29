@@ -11,16 +11,43 @@ import { useGuestCount } from '../../contexts/GuestCountContext';
 
 const Step3 = ({ control }: Step1Props) => {
   const { previousStep } = useWizard();
-  const { getValues } = useFormContext();
+  const { getValues, trigger } = useFormContext();
   const { guests } = useGuestCount();
   const navigate = useNavigate();
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
+    const isValid = await trigger(); // Ensures guest fields are collected
+  
+    if (!isValid) {
+      console.warn("Form is invalid");
+      return;
+    }
+  
     const formData = getValues();
+    console.log("✅ guest formData:", formData.guests); // 🔍 Debug here
+    console.log("✅ adult guests:", formData.guests?.adults);
+    console.log("✅ child guests:", formData.guests?.children);
+  
+    const bookingId = `BOOK-${Date.now()}`;
+    const allGuests = [
+      ...(formData.guests?.adults?.map((g: any) => ({
+        ...g,
+        guest_type: 'adult',
+        booking_id: bookingId,
+      })) || []),
+      ...(formData.guests?.children?.map((g: any) => ({
+        ...g,
+        guest_type: 'child',
+        booking_id: bookingId,
+      })) || []),
+    ];
+  
+    console.log("✅ transformed guests for backend:", allGuests);
+  
 
     const payload = {
       booking: {
-        id: `BOOK-${Date.now()}`, // Temporary ID (real one set after email verify)
+        id: bookingId, // Temporary ID (real one set after email verify)
         destination_id: '',        // 🟡 Placeholder (from Feature 3)
         hotel_id: '',              // 🟡 Placeholder
         room_id: '',               // 🟡 Placeholder
@@ -30,10 +57,10 @@ const Step3 = ({ control }: Step1Props) => {
         children: guests.children,
         message_to_hotel: formData.booking?.message_to_hotel || '',
         num_nights: formData.booking?.num_nights || 1,
-        price: formData.booking?.price || 0,
+        price: formData.booking?.price || 999.99, // 🟡 Placeholder until Feature 3 is wired
       },
       customer: formData.customer,
-      guests: formData.guests,
+      guests: allGuests,
       payment: {
         payment_reference: `PAY-${Date.now()}`,
         masked_card_number: formData.cardNo?.toString().slice(-4).padStart(16, '*') || '**** **** **** 1234',

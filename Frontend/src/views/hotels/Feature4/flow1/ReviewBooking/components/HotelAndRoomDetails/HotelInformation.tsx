@@ -8,7 +8,7 @@ import { FaCheckCircle } from 'react-icons/fa'
 import { splitArray } from '@/utils'
 import Flatpicker from '@/components/Flatpicker'
 import { useToggle } from '@/hooks'
-import { useState, createContext, useContext, Fragment } from 'react'
+import { useState, createContext, useContext, Fragment, useEffect } from 'react'
 import { BsDashCircle, BsPencilSquare, BsPlusCircle, BsSearch } from 'react-icons/bs'
 import { useAvailabilityForm } from '@/hooks/useAvailabilityForm'
 import { format, differenceInDays } from 'date-fns'
@@ -64,6 +64,50 @@ const HotelInformation = ({ hotelData, roomData }: { hotelData: HotelData, roomD
 
   const cleanedDistText = distText.replace(/\/\s*[\d.]+\s*mi/g, '');
    const { isOpen, toggle } = useToggle()
+
+  const [formValue, setFormValue] = useState({
+    location: 'San Jacinto, USA',
+    stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
+    guests: {
+      adults: 2,
+      children: 1,
+      rooms: 1,
+    },
+  })
+  const { setGuests } = useGuestCount();
+
+const updateGuests = (type: 'rooms' | 'adults' | 'children', increment = true) => {
+  setFormValue((prev) => {
+    const currentValue = prev.guests[type];
+    const newValue = increment ? currentValue + 1 : Math.max(currentValue - 1, 0);
+    const newGuests = {
+      ...prev.guests,
+      [type]: newValue,
+    };
+
+    // Update global guest count context
+    // setGuests({ adults: newGuests.adults, children: newGuests.children });
+    
+    
+
+    return {
+      ...prev,
+      guests: newGuests,
+    };
+  });
+};
+
+useEffect(() => {
+  setGuests({
+    adults: formValue.guests.adults,
+    children: formValue.guests.children
+  });
+}, [formValue.guests.adults, formValue.guests.children]);
+
+  const checkIn = formValue.stayFor[0]
+  const checkOut = formValue.stayFor[1]
+  const numNights = differenceInDays(checkOut, checkIn)
+  const numDays = numNights + 1
 
   return (
     <Card className="shadow">

@@ -12,8 +12,7 @@ type AvailabilityFormType = {
   location: string
   stayFor: Date | Array<Date>
   guests: {
-    adults: number
-    children: number
+    totalguests: number
     rooms: number
   }
 }
@@ -23,9 +22,8 @@ const AvailabilityFilter = () => {
     location: '00Hr',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
-      adults: 2,
+      totalguests: 1,
       rooms: 1,
-      children: 0,
     },
   }
 
@@ -37,24 +35,28 @@ const AvailabilityFilter = () => {
       ...formValue,
       guests: {
         ...formValue.guests,
-        [type]: increase ? val + 1 : val > 1 ? val - 1 : 0,
+        [type]: increase ? val + 1 : val > 1 ? val - 1 : val,
       },
     })
   }
 
   const getGuestsValue = (): string => {
-    let value = ''
-    const guests = formValue.guests
-    if (guests.adults) {
-      value += guests.adults + (guests.adults > 1 ? ' Adults ' : ' Adult ')
+  
+    const guests = formValue.guests;
+    const  total = guests.totalguests;
+    let rooms = guests.rooms;
+    let value = "";
+    do
+    {
+      rooms -= 1;
+      value += total;
+      if(rooms > 0)
+      {
+        value += "|"
+      }
     }
-    if (guests.children) {
-      value += guests.children + (guests.children > 1 ? ' Children ' : ' Child ')
-    }
-    if (guests.rooms) {
-      value += guests.rooms + (guests.rooms > 1 ? ' Rooms ' : ' Room ')
-    }
-    return value
+    while(rooms > 0);
+    return value;
   }
   const [locations, setLocations] = useState<destinationinterface[]>([])
   useEffect(() => {
@@ -71,8 +73,12 @@ const AvailabilityFilter = () => {
 
     const city = selectedLocation.term;
     const state = selectedLocation.state || "";
+    const [start, end] = formValue.stayFor as [Date, Date];
+    const checkin = encodeURIComponent(start.toISOString());
+    const checkout = encodeURIComponent(end.toISOString());
 
-    const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`;
+    const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&guests=${getGuestsValue()}
+    &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`;
     navigate(`/hotels/list?${query}`);
   };
 
@@ -123,7 +129,8 @@ const AvailabilityFilter = () => {
                     options={{
                       mode: 'range',
                       dateFormat: 'd M',
-                      closeOnSelect:false
+                      closeOnSelect:false,
+                      minDate:"today"
                     }}
                   />
                 </div>
@@ -149,37 +156,15 @@ const AvailabilityFilter = () => {
                     <DropdownMenu className="guest-selector-dropdown" renderOnMount>
                       <li className="d-flex justify-content-between">
                         <div>
-                          <h6 className="mb-0">Adults</h6>
-                          <small>Ages 13 or above</small>
+                          <h6 className="mb-0">Guests</h6>
+                          <small>Per Room</small>
                         </div>
                         <div className="hstack gap-1 align-items-center">
-                          <Button variant="link" className="adult-remove p-0 mb-0" onClick={() => updateGuests('adults', false)}>
+                          <Button variant="link" className="adult-remove p-0 mb-0" onClick={() => updateGuests('totalguests', false)}>
                             <BsDashCircle className=" fs-5 fa-fw" />
                           </Button>
-                          <h6 className="guest-selector-count mb-0 adults">{formValue.guests.adults ?? 0}</h6>
-                          <Button variant="link" className="adult-add p-0 mb-0" onClick={() => updateGuests('adults')}>
-                            <BsPlusCircle className=" fs-5 fa-fw" />
-                          </Button>
-                        </div>
-                      </li>
-
-                      <DropdownDivider />
-
-                      <li className="d-flex justify-content-between">
-                        <div>
-                          <h6 className="mb-0">Children</h6>
-                          <small>Ages 13 below</small>
-                        </div>
-                        <div className="hstack gap-1 align-items-center">
-                          <Button
-                            variant="link"
-                            type="button"
-                            className="btn btn-link child-remove p-0 mb-0"
-                            onClick={() => updateGuests('children', false)}>
-                            <BsDashCircle className="  fs-5 fa-fw" />
-                          </Button>
-                          <h6 className="guest-selector-count mb-0 child">{formValue.guests.children ?? 0}</h6>
-                          <Button variant="link" type="button" className="btn btn-link child-add p-0 mb-0" onClick={() => updateGuests('children')}>
+                          <h6 className="guest-selector-count mb-0 adults">{formValue.guests.totalguests ?? 0}</h6>
+                          <Button variant="link" className="adult-add p-0 mb-0" onClick={() => updateGuests('totalguests')}>
                             <BsPlusCircle className=" fs-5 fa-fw" />
                           </Button>
                         </div>
@@ -190,7 +175,7 @@ const AvailabilityFilter = () => {
                       <li className="d-flex justify-content-between">
                         <div>
                           <h6 className="mb-0">Rooms</h6>
-                          <small>Max room 8</small>
+                          <small>Per No. Of Guests</small>
                         </div>
                         <div className="hstack gap-1 align-items-center">
                           <Button variant="link" type="button" className="room-remove p-0 mb-0" onClick={() => updateGuests('rooms', false)}>
