@@ -138,6 +138,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
             </Card>
           </Col>
         </Row>
+
         <Card className="bg-transparent">
           <CardHeader className="border-bottom bg-transparent px-0 pt-0">
             <h3 className="card-title mb-0">Amenities</h3>
