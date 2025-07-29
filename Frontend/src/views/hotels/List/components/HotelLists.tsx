@@ -255,6 +255,7 @@ const HotelLists = () => {
         // Apply the same image mapping logic as the initial fetch
         const mapped = data.map((hotel: any) => {
           let images: string[] = [];
+          // console.log(`${hotel.name} has ${hotel.image_count} images`);
 
           if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
             const maxImages = Math.min(hotel.image_count, 5);
@@ -288,6 +289,7 @@ const HotelLists = () => {
             rating: hotel.rating || 0,
             amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
             price: Math.floor(Math.random() * 1000) + 100,
+            // schemes: ["hi", "sayang", "ily!"],
           };
         });
 

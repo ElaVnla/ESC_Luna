@@ -11,12 +11,11 @@ export type HotelsListType = {
   id: number
   name: string
   address: string
-  sale?: string
   images: string[]
   rating: number
   amenities: string[]
   price: number
-  schemes?: string[]
+  // schemes?: string[]
 }
 
 // export type HotelsListType = {

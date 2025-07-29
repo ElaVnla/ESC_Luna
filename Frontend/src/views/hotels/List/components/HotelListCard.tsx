@@ -35,8 +35,8 @@ import "tiny-slider/dist/tiny-slider.css";
 import { Link } from "react-router-dom";
 
 const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
-  const { address, amenities, images, name, price, rating, sale, schemes } =
-    hotel;
+  // const { address, amenities, images, name, price, rating, sale, schemes } = hotel;
+  const { address, amenities, images, name, price, rating } = hotel;
 
   const { dir } = useLayoutContext();
   const normalizedAmenities = Array.isArray(amenities)
@@ -62,15 +62,9 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
   };
 
   return (
-    <Card className="shadow p-2" id="HERE1">
+    <Card className="shadow p-2" key={name}>
       <Row className="g-0">
         <Col md={5} className="position-relative">
-          {sale && (
-            <div className="position-absolute top-0 start-0 z-index-1 m-2">
-              <div className="badge text-bg-danger">{sale}</div>
-            </div>
-          )}
-
           {/* <div
             className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
             >
@@ -84,7 +78,6 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
               </div> */}
 
           <div
-            key={name}
             style={{ height: "250px" }}
             className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
           >
@@ -149,51 +142,6 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                     )
                   )}
               </ul>
-
-              {/* <ul className="list-inline mb-0 z-index-2">
-                <li className="list-inline-item">
-                  <Button variant="light" size="sm" className="btn-round">
-                    <FaHeart className="fa-fw" />
-                  </Button>
-                </li>
-
-                <Dropdown className="list-inline-item dropdown">
-                  <DropdownToggle
-                    className="arrow-none btn btn-sm btn-light btn-round"
-                    role="button"
-                    id="dropdownShare"
-                    aria-label="Share hotel"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <FaShareAlt className="fa-fw" />
-                  </DropdownToggle>
-                  <DropdownMenu
-                    className="dropdown-menu-end min-w-auto shadow rounded"
-                    aria-labelledby="dropdownShare"
-                  >
-                    <DropdownItem href="">
-                      <FaTwitterSquare className="me-2" />
-                      Twitter
-                    </DropdownItem>
-
-                    <DropdownItem href="">
-                      <FaFacebookSquare className="me-2" />
-                      Facebook
-                    </DropdownItem>
-
-                    <DropdownItem href="">
-                      <FaLinkedin className="me-2" />
-                      LinkedIn
-                    </DropdownItem>
-
-                    <DropdownItem href="">
-                      <FaCopy className="me-2" />
-                      Copy link
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </ul> */}
             </div>
             <h5 className="card-title mb-1">
               <Link to="/hotels/detail">{name}</Link>
@@ -209,7 +157,8 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                 </li>
               ))}
             </ul>
-            <ul className="list-group list-group-borderless small mb-0 mt-2">
+
+            {/* <ul className="list-group list-group-borderless small mb-0 mt-2">
               {schemes ? (
                 <Fragment>
                   {schemes.map((scheme, idx) => {
@@ -230,7 +179,8 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   Non Refundable
                 </li>
               )}
-            </ul>
+            </ul> */}
+
             <div className="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
               <div className="d-flex align-items-center">
                 <h5 className="fw-bold mb-0 me-1">
@@ -238,11 +188,6 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   {price}
                 </h5>
                 <span className="mb-0 me-2">/day</span>
-                {sale && (
-                  <span className="text-decoration-line-through mb-0">
-                    {currency}1000
-                  </span>
-                )}
               </div>
               <div className="mt-3 mt-sm-0">
                 <Button variant="dark" size="sm" className="mb-0 w-100">
