@@ -38,7 +38,14 @@ function processAmenities(amenities: Record<string,boolean>) : string[] {
     exteriorRoomEntrance: "Exterior Room Entrance",
     videoCheckOut: "Video Check-out",
     sauna: "Sauna",
-    dryCleaning: "Dry Cleaning"
+    dryCleaning: "Dry Cleaning",
+    airportTransportation: "Airport Transportation",
+    restrictedAccess: "Restricted Access",
+    carRentDesk: "Car-rent Desk",
+    inHouseBar: "In-house Bar",
+    coffeeTeaMaker: "Coffee & Tea Maker",
+    valetParking: "Valet Parking"
+
   }
   return Object.entries(amenities)
     .filter(([_, value]) => value)

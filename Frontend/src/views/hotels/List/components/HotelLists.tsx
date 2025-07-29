@@ -112,6 +112,8 @@ const HotelLists = () => {
     syncAndFetchHotels();
   }, [city, state]);
 
+  // console.log(hotels);
+
   // useEffect(() => {
   //   setLoading(true);
   //   fetch(
@@ -228,6 +230,10 @@ const HotelLists = () => {
       try {
         const queryParams = new URLSearchParams();
 
+        // Always include city parameter for filtering
+        queryParams.append("city", city);
+        if (state) queryParams.append("state", state);
+
         if (filters.starRatings.length > 0) {
           queryParams.append("rawStarRatings", filters.starRatings.join(","));
         }
@@ -245,14 +251,54 @@ const HotelLists = () => {
         );
 
         const data = await response.json();
-        setHotels(data);
+
+        // Apply the same image mapping logic as the initial fetch
+        const mapped = data.map((hotel: any) => {
+          let images: string[] = [];
+
+          if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
+            const maxImages = Math.min(hotel.image_count, 5);
+            for (let i = 0; i < maxImages; i++) {
+              const imageUrl =
+                hotel.img_baseurl + i.toString() + hotel.img_suffix;
+              if (i == hotel.default_img_index) {
+                console.log(
+                  `Generated default image URL for ${hotel.name} : ${imageUrl}`
+                );
+                images.unshift(imageUrl);
+              } else {
+                console.log(
+                  `Generated non-default image URL for ${hotel.name} : ${imageUrl}`
+                );
+                images.push(imageUrl);
+              }
+            }
+          }
+
+          if (images.length === 0) {
+            console.log(`No images found for ${hotel.name}, using fallback`);
+            images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
+          }
+
+          return {
+            id: parseInt(hotel.id),
+            name: hotel.name,
+            address: hotel.address,
+            images,
+            rating: hotel.rating || 0,
+            amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
+            price: Math.floor(Math.random() * 1000) + 100,
+          };
+        });
+
+        setHotels(mapped);
       } catch (err) {
         console.error("Failed to fetch filtered hotels:", err);
       }
     };
 
     fetchHotels();
-  }, [filters]);
+  }, [filters, city, state]);
 
   return (
     <section className="pt-0">

@@ -71,18 +71,20 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
             </div>
           )}
 
-          {/* <div className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2">
+          {/* <div
+            className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
+            >
             <TinySlider settings={listSliderSettings}>
-              {images.map((image, idx) => (
-                <div key={idx}>
-                  <Image src={image} alt="Card image" />
-                </div>
+            {images.map((image, idx) => (
+              <div key={idx}>
+              <Image src={image} alt="Card image" />
+              </div>
               ))}
-            </TinySlider>
-          </div> */}
+              </TinySlider>
+              </div> */}
 
           <div
-            id="HERE2"
+            key={name}
             style={{ height: "250px" }}
             className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
           >
@@ -97,7 +99,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src =
-                          "https://placehold.co/800x520/jpeg?text=No+Image";
+                          "https://placehold.co/800x520/jpeg?text=Image+Failed+to+Load";
                       }}
                     />
                   </div>
