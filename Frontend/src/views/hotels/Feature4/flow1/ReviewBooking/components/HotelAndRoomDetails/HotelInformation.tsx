@@ -8,7 +8,7 @@ import { FaCheckCircle } from 'react-icons/fa'
 import { splitArray } from '@/utils'
 import Flatpicker from '@/components/Flatpicker'
 import { useToggle } from '@/hooks'
-import { useState, createContext, useContext } from 'react'
+import { useState, createContext, useContext, useEffect } from 'react'
 import { BsDashCircle, BsPencilSquare, BsPlusCircle, BsSearch } from 'react-icons/bs'
 import { useAvailabilityForm } from '@/hooks/useAvailabilityForm'
 import { format, differenceInDays } from 'date-fns'
@@ -40,7 +40,9 @@ const updateGuests = (type: 'rooms' | 'adults' | 'children', increment = true) =
     };
 
     // Update global guest count context
-    setGuests({ adults: newGuests.adults, children: newGuests.children });
+    // setGuests({ adults: newGuests.adults, children: newGuests.children });
+    
+    
 
     return {
       ...prev,
@@ -49,6 +51,12 @@ const updateGuests = (type: 'rooms' | 'adults' | 'children', increment = true) =
   });
 };
 
+useEffect(() => {
+  setGuests({
+    adults: formValue.guests.adults,
+    children: formValue.guests.children
+  });
+}, [formValue.guests.adults, formValue.guests.children]);
 
   const checkIn = formValue.stayFor[0]
   const checkOut = formValue.stayFor[1]
