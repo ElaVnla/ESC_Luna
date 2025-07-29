@@ -1,6 +1,6 @@
 import { RoomAdditionalInfo } from '@/models/RoomDetailsApi';
 import { Card, CardBody, CardHeader } from 'react-bootstrap'
-import { BsArrowRight, BsCheckCircleFill, BsXCircleFill } from 'react-icons/bs'
+
 
 type Props = {
   roomPolicies: RoomAdditionalInfo;

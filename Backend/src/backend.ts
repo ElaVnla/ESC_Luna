@@ -19,6 +19,12 @@ import PaymentRouter from './routes/PaymentRouter';
 import APIRouter from './routes/APIRouter';
 import ForTestingRouter from './routes/ForTestingRouter';
 
+import OTPRouter from './routes/OTPRouter';
+import TestEmailRouter from './routes/TestEmailRouter';
+import GuestRouter from './routes/GuestRouter';
+
+
+
 // create instance of express
 const app = express();
 
@@ -26,7 +32,10 @@ const app = express();
 // handles client side
 app.use(express.static(path.join(__dirname, 'public')));
 // Address security issues
-app.use(cors()); // Manage and control web security
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+})); // Manage and control web security
 // Parsing JSON data from incoming HTTP requests
 app.use(express.json());
 
@@ -42,6 +51,11 @@ app.use('/bookings', BookingRouter);
 app.use('/payments', PaymentRouter);
 app.use('/api', APIRouter);
 app.use('/fortesting', ForTestingRouter);
+app.use('/otp', OTPRouter);
+app.use('/test-email', TestEmailRouter);
+app.use('/email', OTPRouter);
+app.use('/guest', GuestRouter)
+
 
 // Setup "/" route to serve the index.html file
 app.get('/', (req, res) => {
@@ -71,3 +85,5 @@ Database.initialize()
 //     console.log(`Server is running on port ${PORT}`);
 // });
 // 
+
+

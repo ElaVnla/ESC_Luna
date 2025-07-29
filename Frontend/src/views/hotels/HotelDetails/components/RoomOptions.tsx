@@ -2,13 +2,15 @@
 import { Card, CardBody, CardHeader} from 'react-bootstrap'
 import { RoomData } from '@/models/RoomDetailsApi';
 import RoomCard from './RoomCard';
+import { HotelData } from '@/models/HotelDetailsApi';
 
 
 type Props = {
   roomData: RoomData;
+  hotelData: HotelData;
 };
 
-const RoomOptions = ({roomData}: Props) => {
+const RoomOptions = ({roomData, hotelData}: Props) => {
     
     const roomCount = new Map<string, number>()
     const roomPrice = new Map<string, number>()
@@ -54,6 +56,8 @@ const RoomOptions = ({roomData}: Props) => {
                   ammenities = {room.amenities}
                   schemes={schemes}
                   count = {roomCount.get(room.roomDescription)?? 1}
+                  hotelData = {hotelData}
+                  roomDataf4={room}
                 />
               )
             }

@@ -2,32 +2,35 @@ import { Wizard, useWizard } from 'react-use-wizard'
 import HotelInformation from './HotelInformation'
 import { CheckFormInput, DropzoneFormInput, FileFormInput, SelectFormInput, TextAreaFormInput, TextFormInput } from '@/components'
 import { Button, Card, CardBody, CardHeader, Col, Row, Container} from 'react-bootstrap'
-import type { StepProps } from '../types'
+import type { Step1Props } from '../types'
 import RoomInformation from './RoomInformation'
 import CancellationPolicy from './CancellationPolicy'
 import SpecialRequest from './SpecialRequest'
 
 
-const Step1 = ({ control }: StepProps) => {
+const Step1 = ({ control, hotelData, roomData }: Step1Props) => {
+
   const { nextStep } = useWizard()
+
+  console.log("IN STEP 1 ROOM DETAILS: ", roomData);
 
   return (
     <div className="vstack gap-4">
       <Row className="g-4">
             <Col xl={7}>
             <div className="vstack gap-3">
-              <HotelInformation />
+              <HotelInformation hotelData={hotelData} roomData={roomData}/>
             <SpecialRequest />
             </div>
           </Col>
           <Col as="aside" xl={5}>
             <Row className="g-4">
               <Col md={12} xl={12}>
-              <RoomInformation />
+              <RoomInformation roomData={roomData}/>
               </Col>
               <Col md={12} xl={12}>
               
-              <CancellationPolicy />
+              <CancellationPolicy roomData={roomData}/>
               </Col>
             </Row>
           </Col>

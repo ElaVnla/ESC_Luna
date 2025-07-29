@@ -11,6 +11,7 @@ export async function parsedestinations(): Promise<destinationinterface[]>
       throw new Error(`Failed to fetch destinations: ${dfetch.status}`);
     }
     const dlist: destinationinterface[] = await dfetch.json();
+    console.log("Test", dlist);
     return dlist;
   } 
   catch (error) 

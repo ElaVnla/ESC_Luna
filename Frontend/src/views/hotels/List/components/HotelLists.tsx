@@ -36,6 +36,11 @@ const HotelLists = () => {
   const query = useQuery();
   const city = query.get("city") || "Singapore, Singapore";
   const state = query.get("state") || "";
+  const guests = query.get("guests");
+  const checkin = query.get("checkin")?.split("T")[0];
+  const checkout = query.get("checkout")?.split("T")[0];
+  console.log(checkin, checkout);
+
 
   useEffect(() => {
     if (!city) return;

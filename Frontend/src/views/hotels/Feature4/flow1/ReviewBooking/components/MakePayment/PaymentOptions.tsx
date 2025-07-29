@@ -58,118 +58,57 @@ const PaymentOptions = () => {
         </h4>
       </CardHeader>
       <CardBody className="p-4 pb-0">
-        <Accordion defaultActiveKey="1" className="accordion-icon accordion-bg-light" id="accordioncircle">
-          <AccordionItem eventKey="1" className="mb-3">
-            <AccordionHeader as="h6" id="heading-1">
-              <BsCreditCard className=" text-primary me-2" /> <span className="me-5">Credit or Debit Card</span>
-            </AccordionHeader>
-            <AccordionBody>
-              <div className="d-sm-flex justify-content-sm-between my-3">
-                <h6 className="mb-2 mb-sm-0">We Accept:</h6>
-                <ul className="list-inline my-0">
-                  {paymentCards.map((card, idx) => (
-                    <li key={idx} className="list-inline-item">
-                      {' '}
-                      <Link to="">
-                        <Image src={card} className="h-30px" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <form onSubmit={handleSubmit(() => {})} className="g-3 row">
-                <Col xs={12}>
-                  <FormLabel>Card Number *</FormLabel>
-                  <div className="position-relative">
-                    <TextFormInput control={control} name="cardNo" type="text" maxLength={14} placeholder="XXXX XXXX XXXX XXXX" combinedInput />
-                    <img src={visaCard} className="w-30px position-absolute top-50 end-0 translate-middle-y me-2 d-none d-sm-block" />
-                  </div>
-                </Col>
+      <Accordion defaultActiveKey="1" className="accordion-icon accordion-bg-light" id="accordioncircle">
+  <AccordionItem eventKey="1" className="mb-3">
+    <AccordionHeader as="h6" id="heading-1">
+      <BsCreditCard className=" text-primary me-2" /> <span className="me-5">Credit or Debit Card</span>
+    </AccordionHeader>
+    <AccordionBody>
+      <div className="d-sm-flex justify-content-sm-between my-3">
+        <h6 className="mb-2 mb-sm-0">We Accept:</h6>
+        <ul className="list-inline my-0">
+          {paymentCards.map((card, idx) => (
+            <li key={idx} className="list-inline-item">
+              <Link to="">
+                <Image src={card} className="h-30px" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-                <Col md={6}>
-                  <FormLabel>Expiration date *</FormLabel>
-                  <div className="input-group">
-                    <TextFormInput maxLength={2} placeholder="Month" control={control} name="expiryMonth" combinedInput />
-                    <TextFormInput maxLength={4} placeholder="Year" control={control} name="expiryYear" combinedInput />
-                  </div>
-                </Col>
+      {/* CARD PAYMENT FORM */}
+      <form onSubmit={handleSubmit(() => {})} className="g-3 row">
+        <Col xs={12}>
+          <FormLabel>Card Number *</FormLabel>
+          <div className="position-relative">
+            <TextFormInput control={control} name="cardNo" type="text" maxLength={14} placeholder="XXXX XXXX XXXX XXXX" combinedInput />
+            <img src={visaCard} className="w-30px position-absolute top-50 end-0 translate-middle-y me-2 d-none d-sm-block" />
+          </div>
+        </Col>
 
-                <TextFormInput containerClass="col-md-6" control={control} name="cvv" label="CVV / CVC *" maxLength={3} placeholder="xxx" />
+        <Col md={6}>
+          <FormLabel>Expiration date *</FormLabel>
+          <div className="input-group">
+            <TextFormInput maxLength={2} placeholder="Month" control={control} name="expiryMonth" combinedInput />
+            <TextFormInput maxLength={4} placeholder="Year" control={control} name="expiryYear" combinedInput />
+          </div>
+        </Col>
 
-                <TextFormInput
-                  containerClass="col-12"
-                  label="Name on Card *"
-                  control={control}
-                  name="cardHolderName"
-                  placeholder="Enter card holder name"
-                />
-              </form>
-            </AccordionBody>
-          </AccordionItem>
-          <AccordionItem eventKey="2" className="mb-3">
-            <AccordionHeader as="h6" id="heading-2">
-              <BsGlobe2 className=" text-primary me-2" /> <span className="me-5">Pay with Net Banking</span>
-            </AccordionHeader>
-            <AccordionBody>
-              <Row as={'form'} className="row g-3 mt-1">
-                <ul className="list-inline mb-0">
-                  <li className="list-inline-item">
-                    {' '}
-                    <h6 className="mb-0">Popular Banks:</h6>{' '}
-                  </li>
-                  <li className="list-inline-item">
-                    <input type="radio" className="btn-check" name="options" id="option1" />
-                    <label className="btn btn-light btn-primary-soft-check" htmlFor="option1">
-                      <Image src={americaBank} className="h-20px me-2" />
-                      Bank of America
-                    </label>
-                  </li>
-                  <li className="list-inline-item">
-                    <input type="radio" className="btn-check" name="options" id="option2" />
-                    <label className="btn btn-light btn-primary-soft-check" htmlFor="option2">
-                      <Image src={japanBank} className="h-20px me-2" />
-                      Bank of Japan
-                    </label>
-                  </li>
-                  <li className="list-inline-item">
-                    <input type="radio" className="btn-check" name="options" id="option3" />
-                    <label className="btn btn-light btn-primary-soft-check" htmlFor="option3">
-                      <Image src={vivivBank} className="h-20px me-2" />
-                      VIVIV Bank
-                    </label>
-                  </li>
-                </ul>
-                <p className="mb-1">In order to complete your transaction, we will transfer you over to Booking secure servers.</p>
-                <p className="my-0">Select your bank from the drop-down list and click proceed to continue with your payment.</p>
-                <Col md={6}>
-                  <SelectFormInput className="form-select form-select-sm js-choice border-0">
-                    <option value={-1}>Please choose one</option>
-                    <option>Bank of America</option>
-                    <option>Bank of India</option>
-                    <option>Bank of London</option>
-                  </SelectFormInput>
-                </Col>
-              </Row>
-            </AccordionBody>
-          </AccordionItem>
-          <AccordionItem eventKey="3" className="mb-3">
-            <AccordionHeader as="h6" id="heading-3">
-              <BsPaypal className=" text-primary me-2" />
-              <span className="me-5">Pay with Paypal</span>
-            </AccordionHeader>
-            <AccordionBody>
-              <div className="card card-body border align-items-center text-center mt-4">
-                <Image src={paypal} className="h-70px mb-3" />
-                <p className="mb-3">
-                  <strong>Tips:</strong> Simply click on the payment button below to proceed to the PayPal payment page.
-                </p>
-                <Button variant="outline-primary" size="sm" className="mb-0">
-                  Pay with paypal
-                </Button>
-              </div>
-            </AccordionBody>
-          </AccordionItem>
-        </Accordion>
+        <TextFormInput containerClass="col-md-6" control={control} name="cvv" label="CVV / CVC *" maxLength={3} placeholder="xxx" />
+
+        <TextFormInput
+          containerClass="col-12"
+          label="Name on Card *"
+          control={control}
+          name="cardHolderName"
+          placeholder="Enter card holder name"
+        />
+      </form>
+    </AccordionBody>
+  </AccordionItem>
+</Accordion>
+
       </CardBody>
       <div className="card-footer p-4 pt-0">
         <p className="mb-0">
