@@ -62,7 +62,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
   };
 
   return (
-    <Card className="shadow p-2">
+    <Card className="shadow p-2" id="HERE1">
       <Row className="g-0">
         <Col md={5} className="position-relative">
           {sale && (
@@ -82,6 +82,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
           </div> */}
 
           <div
+            id="HERE2"
             style={{ height: "250px" }}
             className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
           >
@@ -91,30 +92,24 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   <div key={idx} className="h-100">
                     <Image
                       src={image}
-                      alt="Card image"
                       className="w-100 h-100 object-fit-cover"
+                      alt={hotel.name}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://placehold.co/800x520/jpeg?text=No+Image";
+                      }}
                     />
                   </div>
                 ))}
               </TinySlider>
             ) : (
               <Image
-                //src="https://via.placeholder.com/800x520?text=No+Image"
-                alt="No image available"
+                src="https://placehold.co/800x520/jpeg?text=Loading"
+                alt="Loading image"
                 className="w-100 h-100 object-fit-cover"
               />
             )}
-            {/* <TinySlider settings={listSliderSettings}>
-              {images.map((image, idx) => (
-                <div key={idx} className="h-100">
-                  <Image
-                    src={image}
-                    alt="Card image"
-                    className="w-100 h-100 object-fit-cover"
-                  />
-                </div>
-              ))}
-            </TinySlider> */}
           </div>
         </Col>
         <Col md={7}>
@@ -152,7 +147,8 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                     )
                   )}
               </ul>
-              <ul className="list-inline mb-0 z-index-2">
+
+              {/* <ul className="list-inline mb-0 z-index-2">
                 <li className="list-inline-item">
                   <Button variant="light" size="sm" className="btn-round">
                     <FaHeart className="fa-fw" />
@@ -195,7 +191,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
-              </ul>
+              </ul> */}
             </div>
             <h5 className="card-title mb-1">
               <Link to="/hotels/detail">{name}</Link>
@@ -205,7 +201,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
               {address}
             </small>
             <ul className="nav nav-divider mt-3">
-              {normalizedAmenities.map((amenity, idx) => (
+              {normalizedAmenities.map((amenity: string, idx: number) => (
                 <li key={idx} className="nav-item">
                   {amenity}
                 </li>
