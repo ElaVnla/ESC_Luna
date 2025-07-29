@@ -6,6 +6,7 @@ import TopNavBar4 from './components/TopNavBar4'
 import { useEffect, useState } from 'react'
 import { HotelData } from '@/models/HotelDetailsApi'
 import { RoomData } from '@/models/RoomDetailsApi'
+import SplashScreen from '@/components/SplashScreen'
 
 import roomMockData2 from './price.json'
 const HotelDetails = () => {
@@ -93,8 +94,14 @@ const HotelDetails = () => {
 
       <main>
         <AvailabilityFilter />
-        <HotelGallery hotelData = {hotelData!}/>
-        <AboutHotel hotelData = {hotelData!} roomData = {mockRoom!}/>
+        {hotelData && mockRoom ? (
+          <>
+            <HotelGallery hotelData={hotelData} />
+            <AboutHotel hotelData={hotelData} roomData={mockRoom} />
+          </>
+        ) : (
+          <SplashScreen />
+        )}
       </main>
 
     </>

@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form'
 import { FormProvider } from 'react-hook-form'
 
 
+
 const Header = () => {
 
   const { goToStep, activeStep } = useWizard()
@@ -53,7 +54,10 @@ const Header = () => {
   )
 }
 
-const BookingDetails = () => {
+const BookingDetails = ({ hotelData, roomData }: { hotelData: any, roomData: any }) => {
+
+  console.log("I PASS HOTEL DATA: ", hotelData);
+  console.log("I PASS ROOM DATA: ", roomData);
 
   const listingSchema = yup.object({
     listingName: yup.string().required('Please enter your listing name'),
@@ -75,9 +79,9 @@ const BookingDetails = () => {
     <section>
       <Container className="bs-stepper stepper-outline">
         <Wizard header={<Header />}>
-          <Step1 control={control} />
-          <Step2 control={control} />
-          <Step3 control={control} />
+          <Step1 control={control} hotelData={hotelData} roomData={roomData}/>
+          <Step2 control={control} hotelData={hotelData} roomData={roomData}/>
+          <Step3 control={control} hotelData={hotelData} roomData={roomData}/>
         </Wizard>
       </Container>
     </section>

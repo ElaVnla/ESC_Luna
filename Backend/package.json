@@ -24,6 +24,7 @@
     "jest": "^30.0.5",
     "mysql2": "^3.14.1",
     "node-fetch": "^2.7.0",
+    "nodemailer": "^7.0.5",
     "reflect-metadata": "^0.2.2",
     "supertest": "^7.1.4",
     "typeorm": "^0.3.25"
@@ -33,6 +34,7 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.12",
     "@types/node-fetch": "^2.6.12",
+    "@types/nodemailer": "^6.4.17",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
