@@ -20,8 +20,13 @@ router.get('/', (req, res) => {
 });
 
 router.get('/hotels/syncByCity', async (req, res) => {
-  const { cityRaw, guests, checkin, checkout } = req.query;
-  const city = Array.isArray(cityRaw) ? cityRaw[0] : cityRaw;
+  const { city, state, guests, checkin, checkout } = req.query;
+  console.log(city);
+  console.log(state);
+  console.log(guests);
+  console.log(checkin);
+  console.log(checkout);
+  //const city = Array.isArray(cityRaw) ? cityRaw[0] : cityRaw;
 
   if (!city || typeof city !== 'string') {
     return res.status(400).json({ error: 'City is required and must be a string' });
@@ -84,14 +89,19 @@ router.get('/hotels/syncByCity', async (req, res) => {
       lang: 'en_US',
       currency: 'SGD',
       country_code: 'SG',
-      guests: guests as string,
+      guests: (guests as string).trim(),
       partner_id: '1089',
       landing_page: 'wl-acme-earn',
       product_type: 'earn',
     });
+    console.log(externalQuery);
 
-    const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?${externalQuery}`);
-    if (!apiRes.ok) throw new Error('Price API returned non-200');
+    //const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?${externalQuery}`);
+    const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=RsBU&checkin=2025-10-01&checkout=2025-10-07&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`);  
+    const errorBody = await apiRes.text();
+    console.error("Hotel price API error response:", errorBody);
+    throw new Error(`Price API returned non-200: ${apiRes.status}`);
+    //if (!apiRes.ok) throw new Error('Price API returned non-200');
     const apiData = await apiRes.json();
 
     return res.status(200).json(apiData);
@@ -186,6 +196,7 @@ router.get('/hotels/syncByCity', async (req, res) => {
 //   }
 // });
 
+// NOT CURRENTLY USED
 router.get('/hotels/sync/:id', async (req, res) => {
   const { id } = req.params;
   console.log(`Fetching hotel with id: ${id}`);
