@@ -173,7 +173,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
           </CardBody>
         </Card>
 
-        <RoomOptions roomData = {roomData}/> 
+        <RoomOptions roomData={roomData} hotelData={hotelData}/> 
         
         <HotelPolicies roomPolicies = {roomData.rooms[0].roomAdditionalInfo} />
 

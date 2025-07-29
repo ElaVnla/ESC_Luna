@@ -1,6 +1,22 @@
+import { HotelData } from '@/models/HotelDetailsApi'
+import { RoomData } from '@/models/RoomDetailsApi'
 import { type Control } from 'react-hook-form'
 
 export type StepProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: Control<any>
+  control: any;
+};
+
+export type HotelRoomProps = {
+  hotelData: any;
+  roomData: any;  
+};
+
+export type hotelProps = {
+  hotelData: any;
 }
+
+export type roomProps = {
+  roomData: any;
+}
+
+export type Step1Props = StepProps & HotelRoomProps;
