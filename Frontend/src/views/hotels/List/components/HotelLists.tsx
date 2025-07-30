@@ -70,6 +70,7 @@ const HotelLists = () => {
 
         // Step 1: Sync with external API
         const syncRes = await fetch(`http://localhost:3000/api/hotels/syncByCity?${cityQuery}`);
+
         if (!syncRes.ok) throw new Error("Sync failed");
         const syncData = await syncRes.json();
         const destinationId = syncData.destinationId;
@@ -77,7 +78,9 @@ const HotelLists = () => {
         console.log(destinationId);
 
         // Step 2: Fetch from local DB after sync
-        const dbRes = await fetch(`http://localhost:3000/hotels/getHotelsByCity?${searchQuery}`);
+        const dbRes = await fetch(
+          `http://localhost:3000/hotels/getHotelsByCity?${searchQuery}`
+        );
         if (!dbRes.ok) throw new Error("DB fetch failed");
         const dbData = await dbRes.json();
         console.log("Hotels fetched from DB:", dbData);
@@ -135,21 +138,28 @@ const HotelLists = () => {
           if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
             const maxImages = Math.min(hotel.image_count, 5);
             for (let i = 0; i < maxImages; i++) {
-              const imageUrl = hotel.img_baseurl + i.toString() + hotel.img_suffix;
-              //console.log(`Generated image URL: ${imageUrl}`);
-              images.push(imageUrl);
+              const imageUrl =
+                hotel.img_baseurl + i.toString() + hotel.img_suffix;
+              if (i == hotel.default_img_index) {
+                console.log(
+                  `Generated default image URL for ${hotel.name} : ${imageUrl}`
+                );
+                images.unshift(imageUrl);
+              } else {
+                console.log(
+                  `Generated non-default image URL for ${hotel.name} : ${imageUrl}`
+                );
+                images.push(imageUrl);
+              }
+
             }
           }
 
           if (images.length === 0) {
-            //console.log(`No images found for ${hotel.name}, using fallbacks`);
-            images = [
-              `https://d2ey9sqrvkqdfs.cloudfront.net/${hotel.id}/0.jpg`,
-              `https://d2ey9sqrvkqdfs.cloudfront.net/0dAF/0.jpg`,
-              `https://via.placeholder.com/800x520/f8f9fa/6c757d?text=${encodeURIComponent(
-                hotel.name
-              )}`,
-            ];
+
+            console.log(`No images found for ${hotel.name}, using fallback`);
+            images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
+
           }
 
           return {
@@ -175,7 +185,7 @@ const HotelLists = () => {
 
     syncAndFetchHotels();
   }, [city, state]);
-
+  
   const hotelListRef = useRef<HTMLDivElement | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -216,8 +226,12 @@ const HotelLists = () => {
     priceRanges: string[];
   }) => {
     setFilters({
-      starRatings: updatedFilters.starRatings.map(Number).filter(n => !isNaN(n)),
-      guestRatings: updatedFilters.guestRatings.map(Number).filter(n => !isNaN(n)),
+      starRatings: updatedFilters.starRatings
+        .map(Number)
+        .filter((n) => !isNaN(n)),
+      guestRatings: updatedFilters.guestRatings
+        .map(Number)
+        .filter((n) => !isNaN(n)),
       priceRanges: updatedFilters.priceRanges,
     });
     setCurrentPage(1);
@@ -227,6 +241,10 @@ const HotelLists = () => {
     const fetchHotels = async () => {
       try {
         const queryParams = new URLSearchParams();
+
+        // Always include city parameter for filtering
+        queryParams.append("city", city);
+        if (state) queryParams.append("state", state);
 
         if (filters.starRatings.length > 0) {
           queryParams.append("rawStarRatings", filters.starRatings.join(","));
@@ -245,14 +263,56 @@ const HotelLists = () => {
         );
 
         const data = await response.json();
-        setHotels(data);
+
+        // Apply the same image mapping logic as the initial fetch
+        const mapped = data.map((hotel: any) => {
+          let images: string[] = [];
+          // console.log(`${hotel.name} has ${hotel.image_count} images`);
+
+          if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
+            const maxImages = Math.min(hotel.image_count, 5);
+            for (let i = 0; i < maxImages; i++) {
+              const imageUrl =
+                hotel.img_baseurl + i.toString() + hotel.img_suffix;
+              if (i == hotel.default_img_index) {
+                console.log(
+                  `Generated default image URL for ${hotel.name} : ${imageUrl}`
+                );
+                images.unshift(imageUrl);
+              } else {
+                console.log(
+                  `Generated non-default image URL for ${hotel.name} : ${imageUrl}`
+                );
+                images.push(imageUrl);
+              }
+            }
+          }
+
+          if (images.length === 0) {
+            console.log(`No images found for ${hotel.name}, using fallback`);
+            images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
+          }
+
+          return {
+            id: parseInt(hotel.id),
+            name: hotel.name,
+            address: hotel.address,
+            images,
+            rating: hotel.rating || 0,
+            amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
+            price: Math.floor(Math.random() * 1000) + 100,
+            // schemes: ["hi", "sayang", "ily!"],
+          };
+        });
+
+        setHotels(mapped);
       } catch (err) {
         console.error("Failed to fetch filtered hotels:", err);
       }
     };
 
     fetchHotels();
-  }, [filters]);
+  }, [filters, city, state]);
 
   useEffect(() => {
     setCurrentPage(1);
