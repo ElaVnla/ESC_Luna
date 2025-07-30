@@ -53,9 +53,9 @@ export async function getHotelsByCity(city: string, state?: string) {
     city
   };
 
-  if (state) {
-    query.state = state;
-  }
+  // if (state) {
+  //   query.state = state;
+  // }
 
   const hotels = await hotelsRepo.findBy(query);
   return hotels;
@@ -100,6 +100,9 @@ export async function storeHotels(hotelsData: any[]) {
   console.log(`Attempting to store ${hotelsData.length} hotels`);
 
   for (const data of hotelsData) {
+    console.log(data.original_metadata?.city);
+    console.log(data.original_metadata?.state);
+    console.log(data.original_metadata?.country);
     const hotel: Hotel = {
       id: data.id,
       name: data.name,
@@ -116,7 +119,11 @@ export async function storeHotels(hotelsData: any[]) {
       postal_code: "null",
       city: data.original_metadata?.city || "",
       state: data.original_metadata?.state || "",
-      country_code: data.original_metadata?.country || "SG",
+      // city: [data.original_metadata?.city, data.original_metadata?.country]
+      //    .filter(Boolean)
+      //    .join(", "),
+      //state: data.original_metadata?.state || "",
+      country_code: data.original_metadata?.country || "",
       image_count: data.image_details?.count || 0,
       primary_destination_id: data.primary_destination_id,
       img_baseurl: data.image_details?.prefix || null,
