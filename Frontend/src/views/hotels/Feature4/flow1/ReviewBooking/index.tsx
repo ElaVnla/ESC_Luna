@@ -5,16 +5,23 @@ import Hero from './components/Hero'
 import FooterWithLinks from '@/components/FooterWithLinks'
 import BookingDetails from './components/BookingDetails'
 import { GuestCountProvider } from './contexts/GuestCountContext'
+import { useLocation } from 'react-router-dom'
+import { HotelData } from '@/models/HotelDetailsApi'
+import { RoomData } from '@/models/RoomDetailsApi'
 
 const ReviewBooking = () => {
+  const location = useLocation();
+  const { hotelData, roomDataf4 } = location.state || {};
+
+  console.log("ROOM DATA f4 WENT THRU: ", roomDataf4);
   return (
     <>
       <PageMetaData title="Hotel - Review Booking" />
       <main>
         <TopNavBar />
         <GuestCountProvider>
-          <Hero />
-          <BookingDetails />
+          <Hero/>
+          <BookingDetails hotelData={hotelData} roomData={roomDataf4}/>
         </GuestCountProvider>
       </main>
     </>

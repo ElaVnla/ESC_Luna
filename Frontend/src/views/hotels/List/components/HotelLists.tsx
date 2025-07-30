@@ -21,38 +21,59 @@ import HotelListFilter from "./HotelListFilter";
 
 import { HotelsListType } from "../data";
 import { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
+
+// TODO: make checkin, checkout and guests responsive
+// TODO: make "select room" lead to feature 3
+// TODO: filter function
+
 
 const HotelLists = () => {
   const { isOpen, toggle } = useToggle();
 
   const [hotels, setHotels] = useState<HotelsListType[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const query = useQuery();
   const city = query.get("city") || "Singapore, Singapore";
   const state = query.get("state") || "";
+  const guests = query.get("guests") || "1";
+  const checkin = query.get("checkin")?.split("T")[0] || "";
+  const checkout = query.get("checkout")?.split("T")[0] || "";
+  console.log(guests);
+  console.log(checkin, checkout);
+
 
   useEffect(() => {
     if (!city) return;
 
     const syncAndFetchHotels = async () => {
+      // clear old data from previous search immediately
+      setHotels([]);
+      console.log(hotels);
+
       setLoading(true);
       try {
+        let cityQuery = `city=${encodeURIComponent(city)}`;
+        
         let searchQuery = `city=${encodeURIComponent(city)}`;
         if (state) searchQuery += `&state=${encodeURIComponent(state)}`;
+        searchQuery += `&guests=${encodeURIComponent(guests)}
+        &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`;
 
         // Step 1: Sync with external API
-        const syncRes = await fetch(
-          `http://localhost:3000/api/hotels/syncByCity?${searchQuery}`
-        );
+        const syncRes = await fetch(`http://localhost:3000/api/hotels/syncByCity?${cityQuery}`);
+
         if (!syncRes.ok) throw new Error("Sync failed");
         const syncData = await syncRes.json();
+        const destinationId = syncData.destinationId;
         console.log("Synced hotels:", syncData);
+        console.log(destinationId);
 
         // Step 2: Fetch from local DB after sync
         const dbRes = await fetch(
@@ -62,8 +83,54 @@ const HotelLists = () => {
         const dbData = await dbRes.json();
         console.log("Hotels fetched from DB:", dbData);
 
-        // Step 3: Map hotel data with better image logic
-        const mapped = dbData.map((hotel: any) => {
+        // Step 3: Fetch prices by destination
+        console.log({
+          city,
+          state,
+          destination_id: destinationId,
+          checkin,
+          checkout,
+          guests,
+        });
+
+        const priceParams = new URLSearchParams({
+          city: city,
+          state: state,
+          destination_id: destinationId,
+          checkin,
+          checkout,
+          guests: (guests as string).trim(),
+          rooms: '1',
+          lang: 'en_US',
+          currency: 'SGD',
+          partner_id: '1089',
+          landing_page: 'wl-acme-earn',
+          product_type: 'earn',
+        });
+        console.log("Final price URL HotelLists:", `/api/hotels/prices?${priceParams.toString()}`);
+        const priceRes = await fetch(`http://localhost:3000/api/hotels/prices?${priceParams}`);
+        if (!priceRes.ok) throw new Error("Failed to fetch prices");
+        const priceData = await priceRes.json(); // assumed to be [{ hotel_id: "...", price: 123 }, ...]
+        console.log("Fetched prices:", priceData);
+
+        // Step 4: Map prices by hotel id
+        const priceMap = new Map<string, number>();
+        for (const hotel of priceData || []) {
+          //console.log(hotel.id, hotel.lowest_converted_price);
+          priceMap.set(hotel.id, hotel.lowest_converted_price);
+        }
+        console.log(priceMap);
+
+        console.log("Price Map IDs:", Array.from(priceMap.keys()));
+        console.log("DB Data IDs:", dbData.map((h: any) => h.id));
+
+
+        // Step 5: Filter dbData to only hotels with price info
+        const filteredDbData = dbData.filter((hotel: any) => priceMap.has(hotel.id));
+        console.log("Filtered DB Data IDs:", filteredDbData.map((h: any) => h.id));
+
+        // Step 6: Map hotel data with better image logic
+        const mapped = filteredDbData.map((hotel: any) => {
           let images: string[] = [];
 
           if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
@@ -82,28 +149,33 @@ const HotelLists = () => {
                 );
                 images.push(imageUrl);
               }
+
             }
           }
 
           if (images.length === 0) {
+
             console.log(`No images found for ${hotel.name}, using fallback`);
             images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
+
           }
 
           return {
-            id: parseInt(hotel.id),
+            id: hotel.id,
             name: hotel.name,
             address: hotel.address,
             images,
             rating: hotel.rating || 0,
             amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
-            price: Math.floor(Math.random() * 1000) + 100,
+            //price: Math.floor(Math.random() * 1000) + 100,
+            price: priceMap.get(hotel.id) || 0, // fallback if no price
           };
         });
 
         setHotels(mapped);
       } catch (err) {
         console.error("Failed to sync or fetch hotels:", err);
+        setHotels([]); // clear hotels if an error occurs
       } finally {
         setLoading(false);
       }
@@ -111,70 +183,7 @@ const HotelLists = () => {
 
     syncAndFetchHotels();
   }, [city, state]);
-
-  // console.log(hotels);
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   fetch(
-  //     `http://localhost:3000/hotels/getHotelsByCity?city=${encodeURIComponent(
-  //       city
-  //     )}`
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       const mapped = data.map((hotel: any) => {
-  //         // Generate multiple image URLs for the slider
-  //         let images = [];
-  //         console.log(
-  //           "Hotel data:",
-  //           hotel.name,
-  //           hotel.img_baseurl,
-  //           hotel.img_suffix,
-  //           hotel.image_count
-  //         );
-
-  //         if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
-  //           const maxImages = Math.min(hotel.image_count, 5); // Generate up to 5 images
-  //           for (let i = 0; i < maxImages; i++) {
-  //             const imageUrl =
-  //               hotel.img_baseurl + i.toString() + hotel.img_suffix;
-  //             console.log(`Generated image URL: ${imageUrl}`);
-  //             images.push(imageUrl);
-  //           }
-  //         }
-
-  //         // Test with the working URL pattern as fallback
-  //         if (images.length === 0) {
-  //           console.log(`No images found for ${hotel.name}, using fallbacks`);
-  //           images = [
-  //             `https://d2ey9sqrvkqdfs.cloudfront.net/${hotel.id}/0.jpg`,
-  //             `https://d2ey9sqrvkqdfs.cloudfront.net/0dAF/0.jpg`, // Known working image
-  //             `https://via.placeholder.com/800x520/f8f9fa/6c757d?text=${encodeURIComponent(
-  //               hotel.name
-  //             )}`,
-  //           ];
-  //         }
-
-  //         return {
-  //           id: parseInt(hotel.id),
-  //           name: hotel.name,
-  //           address: hotel.address,
-  //           images: images,
-  //           rating: hotel.rating || 0,
-  //           amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
-  //           price: Math.floor(Math.random() * 1000) + 100,
-  //         };
-  //       });
-  //       setHotels(mapped);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to load hotels:", err);
-  //       setLoading(false);
-  //     });
-  // }, [city]); // re-fetch if city changes
-
+  
   const hotelListRef = useRef<HTMLDivElement | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -223,6 +232,7 @@ const HotelLists = () => {
         .filter((n) => !isNaN(n)),
       priceRanges: updatedFilters.priceRanges,
     });
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -302,6 +312,15 @@ const HotelLists = () => {
     fetchHotels();
   }, [filters, city, state]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+
+    const newParams = new URLSearchParams(location.search);
+    newParams.set("page", "1");
+    navigate(`${location.pathname}?${newParams.toString()}`);
+  }, [hotels]);
+
+
   return (
     <section className="pt-0">
       <Container>
@@ -377,121 +396,97 @@ const HotelLists = () => {
             </Offcanvas>
           </Col>
           <Col xl={8} xxl={9}>
+
             <div className="vstack gap-4" ref={hotelListRef}>
-              {currentHotels.map((hotel, idx) => (
-                <HotelListCard key={idx} hotel={hotel} />
-              ))}
-
-              <nav
-                className="d-flex justify-content-center"
-                aria-label="navigation"
-              >
-                <ul className="pagination pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
-                  {/* Previous button */}
-                  <li
-                    className={`page-item mb-0 ${
-                      currentPage === 1 ? "disabled" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => {
-                        setCurrentPage((prev) => {
-                          const newPage = Math.max(prev - 1, 1);
-                          hotelListRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                          return newPage;
-                        });
-                      }}
-                    >
-                      <FaAngleLeft />
-                    </button>
-                  </li>
-
-                  {/* Page numbers */}
-                  {pageNumbers.map((number) => (
-                    <li
-                      key={number}
-                      className={`page-item mb-0 ${
-                        currentPage === number ? "active" : ""
-                      }`}
-                    >
-                      <button
-                        className="page-link"
-                        onClick={() => {
-                          setCurrentPage(number);
-                          hotelListRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                        }}
-                      >
-                        {number}
-                      </button>
-                    </li>
+              {loading ? (
+                <div className="text-center py-5">Loading hotels...</div>
+              ) : hotels.length === 0 ? (
+                <div className="text-center py-5 text-muted">
+                  <BsExclamationOctagonFill className="me-2" />
+                  No hotels found.
+                </div>
+              ) : (
+                <>
+                  {currentHotels.map((hotel, idx) => (
+                    <HotelListCard key={idx} hotel={hotel} />
                   ))}
 
-                  {/* Next button */}
-                  <li
-                    className={`page-item mb-0 ${
-                      currentPage === totalPages ? "disabled" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => {
-                        setCurrentPage((prev) => {
-                          const newPage = Math.min(prev + 1, totalPages);
-                          hotelListRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                          });
-                          return newPage;
-                        });
-                      }}
+                  <nav className="d-flex justify-content-center" aria-label="navigation">
+                    <nav
+                      className="d-flex justify-content-center"
+                      aria-label="navigation"
                     >
-                      <FaAngleRight />
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+                      <ul className="pagination pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
+                        {/* Previous button */}
+                        <li
+                          className={`page-item mb-0 ${
+                            currentPage === 1 ? "disabled" : ""
+                          }`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => {
+                              setCurrentPage((prev) => {
+                                const newPage = Math.max(prev - 1, 1);
+                                hotelListRef.current?.scrollIntoView({
+                                  behavior: "smooth",
+                                });
+                                return newPage;
+                              });
+                            }}
+                          >
+                            <FaAngleLeft />
+                          </button>
+                        </li>
 
-              {/* <nav
-                className="d-flex justify-content-center"
-                aria-label="navigation"
-              >
-                <ul className="pagination pagination-primary-soft d-inline-block d-md-flex rounded mb-0">
-                  <li className="page-item mb-0">
-                    <Link className="page-link" to="" tabIndex={-1}>
-                      <FaAngleLeft />
-                    </Link>
-                  </li>
-                  <li className="page-item mb-0">
-                    <Link className="page-link" to="">
-                      1
-                    </Link>
-                  </li>
-                  <li className="page-item mb-0 active">
-                    <Link className="page-link" to="">
-                      2
-                    </Link>
-                  </li>
-                  <li className="page-item mb-0">
-                    <Link className="page-link" to="">
-                      ..
-                    </Link>
-                  </li>
-                  <li className="page-item mb-0">
-                    <Link className="page-link" to="">
-                      6
-                    </Link>
-                  </li>
-                  <li className="page-item mb-0">
-                    <Link className="page-link" to="">
-                      <FaAngleRight />
-                    </Link>
-                  </li>
-                </ul>
-              </nav> */}
+                        {/* Page numbers */}
+                        {pageNumbers.map((number) => (
+                          <li
+                            key={number}
+                            className={`page-item mb-0 ${
+                              currentPage === number ? "active" : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => {
+                                setCurrentPage(number);
+                                hotelListRef.current?.scrollIntoView({
+                                  behavior: "smooth",
+                                });
+                              }}
+                            >
+                              {number}
+                            </button>
+                          </li>
+                        ))}
+
+                        {/* Next button */}
+                        <li
+                          className={`page-item mb-0 ${
+                            currentPage === totalPages ? "disabled" : ""
+                          }`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => {
+                              setCurrentPage((prev) => {
+                                const newPage = Math.min(prev + 1, totalPages);
+                                hotelListRef.current?.scrollIntoView({
+                                  behavior: "smooth",
+                                });
+                                return newPage;
+                              });
+                            }}
+                          >
+                            <FaAngleRight />
+                          </button>
+                        </li>
+                      </ul>
+                    </nav>
+                  </nav>
+                </>
+              )}
             </div>
           </Col>
         </Row>

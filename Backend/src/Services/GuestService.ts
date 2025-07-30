@@ -6,6 +6,7 @@ export async function insertGuests(guests: GuestModel[]) {
   const db = Database;
 
   for (const guest of guests) {
+    console.log("Inserting guest:", guest);
     await db.query(`
       INSERT INTO guests (
         booking_id,
