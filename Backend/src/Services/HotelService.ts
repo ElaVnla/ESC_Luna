@@ -38,7 +38,14 @@ function processAmenities(amenities: Record<string,boolean>) : string[] {
     exteriorRoomEntrance: "Exterior Room Entrance",
     videoCheckOut: "Video Check-out",
     sauna: "Sauna",
-    dryCleaning: "Dry Cleaning"
+    dryCleaning: "Dry Cleaning",
+    airportTransportation: "Airport Transportation",
+    restrictedAccess: "Restricted Access",
+    carRentDesk: "Car-rent Desk",
+    inHouseBar: "In-house Bar",
+    coffeeTeaMaker: "Coffee & Tea Maker",
+    valetParking: "Valet Parking"
+
   }
   return Object.entries(amenities)
     .filter(([_, value]) => value)
@@ -127,7 +134,7 @@ export async function storeHotels(hotelsData: any[]) {
       image_count: data.image_details?.count || 0,
       primary_destination_id: data.primary_destination_id,
       img_baseurl: data.image_details?.prefix || null,
-      default_img_index: data.image_details?.default_image_index || null,
+      default_img_index: data.default_image_index || null,
       img_suffix: data.image_details?.suffix || null
     };
     // await repo.save(hotel);
