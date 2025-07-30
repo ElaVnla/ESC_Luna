@@ -27,10 +27,12 @@ const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
 
-// TODO: make checkin, checkout and guests responsive
+// TODO: make checkin, checkout and guests responsive (search button refreshes when checkincheckout/guests change)
 // TODO: make "select room" lead to feature 3
 // TODO: filter function
-
+// TODO: change hotellistcard display (remove amenities, add distance from destination)
+// TODO: change hotellistcard display "/day" "total price"
+// TODO: sort hotels by price & ratings, add sort by price/rating option? show rating first
 
 const HotelLists = () => {
   const { isOpen, toggle } = useToggle();
