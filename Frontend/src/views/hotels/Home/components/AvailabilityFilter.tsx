@@ -83,6 +83,8 @@ const AvailabilityFilter = () => {
 
     const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&guests=${getGuestsValue()}
     &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`;
+    console.log(city);
+    console.log(state);
     navigate(`/hotels/list?${query}`);
   };
 

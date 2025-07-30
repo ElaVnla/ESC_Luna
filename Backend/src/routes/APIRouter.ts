@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Database } from '../Database';
 import { getCountryCode, storeHotels, updateHotelPrices } from '../Services/HotelService';
+import { setTimeout } from 'timers/promises';
 import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
@@ -66,7 +67,7 @@ router.get('/hotels/syncByCity', async (req, res) => {
     if (!response.ok) throw new Error('API returned non-200');
     const data = await response.json();
 
-    storeHotels(data);
+    await storeHotels(data);
 
     console.log(`Stored ${data.length} hotels for destinationId ${destinationId}`);
     return res.status(200).json({
@@ -100,42 +101,75 @@ router.get('/hotels/prices', async (req, res) => {
 
   try {
     const externalQuery = new URLSearchParams({
+      city: city as string,
+      state: state as string,
       destination_id: destination_id as string,
       checkin: checkin as string,
       checkout: checkout as string,
       lang: 'en_US',
       currency: 'SGD',
-      country_code: countryCode as string,
+      //country_code: countryCode as string,
       guests: (guests as string).trim(),
       partner_id: '1089',
       landing_page: 'wl-acme-earn',
       product_type: 'earn',
     });
 
-    console.log("Final price URL APIRouter:", `/api/hotels/prices?${externalQuery.toString()}`);
-    const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?${externalQuery}`);
-    const bodyText = await apiRes.text();
+    const maxRetries = 3;
+    const delayBetweenRetriesMs = 2000;
+    let attempt = 0;
+    let hotels: any[] = [];
 
-    let parsed;
-    try {
-      parsed = JSON.parse(bodyText);
-    } catch {
-      return res.status(500).json({ error: 'Failed to parse price API response' });
-    }
+    console.log("Final URL:", `https://hotelapi.loyalty.dev/api/hotels/prices?${externalQuery}`);
+
+    while (attempt < maxRetries) {
+      console.log(`Attempt ${attempt + 1} - Fetching hotel prices...`);
+      const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?${externalQuery}`);
+      const bodyText = await apiRes.text();
+
+    // console.log("Final price URL APIRouter:", `/api/hotels/prices?${externalQuery.toString()}`);
+    // const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?${externalQuery}`);
+    // const bodyText = await apiRes.text();
+
+      let parsed;
+      try {
+        parsed = JSON.parse(bodyText);
+      } catch {
+        return res.status(500).json({ error: 'Failed to parse price API response' });
+      }
 
     if (!apiRes.ok) {
       console.error("Hotel price API error response:", parsed);
+      // return res.status(200).json({
+      //   warning: `Hotel price API returned ${apiRes.status}, possibly no results`,
+      //   response: parsed,
+      // });
+    } else if (Array.isArray(parsed.hotels) && parsed.hotels.length > 0) {
+        hotels = parsed.hotels;
+        break; // success, hotel found
+    } else {
+      console.log("No hotels found in response.");
+    }
+
+      attempt++;
+      if (attempt < maxRetries) {
+        console.log(`No hotels found. Retrying in ${delayBetweenRetriesMs}ms...`);
+        await setTimeout(delayBetweenRetriesMs);
+      }
+    }
+
+    if (hotels.length === 0) {
       return res.status(200).json({
-        warning: `Hotel price API returned ${apiRes.status}, possibly no results`,
-        response: parsed,
+        warning: `Hotel price API returned empty results after ${maxRetries} retries`,
+        hotels: [],
       });
     }
 
-    const hotels = parsed.hotels;
-    //console.log(hotels);
-    if (!Array.isArray(hotels)) {
-      return res.status(500).json({ error: 'Hotel price API did not return a hotels array' });
-    }
+    // const hotels = parsed.hotels;
+    // //console.log(hotels);
+    // if (!Array.isArray(hotels)) {
+    //   return res.status(500).json({ error: 'Hotel price API did not return a hotels array' });
+    // }
     
     await updateHotelPrices(hotels);
     return res.status(200).json(hotels);

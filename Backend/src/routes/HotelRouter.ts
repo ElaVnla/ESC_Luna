@@ -38,7 +38,8 @@ router.get("/getHotelsByCity", async (req, res) => {
     }
 
     // Now call your service function with these parameters
-    const hotels = await getHotelsByCity(city, state);
+    const hotels = await getHotelsByCity(city);
+    //const hotels = await getHotelsByCity(cityParam);
 
     res.json(hotels);
   } catch (error) {
