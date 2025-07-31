@@ -42,9 +42,9 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
   };
   //const { isOpen: hotelTypeIsOpen, toggle: hotelTypeToggle } = useToggle()
   //const { isOpen: hotelAmenitiesIsOpen, toggle: hotelAmenitiesToggle } = useToggle()
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
-  const [selectedRatings, setSelectedRatings] = useState<string[]>([]); // guest rating
-  const [selectedStars, setSelectedStars] = useState<string[]>([]); // star rating
+  // const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
+  // const [selectedRatings, setSelectedRatings] = useState<string[]>([]); // guest rating
+  // const [selectedStars, setSelectedStars] = useState<string[]>([]); // star rating
 
   // const handleCheckboxChange = (id: string, list: string[], setter: (val: string[]) => void) => {
   //   const updated = list.includes(id)
@@ -153,8 +153,10 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
                 type="checkbox"
                 className="btn-check"
                 id={`star-${star}`}
-                checked={selectedStars.includes(star)}
-                onChange={() => handleCheckboxChange(star, selectedStars, "starRatings")}
+                checked={filters.starRatings.includes(star)}
+                onChange={() => handleCheckboxChange(star, filters.starRatings, "starRatings")}
+                // checked={selectedStars.includes(star)}
+                // onChange={() => handleCheckboxChange(star, selectedStars, "starRatings")}
               />
               <label
                 className="btn btn-sm btn-light btn-primary-soft-check items-center"
@@ -209,8 +211,10 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
                 type="checkbox"
                 className="btn-check"
                 id={`guestRating-${rating}`}
-                checked={selectedRatings.includes(rating)}
-                onChange={() => handleCheckboxChange(rating, selectedRatings, "guestRatings")}
+                checked={filters.guestRatings.includes(rating)}
+                onChange={() => handleCheckboxChange(rating, filters.guestRatings, "guestRatings")}
+                // checked={selectedRatings.includes(rating)}
+                // onChange={() => handleCheckboxChange(rating, selectedRatings, "guestRatings")}
               />
               <label
                 className="btn btn-sm btn-light btn-primary-soft-check"
@@ -254,19 +258,21 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
         <h6 className="mb-2">Price range</h6>
         <div className="col-12">
           {[
-            { id: '1', label: `Up to ${currency}500` },
-            { id: '2', label: `${currency}500 - ${currency}1000` },
-            { id: '3', label: `${currency}1000 - ${currency}1500` },
-            { id: '4', label: `${currency}1500 - ${currency}2000` },
-            { id: '5', label: `${currency}2000+` }
+            { id: '0-500', label: `Up to ${currency}500` },
+            { id: '500-1000', label: `${currency}500 - ${currency}1000` },
+            { id: '1000-1500', label: `${currency}1000 - ${currency}1500` },
+            { id: '1500-2000', label: `${currency}1500 - ${currency}2000` },
+            { id: '2000+', label: `${currency}2000+` }
           ].map(({ id, label }) => (
             <div className="form-check" key={id}>
               <input
                 className="form-check-input"
                 type="checkbox"
                 id={`priceRange${id}`}
-                checked={selectedPriceRanges.includes(id)}
-                onChange={() => handleCheckboxChange(id, selectedPriceRanges, "priceRanges")}
+                checked={filters.priceRanges.includes(id)}
+                onChange={() => handleCheckboxChange(id, filters.priceRanges, "priceRanges")}
+                // checked={selectedPriceRanges.includes(id)}
+                // onChange={() => handleCheckboxChange(id, selectedPriceRanges, "priceRanges")}
               />
               <label className="form-check-label" htmlFor={`priceRange${id}`}>
                 {label}

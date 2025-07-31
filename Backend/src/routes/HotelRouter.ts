@@ -51,6 +51,7 @@ router.get("/getHotelsByCity", async (req, res) => {
 router.get("/getFilteredHotels", async (req, res) => {
   try {
     const { rawStarRatings, rawGuestRatings, rawPriceRanges } = req.query;
+    console.log(rawStarRatings, rawGuestRatings, rawPriceRanges);
     const filters: any = {};
     let priceRanges: string[] = [];
 
@@ -73,12 +74,24 @@ router.get("/getFilteredHotels", async (req, res) => {
     }
 
     // Price Ranges
+    console.log(typeof(rawPriceRanges));
     if (typeof rawPriceRanges === "string") {
       priceRanges = rawPriceRanges
         .split(",")
         .map(s => s.trim())
         .filter(Boolean); // keep strings like "100-200"
-      if (priceRanges.length > 0) filters.priceRanges = priceRanges;
+
+      const parsedRanges = priceRanges
+        .map(range => {
+          const [min, max] = range.split("-").map(Number);
+          if (!isNaN(min) && !isNaN(max)) return { min, max };
+          return null;
+        })
+        .filter(Boolean); // Remove any nulls from invalid format
+
+      if (parsedRanges.length > 0) filters.priceRanges = parsedRanges;
+      console.log("Parsed price ranges:", filters.priceRanges);
+      //if (priceRanges.length > 0) filters.priceRanges = priceRanges;
     }
 
     const hotels = await getFilteredHotels(filters);

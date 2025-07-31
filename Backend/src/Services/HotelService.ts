@@ -181,17 +181,24 @@ export async function getFilteredHotels(filters: any) {
   }
 
   if (filters.priceRanges && Array.isArray(filters.priceRanges)) {
-    const rangeConditions = filters.priceRanges.map((range: string, index: number) => {
-      const [min, max] = range.split('-').map(Number);
+    const rangeConditions = filters.priceRanges.map((range: { min: number; max: number }, index: number) => {
+      //const [min, max] = range.split('-').map(Number);
       return `(hotel.price BETWEEN :min${index} AND :max${index})`;
     });
 
     const rangeParams = Object.fromEntries(
-      filters.priceRanges.flatMap((range: string, index: number) => {
-        const [min, max] = range.split('-').map(Number);
-        return [[`min${index}`, min], [`max${index}`, max]];
-      })
+      filters.priceRanges.flatMap((range: { min: number; max: number }, index: number) => [
+        [`min${index}`, range.min],
+        [`max${index}`, range.max],
+      ])
     );
+
+    // const rangeParams = Object.fromEntries(
+    //   filters.priceRanges.flatMap((range: string, index: number) => {
+    //     const [min, max] = range.split('-').map(Number);
+    //     return [[`min${index}`, min], [`max${index}`, max]];
+    //   })
+    // );
 
     qb.andWhere(rangeConditions.join(' OR '), rangeParams);
   }
