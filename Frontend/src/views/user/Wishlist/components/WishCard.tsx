@@ -83,7 +83,7 @@ const WishCard = ({ wishCard }: { wishCard: WishCardType }) => {
                   {currency}
                   {price}
                 </h5>
-                <span className="mb-0 me-2">/day</span>
+                {/* <span className="mb-0 me-2">/day</span> */}
               </div>
               <div className="mt-3 mt-sm-0">
                 <Link to="/hotels/detail" className="btn btn-sm btn-dark w-100 mb-0">

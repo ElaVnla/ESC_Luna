@@ -33,12 +33,53 @@ const useQuery = () => {
 // TODO: change hotellistcard display (remove amenities, add distance from destination)
 // TODO: change hotellistcard display "/day" "total price"
 // TODO: sort hotels by price & ratings, add sort by price/rating option? show rating first
+function mapHotelsWithPricesAndImages(hotels: any[], priceData: any[]): any[] {
+  const priceMap = new Map<string, number>();
+  for (const hotel of priceData || []) {
+    priceMap.set(hotel.id, hotel.lowest_converted_price);
+  }
+
+  const filtered = hotels.filter((hotel) => priceMap.has(hotel.id));
+
+  return filtered.map((hotel) => {
+    let images: string[] = [];
+
+    if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
+      const maxImages = Math.min(hotel.image_count, 5);
+      for (let i = 0; i < maxImages; i++) {
+        const imageUrl = hotel.img_baseurl + i.toString() + hotel.img_suffix;
+        if (i === hotel.default_img_index) {
+          images.unshift(imageUrl);
+        } else {
+          images.push(imageUrl);
+        }
+      }
+    }
+
+    if (images.length === 0) {
+      images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
+    }
+
+    return {
+      id: hotel.id,
+      name: hotel.name,
+      address: hotel.address,
+      images,
+      rating: hotel.rating || 0,
+      amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
+      price: priceMap.get(hotel.id) || 0,
+    };
+  });
+}
+
 
 const HotelLists = () => {
   const { isOpen, toggle } = useToggle();
 
   const [hotels, setHotels] = useState<HotelsListType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [destinationId, setDestinationId] = useState<string>('');
+
   const navigate = useNavigate();
 
   const query = useQuery();
@@ -74,6 +115,7 @@ const HotelLists = () => {
         if (!syncRes.ok) throw new Error("Sync failed");
         const syncData = await syncRes.json();
         const destinationId = syncData.destinationId;
+        setDestinationId(destinationId); // store for later use in filter hotel fetch
         console.log("Synced hotels:", syncData);
         console.log(destinationId);
 
@@ -131,50 +173,53 @@ const HotelLists = () => {
         const filteredDbData = dbData.filter((hotel: any) => priceMap.has(hotel.id));
         console.log("Filtered DB Data IDs:", filteredDbData.map((h: any) => h.id));
 
-        // Step 6: Map hotel data with better image logic
-        const mapped = filteredDbData.map((hotel: any) => {
-          let images: string[] = [];
-
-          if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
-            const maxImages = Math.min(hotel.image_count, 5);
-            for (let i = 0; i < maxImages; i++) {
-              const imageUrl =
-                hotel.img_baseurl + i.toString() + hotel.img_suffix;
-              if (i == hotel.default_img_index) {
-                console.log(
-                  `Generated default image URL for ${hotel.name} : ${imageUrl}`
-                );
-                images.unshift(imageUrl);
-              } else {
-                console.log(
-                  `Generated non-default image URL for ${hotel.name} : ${imageUrl}`
-                );
-                images.push(imageUrl);
-              }
-
-            }
-          }
-
-          if (images.length === 0) {
-
-            console.log(`No images found for ${hotel.name}, using fallback`);
-            images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
-
-          }
-
-          return {
-            id: hotel.id,
-            name: hotel.name,
-            address: hotel.address,
-            images,
-            rating: hotel.rating || 0,
-            amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
-            //price: Math.floor(Math.random() * 1000) + 100,
-            price: priceMap.get(hotel.id) || 0, // fallback if no price
-          };
-        });
-
+        const mapped = mapHotelsWithPricesAndImages(filteredDbData, priceData);
         setHotels(mapped);
+
+        // Step 6: Map hotel data with better image logic
+        // const mapped = filteredDbData.map((hotel: any) => {
+        //   let images: string[] = [];
+
+        //   if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
+        //     const maxImages = Math.min(hotel.image_count, 5);
+        //     for (let i = 0; i < maxImages; i++) {
+        //       const imageUrl =
+        //         hotel.img_baseurl + i.toString() + hotel.img_suffix;
+        //       if (i == hotel.default_img_index) {
+        //         console.log(
+        //           `Generated default image URL for ${hotel.name} : ${imageUrl}`
+        //         );
+        //         images.unshift(imageUrl);
+        //       } else {
+        //         console.log(
+        //           `Generated non-default image URL for ${hotel.name} : ${imageUrl}`
+        //         );
+        //         images.push(imageUrl);
+        //       }
+
+        //     }
+        //   }
+
+        //   if (images.length === 0) {
+
+        //     console.log(`No images found for ${hotel.name}, using fallback`);
+        //     images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
+
+        //   }
+
+        //   return {
+        //     id: hotel.id,
+        //     name: hotel.name,
+        //     address: hotel.address,
+        //     images,
+        //     rating: hotel.rating || 0,
+        //     amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
+        //     //price: Math.floor(Math.random() * 1000) + 100,
+        //     price: priceMap.get(hotel.id) || 0, // fallback if no price
+        //   };
+        // });
+
+        //setHotels(mapped);
       } catch (err) {
         console.error("Failed to sync or fetch hotels:", err);
         setHotels([]); // clear hotels if an error occurs
@@ -207,112 +252,121 @@ const HotelLists = () => {
   }
 
   // filter section
-  const [filters, setFilters] = useState<FiltersType>({
+  type FiltersType = {
+    starRatings: string[];
+    guestRatings: string[];
+    priceRanges: string[];
+  };
+
+  const [rawFilters, setRawFilters] = useState<FiltersType>({
     starRatings: [],
     guestRatings: [],
     priceRanges: [],
   });
 
-  type FiltersType = {
-    starRatings: number[];
-    guestRatings: number[];
-    priceRanges: string[];
+  // // this handles string arrays from HotelListFilter and converts
+  // const handleFilterChange = (updatedFilters: {
+  //   starRatings: string[];
+  //   guestRatings: string[];
+  //   priceRanges: string[];
+  // }) => {
+  //   setFilters({
+  //     starRatings: updatedFilters.starRatings
+  //       .map(Number)
+  //       .filter((n) => !isNaN(n)),
+  //     guestRatings: updatedFilters.guestRatings
+  //       .map(Number)
+  //       .filter((n) => !isNaN(n)),
+  //     priceRanges: updatedFilters.priceRanges,
+  //   });
+  //   setCurrentPage(1);
+  // };
+
+  const handleFilterChange = async () => {
+    if (!destinationId) return;
+    try {
+      const queryParams = new URLSearchParams();
+
+      // Always include city parameter for filtering
+      queryParams.append("city", city);
+      if (state) queryParams.append("state", state);
+
+      if (rawFilters.starRatings.length > 0) {
+        queryParams.append("rawStarRatings", rawFilters.starRatings.map(Number).join(","));
+      }
+
+      if (rawFilters.guestRatings.length > 0) {
+        queryParams.append("rawGuestRatings", rawFilters.guestRatings.join(","));
+      }
+
+      if (rawFilters.priceRanges.length > 0) {
+        queryParams.append("rawPriceRanges", rawFilters.priceRanges.join(","));
+      }
+
+      const dbRes = await fetch(
+        `http://localhost:3000/hotels/getFilteredHotels?${queryParams.toString()}`
+      );
+
+      if (!dbRes.ok) throw new Error("DB fetch failed");
+      const dbData = await dbRes.json();
+      console.log("Hotels fetched from DB:", dbData);
+
+      const priceParams = new URLSearchParams({
+        city: city,
+        state: state,
+        destination_id: destinationId,
+        checkin,
+        checkout,
+        guests: (guests as string).trim(),
+        rooms: '1',
+        lang: 'en_US',
+        currency: 'SGD',
+        partner_id: '1089',
+        landing_page: 'wl-acme-earn',
+        product_type: 'earn',
+      });
+      console.log("Final price URL HotelLists:", `/api/hotels/prices?${priceParams.toString()}`);
+      const priceRes = await fetch(`http://localhost:3000/api/hotels/prices?${priceParams}`);
+      if (!priceRes.ok) throw new Error("Failed to fetch prices");
+      const priceData = await priceRes.json(); // assumed to be [{ hotel_id: "...", price: 123 }, ...]
+      console.log("Fetched prices:", priceData);
+
+      // Step 4: Map prices by hotel id
+      const priceMap = new Map<string, number>();
+      for (const hotel of priceData || []) {
+        //console.log(hotel.id, hotel.lowest_converted_price);
+        priceMap.set(hotel.id, hotel.lowest_converted_price);
+      }
+      console.log(priceMap);
+
+      //const data = await response.json();
+
+      // Apply the same image mapping logic as the initial fetch
+      const filteredDbData = dbData.filter((hotel: any) => priceMap.has(hotel.id));
+      console.log("Filtered DB Data IDs:", filteredDbData.map((h: any) => h.id));
+
+      // Step 6: Map hotel data with better image logic
+      const mapped = mapHotelsWithPricesAndImages(filteredDbData, priceData);
+      setHotels(mapped);
+
+    } catch (err) {
+      console.error("Failed to fetch filtered hotels:", err);
+    }
   };
 
-  // this handles string arrays from HotelListFilter and converts
-  const handleFilterChange = (updatedFilters: {
-    starRatings: string[];
-    guestRatings: string[];
-    priceRanges: string[];
-  }) => {
-    setFilters({
-      starRatings: updatedFilters.starRatings
-        .map(Number)
-        .filter((n) => !isNaN(n)),
-      guestRatings: updatedFilters.guestRatings
-        .map(Number)
-        .filter((n) => !isNaN(n)),
-      priceRanges: updatedFilters.priceRanges,
+  useEffect(() => {
+    handleFilterChange();
+  }, [rawFilters, city, state]);
+
+  const resetFilters = () => {
+    setRawFilters({
+      starRatings: [],
+      guestRatings: [],
+      priceRanges: [],
     });
     setCurrentPage(1);
   };
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const queryParams = new URLSearchParams();
-
-        // Always include city parameter for filtering
-        queryParams.append("city", city);
-        if (state) queryParams.append("state", state);
-
-        if (filters.starRatings.length > 0) {
-          queryParams.append("rawStarRatings", filters.starRatings.join(","));
-        }
-
-        if (filters.guestRatings.length > 0) {
-          queryParams.append("rawGuestRatings", filters.guestRatings.join(","));
-        }
-
-        if (filters.priceRanges.length > 0) {
-          queryParams.append("rawPriceRanges", filters.priceRanges.join(","));
-        }
-
-        const response = await fetch(
-          `http://localhost:3000/hotels/getFilteredHotels?${queryParams.toString()}`
-        );
-
-        const data = await response.json();
-
-        // Apply the same image mapping logic as the initial fetch
-        const mapped = data.map((hotel: any) => {
-          let images: string[] = [];
-          // console.log(`${hotel.name} has ${hotel.image_count} images`);
-
-          if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
-            const maxImages = Math.min(hotel.image_count, 5);
-            for (let i = 0; i < maxImages; i++) {
-              const imageUrl =
-                hotel.img_baseurl + i.toString() + hotel.img_suffix;
-              if (i == hotel.default_img_index) {
-                console.log(
-                  `Generated default image URL for ${hotel.name} : ${imageUrl}`
-                );
-                images.unshift(imageUrl);
-              } else {
-                console.log(
-                  `Generated non-default image URL for ${hotel.name} : ${imageUrl}`
-                );
-                images.push(imageUrl);
-              }
-            }
-          }
-
-          if (images.length === 0) {
-            console.log(`No images found for ${hotel.name}, using fallback`);
-            images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
-          }
-
-          return {
-            id: parseInt(hotel.id),
-            name: hotel.name,
-            address: hotel.address,
-            images,
-            rating: hotel.rating || 0,
-            amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
-            price: Math.floor(Math.random() * 1000) + 100,
-            // schemes: ["hi", "sayang", "ily!"],
-          };
-        });
-
-        setHotels(mapped);
-      } catch (err) {
-        console.error("Failed to fetch filtered hotels:", err);
-      }
-    };
-
-    fetchHotels();
-  }, [filters, city, state]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -368,10 +422,13 @@ const HotelLists = () => {
         <Row>
           <Col xl={4} xxl={3}>
             <div className="d-none d-xl-block">
-              <HotelListFilter onFilterChange={handleFilterChange} />
+              <HotelListFilter filters={rawFilters} setFilters={setRawFilters} />
               <div className="d-flex justify-content-between p-2 p-xl-0 mt-xl-4">
-                <button className="btn btn-link p-0 mb-0">Clear all</button>
-                <button className="btn btn-primary mb-0">Filter Result</button>
+                <button className="btn btn-link p-0 mb-0" onClick={resetFilters}>Clear all</button>
+                <button className="btn btn-primary mb-0" onClick={() => {
+                  handleFilterChange();
+                  //toggle();
+                }}>Filter Result</button>
               </div>
             </div>
             <Offcanvas
@@ -389,11 +446,14 @@ const HotelLists = () => {
                 </h5>
               </OffcanvasHeader>
               <OffcanvasBody className="offcanvas-body flex-column p-3 p-xl-0">
-                <HotelListFilter onFilterChange={handleFilterChange} />
+                <HotelListFilter filters={rawFilters} setFilters={setRawFilters} />
               </OffcanvasBody>
               <div className="d-flex justify-content-between p-2 p-xl-0 mt-xl-4">
-                <button className="btn btn-link p-0 mb-0">Clear all</button>
-                <button className="btn btn-primary mb-0">Filter Result</button>
+                <button className="btn btn-link p-0 mb-0" onClick={resetFilters}>Clear all</button>
+                <button className="btn btn-primary mb-0" onClick={() => {
+                  handleFilterChange();
+                  //toggle();
+                }}>Filter Result</button>
               </div>
             </Offcanvas>
           </Col>

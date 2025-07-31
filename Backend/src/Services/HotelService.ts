@@ -107,9 +107,9 @@ export async function storeHotels(hotelsData: any[]) {
   console.log(`Attempting to store ${hotelsData.length} hotels`);
 
   for (const data of hotelsData) {
-    console.log(data.original_metadata?.city);
-    console.log(data.original_metadata?.state);
-    console.log(data.original_metadata?.country);
+    //console.log(data.original_metadata?.city);
+    //console.log(data.original_metadata?.state);
+    //console.log(data.original_metadata?.country);
     const hotel: Hotel = {
       id: data.id,
       name: data.name,

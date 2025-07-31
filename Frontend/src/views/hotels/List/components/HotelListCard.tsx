@@ -38,6 +38,10 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
   // const { address, amenities, images, name, price, rating, sale, schemes } = hotel;
   const { address, amenities, images, name, price, rating } = hotel;
 
+  console.log("Rendering hotel rating:", hotel.name, rating );
+  const numericRating = Number(rating);
+
+
   const { dir } = useLayoutContext();
   const normalizedAmenities = Array.isArray(amenities)
     ? amenities
@@ -65,17 +69,6 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
     <Card className="shadow p-2" key={name}>
       <Row className="g-0">
         <Col md={5} className="position-relative">
-          {/* <div
-            className="tiny-slider arrow-round arrow-xs arrow-dark overflow-hidden rounded-2"
-            >
-            <TinySlider settings={listSliderSettings}>
-            {images.map((image, idx) => (
-              <div key={idx}>
-              <Image src={image} alt="Card image" />
-              </div>
-              ))}
-              </TinySlider>
-              </div> */}
 
           <div
             style={{ height: "250px" }}
@@ -113,7 +106,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
               {/* Star rating */}
               <ul className="list-inline mb-1">
                 {/* Full stars */}
-                {Array.from(new Array(Math.floor(rating))).map((_star, idx) => (
+                {Array.from(new Array(Math.floor(numericRating))).map((_star, idx) => (
                   <li key={idx} className="list-inline-item me-1 small">
                     <FaStar
                       size={15}
@@ -123,7 +116,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   </li>
                 ))}
                 {/* Half star */}
-                {!Number.isInteger(rating) && (
+                {!Number.isInteger(numericRating) && (
                   <li className="list-inline-item me-1 small">
                     <FaStarHalfAlt
                       size={15}
@@ -133,8 +126,8 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   </li>
                 )}
                 {/* Empty stars */}
-                {rating < 5 &&
-                  Array.from(new Array(5 - Math.ceil(rating))).map(
+                {numericRating < 5 &&
+                  Array.from(new Array(5 - Math.ceil(numericRating))).map(
                     (_val, idx) => (
                       <li key={idx} className="list-inline-item me-1 small">
                         <FaStar size={15} data-testid="star-icon" />
@@ -158,36 +151,13 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
               ))}
             </ul>
 
-            {/* <ul className="list-group list-group-borderless small mb-0 mt-2">
-              {schemes ? (
-                <Fragment>
-                  {schemes.map((scheme, idx) => {
-                    return (
-                      <li
-                        key={idx}
-                        className="list-group-item d-flex text-success p-0 items-center"
-                      >
-                        <BsPatchCheckFill className="me-2" />
-                        {scheme}
-                      </li>
-                    );
-                  })}
-                </Fragment>
-              ) : (
-                <li className="list-group-item d-flex text-danger p-0 items-center">
-                  <BsPatchCheckFill className="me-2" />
-                  Non Refundable
-                </li>
-              )}
-            </ul> */}
-
             <div className="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
               <div className="d-flex align-items-center">
                 <h5 className="fw-bold mb-0 me-1">
                   {currency}
                   {price}
                 </h5>
-                <span className="mb-0 me-2">/day</span>
+                {/* <span className="mb-0 me-2">/day</span> */}
               </div>
               <div className="mt-3 mt-sm-0">
                 <Button variant="dark" size="sm" className="mb-0 w-100">

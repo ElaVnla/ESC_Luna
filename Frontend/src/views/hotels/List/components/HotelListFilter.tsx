@@ -7,36 +7,59 @@ import { FaAngleDown } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 
 // temporary, will move to proper file later
+// type HotelListFilterProps = {
+//   onFilterChange: (filters: {
+//     priceRanges: string[];
+//     guestRatings: string[];
+//     starRatings: string[];
+//   }) => void;
+// };
+
 type HotelListFilterProps = {
-  onFilterChange: (filters: {
-    priceRanges: string[];
-    guestRatings: string[];
+  filters: {
     starRatings: string[];
+    guestRatings: string[];
+    priceRanges: string[];
+  };
+  setFilters: (filters: {
+    starRatings: string[];
+    guestRatings: string[];
+    priceRanges: string[];
   }) => void;
 };
 
 
-const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => {
+const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
+  const handleCheckboxChange = (
+    id: string,
+    list: string[],
+    key: keyof typeof filters
+  ) => {
+    const updatedList = list.includes(id)
+      ? list.filter((item) => item !== id)
+      : [...list, id];
+    setFilters({ ...filters, [key]: updatedList });
+  };
   //const { isOpen: hotelTypeIsOpen, toggle: hotelTypeToggle } = useToggle()
   //const { isOpen: hotelAmenitiesIsOpen, toggle: hotelAmenitiesToggle } = useToggle()
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
-  const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
-  const [selectedStars, setSelectedStars] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<string[]>([]); // guest rating
+  const [selectedStars, setSelectedStars] = useState<string[]>([]); // star rating
 
-  const handleCheckboxChange = (id: string, list: string[], setter: (val: string[]) => void) => {
-    const updated = list.includes(id)
-      ? list.filter(item => item !== id)
-      : [...list, id];
-    setter(updated);
-  };
+  // const handleCheckboxChange = (id: string, list: string[], setter: (val: string[]) => void) => {
+  //   const updated = list.includes(id)
+  //     ? list.filter(item => item !== id)
+  //     : [...list, id];
+  //   setter(updated);
+  // };
 
-  const handleApplyFilters = () => {
-    onFilterChange({
-      priceRanges: selectedPriceRanges,
-      guestRatings: selectedRatings,
-      starRatings: selectedStars,
-    });
-  };
+  // const handleApplyFilters = () => {
+  //   onFilterChange({
+  //     priceRanges: selectedPriceRanges,
+  //     guestRatings: selectedRatings,
+  //     starRatings: selectedStars,
+  //   });
+  // };
 
   return (
     <form className="rounded-3 shadow">
@@ -122,7 +145,7 @@ const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => 
       </Card>*/}
       <hr className="my-0" />
       <div className="card card-body rounded-0 p-4">
-        <h6 className="mb-2">Star Rating</h6>
+        <h6 className="mb-2">Star Ratings</h6>
         <ul className="list-inline mb-0 g-3">
           {['1', '2', '3', '4', '5'].map(star => (
             <li className="list-inline-item mb-0" key={star}>
@@ -131,7 +154,7 @@ const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => 
                 className="btn-check"
                 id={`star-${star}`}
                 checked={selectedStars.includes(star)}
-                onChange={() => handleCheckboxChange(star, selectedStars, setSelectedStars)}
+                onChange={() => handleCheckboxChange(star, selectedStars, "starRatings")}
               />
               <label
                 className="btn btn-sm btn-light btn-primary-soft-check items-center"
@@ -187,7 +210,7 @@ const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => 
                 className="btn-check"
                 id={`guestRating-${rating}`}
                 checked={selectedRatings.includes(rating)}
-                onChange={() => handleCheckboxChange(rating, selectedRatings, setSelectedRatings)}
+                onChange={() => handleCheckboxChange(rating, selectedRatings, "guestRatings")}
               />
               <label
                 className="btn btn-sm btn-light btn-primary-soft-check"
@@ -243,7 +266,7 @@ const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => 
                 type="checkbox"
                 id={`priceRange${id}`}
                 checked={selectedPriceRanges.includes(id)}
-                onChange={() => handleCheckboxChange(id, selectedPriceRanges, setSelectedPriceRanges)}
+                onChange={() => handleCheckboxChange(id, selectedPriceRanges, "priceRanges")}
               />
               <label className="form-check-label" htmlFor={`priceRange${id}`}>
                 {label}
@@ -282,6 +305,10 @@ const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => 
           </div> */}
         </div>
       </div>
+      {/* <div className="d-flex justify-content-between p-2 p-xl-0 mt-xl-4">
+        <button className="btn btn-link p-0 mb-0">Clear all</button>
+        <button className="btn btn-primary mb-0">Filter Result</button>
+      </div> */}
       {/* <hr className="my-0" /> */}
       {/* <div className="card card-body rounded-0 p-4">
         <h6 className="mb-2">Popular Type</h6>
@@ -388,6 +415,7 @@ const HotelListFilter: React.FC<HotelListFilterProps> = ({ onFilterChange }) => 
         </div>
       </div> */}
     </form>
+    
   )
 }
 

@@ -12,7 +12,7 @@ const Hero = () => {
         >
           <Row className="row my-2 my-xl-5">
             <Col md={8} className="mx-auto">
-              <h1 className="text-center text-white">Hotels in Singapore</h1>
+              <h1 className="text-center text-white">Search for hotels now!</h1>
             </Col>
           </Row>
           <AvailabilityFilter />
