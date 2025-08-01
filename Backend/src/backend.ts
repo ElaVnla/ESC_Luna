@@ -54,7 +54,7 @@ app.use('/fortesting', ForTestingRouter);
 app.use('/otp', OTPRouter);
 app.use('/test-email', TestEmailRouter);
 app.use('/email', OTPRouter);
-app.use('/guest', GuestRouter)
+app.use('/guests', GuestRouter)
 
 
 // Setup "/" route to serve the index.html file
