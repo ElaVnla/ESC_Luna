@@ -114,7 +114,8 @@ export async function storeHotels(hotelsData: any[]) {
       id: data.id,
       name: data.name,
       address: data.address,
-      rating: data.rating,
+      star_rating: data.rating,
+      guest_rating: data.trustyou?.score?.kaligo_overall,
       latitude: data.latitude,
       longitude: data.longitude,
       phone_number: "null",
@@ -172,13 +173,24 @@ export async function getFilteredHotels(filters: any) {
     qb.andWhere("hotel.city = :city", { city: filters.city });
   }
 
-  if (filters.rating && Array.isArray(filters.rating)) {
-    qb.andWhere("hotel.rating IN (:...ratings)", { ratings: filters.rating });
+  if (filters.star_rating && Array.isArray(filters.star_rating)) {
+    qb.andWhere("hotel.star_rating IN (:...ratings)", { ratings: filters.star_rating });
   }
 
-  if (filters.guestRating && Array.isArray(filters.guestRating)) {
-    qb.andWhere("hotel.guestRating IN (:...guestRatings)", { guestRatings: filters.guestRating });
+  if (filters.guest_rating_min !== undefined && filters.guest_rating_max !== undefined) {
+    qb.andWhere(
+      "hotel.guest_rating BETWEEN :minGuest AND :maxGuest",
+      {
+        minGuest: filters.guest_rating_min,
+        maxGuest: filters.guest_rating_max,
+      }
+    );
   }
+
+  // if (filters.guest_rating && Array.isArray(filters.guest_rating)) {
+  //   //qb.andWhere("hotel.guest_rating IN (:...guestRatings)", { guestRatings: filters.guest_rating });
+  //   qb.andWhere("hotel.guest_rating >= :minGuestRating", { guestRatings: filters.guest_rating });
+  // }
 
   if (filters.priceRanges && Array.isArray(filters.priceRanges)) {
     const rangeConditions = filters.priceRanges.map((range: { min: number; max: number }, index: number) => {
@@ -192,6 +204,10 @@ export async function getFilteredHotels(filters: any) {
         [`max${index}`, range.max],
       ])
     );
+
+    console.log(filters.star_rating);
+    console.log(filters.guest_rating);
+    console.log(filters.priceRanges);
 
     // const rangeParams = Object.fromEntries(
     //   filters.priceRanges.flatMap((range: string, index: number) => {

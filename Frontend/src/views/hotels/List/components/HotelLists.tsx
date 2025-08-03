@@ -23,16 +23,18 @@ import { HotelsListType } from "../data";
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+// TODO: DONE make checkin, checkout and guests responsive (search button refreshes when checkincheckout/guests change)
+// TODO: make "select room" lead to feature 3
+// TODO: DONE filter function (stars and price done, left w guest ratings)
+// TODO: DONE change hotellistcard display (made amenities nicer)
+// TODO: DONE change hotellistcard display "/day" "total"
+// TODO: DONE sort hotels by price & ratings, add sort by price/rating option? show rating first
+// TODO: map....
+
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
 
-// TODO: make checkin, checkout and guests responsive (search button refreshes when checkincheckout/guests change)
-// TODO: make "select room" lead to feature 3
-// TODO: filter function (stars and price done, left w guest ratings)
-// TODO: change hotellistcard display (remove amenities, add distance from destination)
-// TODO: change hotellistcard display "/day" "total price"
-// TODO: sort hotels by price & ratings, add sort by price/rating option? show rating first
 function mapHotelsWithPricesAndImages(hotels: any[], priceData: any[]): any[] {
   const priceMap = new Map<string, number>();
   for (const hotel of priceData || []) {
@@ -65,7 +67,8 @@ function mapHotelsWithPricesAndImages(hotels: any[], priceData: any[]): any[] {
       name: hotel.name,
       address: hotel.address,
       images,
-      rating: hotel.rating || 0,
+      star_rating: hotel.star_rating || 0,
+      guest_rating: hotel.guest_rating || 0,
       amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
       price: priceMap.get(hotel.id) || 0,
     };
@@ -79,6 +82,10 @@ const HotelLists = () => {
   const [hotels, setHotels] = useState<HotelsListType[]>([]);
   const [loading, setLoading] = useState(true);
   const [destinationId, setDestinationId] = useState<string>('');
+
+  const [sortBy, setSortBy] = useState<"price" | "rating" | "">("rating");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
 
   const navigate = useNavigate();
 
@@ -176,50 +183,6 @@ const HotelLists = () => {
         const mapped = mapHotelsWithPricesAndImages(filteredDbData, priceData);
         setHotels(mapped);
 
-        // Step 6: Map hotel data with better image logic
-        // const mapped = filteredDbData.map((hotel: any) => {
-        //   let images: string[] = [];
-
-        //   if (hotel.img_baseurl && hotel.img_suffix && hotel.image_count > 0) {
-        //     const maxImages = Math.min(hotel.image_count, 5);
-        //     for (let i = 0; i < maxImages; i++) {
-        //       const imageUrl =
-        //         hotel.img_baseurl + i.toString() + hotel.img_suffix;
-        //       if (i == hotel.default_img_index) {
-        //         console.log(
-        //           `Generated default image URL for ${hotel.name} : ${imageUrl}`
-        //         );
-        //         images.unshift(imageUrl);
-        //       } else {
-        //         console.log(
-        //           `Generated non-default image URL for ${hotel.name} : ${imageUrl}`
-        //         );
-        //         images.push(imageUrl);
-        //       }
-
-        //     }
-        //   }
-
-        //   if (images.length === 0) {
-
-        //     console.log(`No images found for ${hotel.name}, using fallback`);
-        //     images = [`https://placehold.co/800x520/jpeg?text=No+Image`];
-
-        //   }
-
-        //   return {
-        //     id: hotel.id,
-        //     name: hotel.name,
-        //     address: hotel.address,
-        //     images,
-        //     rating: hotel.rating || 0,
-        //     amenities: hotel.amenities ? JSON.parse(hotel.amenities) : [],
-        //     //price: Math.floor(Math.random() * 1000) + 100,
-        //     price: priceMap.get(hotel.id) || 0, // fallback if no price
-        //   };
-        // });
-
-        //setHotels(mapped);
       } catch (err) {
         console.error("Failed to sync or fetch hotels:", err);
         setHotels([]); // clear hotels if an error occurs
@@ -229,8 +192,15 @@ const HotelLists = () => {
     };
 
     syncAndFetchHotels();
-  }, [city, state]);
-  
+  }, [city, state, guests, checkin, checkout]);
+
+  // Sorting section
+  const handleSortChange = (type: "price" | "rating", order: "asc" | "desc") => {
+    setSortBy(type);
+    setSortOrder(order);
+  };
+
+  // Pagination section
   const hotelListRef = useRef<HTMLDivElement | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -239,9 +209,40 @@ const HotelLists = () => {
   const totalPages = Math.ceil(hotels.length / hotelsPerPage);
   const startIndex = (currentPage - 1) * hotelsPerPage;
   const endIndex = startIndex + hotelsPerPage;
-  const currentHotels = hotels.slice(startIndex, endIndex);
 
-  // For pagination numbers
+  // const sortedHotels = [...hotels];
+  // if (sortBy === "price") {
+  //   sortedHotels.sort((a, b) =>
+  //     sortOrder === "asc" ? a.price - b.price : b.price - a.price
+  //   );
+  // } else if (sortBy === "rating") {
+  //   sortedHotels.sort((a, b) =>
+  //     sortOrder === "asc" ? a.star_rating - b.star_rating : b.star_rating - a.star_rating
+  //   );
+  // }
+  // split hotels sorting in primary (sort option) and secondary (guest rating high to low)
+  const sortedHotels = [...hotels].sort((a, b) => {
+    let primary = 0;
+
+    if (sortBy === "rating") {
+      primary = sortOrder === "asc"
+        ? a.star_rating - b.star_rating
+        : b.star_rating - a.star_rating;
+    } else if (sortBy === "price") {
+      primary = sortOrder === "asc"
+        ? a.price - b.price
+        : b.price - a.price;
+    } else {
+      primary = b.guest_rating - a.guest_rating;
+    }
+
+    if (primary !== 0) return primary;
+
+    return b.guest_rating - a.guest_rating;
+  });
+
+  const currentHotels = sortedHotels.slice(startIndex, endIndex);
+
   const visiblePages = 5;
   const startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
   const endPage = Math.min(totalPages, startPage + visiblePages - 1);
@@ -251,36 +252,20 @@ const HotelLists = () => {
     pageNumbers.push(i);
   }
 
-  // filter section
+  // Filter section
   type FiltersType = {
     starRatings: string[];
     guestRatings: string[];
+    guestRatingRange: [number, number];
     priceRanges: string[];
   };
 
   const [rawFilters, setRawFilters] = useState<FiltersType>({
     starRatings: [],
     guestRatings: [],
+    guestRatingRange: [1, 5] as [number, number],
     priceRanges: [],
   });
-
-  // // this handles string arrays from HotelListFilter and converts
-  // const handleFilterChange = (updatedFilters: {
-  //   starRatings: string[];
-  //   guestRatings: string[];
-  //   priceRanges: string[];
-  // }) => {
-  //   setFilters({
-  //     starRatings: updatedFilters.starRatings
-  //       .map(Number)
-  //       .filter((n) => !isNaN(n)),
-  //     guestRatings: updatedFilters.guestRatings
-  //       .map(Number)
-  //       .filter((n) => !isNaN(n)),
-  //     priceRanges: updatedFilters.priceRanges,
-  //   });
-  //   setCurrentPage(1);
-  // };
 
   const handleFilterChange = async () => {
     if (!destinationId) return;
@@ -298,6 +283,17 @@ const HotelLists = () => {
 
       if (rawFilters.guestRatings.length > 0) {
         queryParams.append("rawGuestRatings", rawFilters.guestRatings.join(","));
+      }
+
+      if (rawFilters.guestRatingRange) {
+        queryParams.append(
+          "guestRatingMin",
+          rawFilters.guestRatingRange[0].toString()
+        );
+        queryParams.append(
+          "guestRatingMax",
+          rawFilters.guestRatingRange[1].toString()
+        );
       }
 
       if (rawFilters.priceRanges.length > 0) {
@@ -357,16 +353,21 @@ const HotelLists = () => {
 
   useEffect(() => {
     handleFilterChange();
-  }, [city, state]);
+  }, [city, state, guests, checkin, checkout]);
 
   const resetFilters = () => {
     setRawFilters({
       starRatings: [],
       guestRatings: [],
+      guestRatingRange: [0, 5],
       priceRanges: [],
     });
     setCurrentPage(1);
   };
+
+  useEffect(() => {
+    resetFilters();
+  }, [city, state, guests, checkin, checkout]);
 
 
   useEffect(() => {
@@ -376,6 +377,10 @@ const HotelLists = () => {
     newParams.set("page", "1");
     navigate(`${location.pathname}?${newParams.toString()}`);
   }, [hotels]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortBy, sortOrder]);
 
 
   return (
@@ -453,13 +458,28 @@ const HotelLists = () => {
                 <button className="btn btn-link p-0 mb-0" onClick={resetFilters}>Clear all</button>
                 <button className="btn btn-primary mb-0" onClick={() => {
                   handleFilterChange();
-                  //toggle();
                 }}>Filter Result</button>
               </div>
             </Offcanvas>
           </Col>
           <Col xl={8} xxl={9}>
-
+          <div className="mb-3 d-flex gap-2 align-items-center">
+            <label htmlFor="sort-by" className="fw-semibold mb-0">Sort by:</label>
+            <select
+              id="sort-by"
+              className="form-select w-auto"
+              value={`${sortBy}-${sortOrder}`}
+              onChange={(e) => {
+                const [type, order] = e.target.value.split("-");
+                handleSortChange(type as "price" | "rating", order as "asc" | "desc");
+              }}
+            >
+              <option value="rating-desc">Star Rating (High to Low)</option>
+              <option value="rating-asc">Star Rating (Low to High)</option>
+              <option value="price-desc">Price (High to Low)</option>
+              <option value="price-asc">Price (Low to High)</option>
+            </select>
+          </div>
             <div className="vstack gap-4" ref={hotelListRef}>
               {loading ? (
                 <div className="text-center py-5">Loading hotels...</div>

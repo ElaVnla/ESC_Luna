@@ -39,7 +39,7 @@ describe("HotelListCard", () => {
     expect(screen.getByText("Test Hotel")).toBeInTheDocument();
     expect(screen.getByText("123 Test Street, Test City")).toBeInTheDocument();
     expect(screen.getByText("$150")).toBeInTheDocument();
-    //expect(screen.getByText("/day")).toBeInTheDocument();
+    expect(screen.getByText("total")).toBeInTheDocument();
   });
 
   it("displays sale badge when sale is present", () => {

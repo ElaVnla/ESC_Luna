@@ -37,7 +37,6 @@ router.get("/getHotelsByCity", async (req, res) => {
       state = parts[1];
     }
 
-    // Now call your service function with these parameters
     const hotels = await getHotelsByCity(city);
     //const hotels = await getHotelsByCity(cityParam);
 
@@ -50,8 +49,8 @@ router.get("/getHotelsByCity", async (req, res) => {
 
 router.get("/getFilteredHotels", async (req, res) => {
   try {
-    const { rawStarRatings, rawGuestRatings, rawPriceRanges } = req.query;
-    console.log(rawStarRatings, rawGuestRatings, rawPriceRanges);
+    const { rawStarRatings, guestRatingMin, guestRatingMax, rawPriceRanges } = req.query;
+    console.log(rawStarRatings, guestRatingMin, guestRatingMax, rawPriceRanges);
     const filters: any = {};
     let priceRanges: string[] = [];
 
@@ -61,17 +60,23 @@ router.get("/getFilteredHotels", async (req, res) => {
         .split(",")
         .map(s => Number(s.trim()))
         .filter(n => !isNaN(n));
-      if (stars.length > 0) filters.rating = stars;
+      if (stars.length > 0) filters.star_rating = stars;
     }
 
     // Guest Ratings
-    if (typeof rawGuestRatings === "string") {
-      const guests = rawGuestRatings
-        .split(",")
-        .map(s => Number(s.trim()))
-        .filter(n => !isNaN(n));
-      if (guests.length > 0) filters.guestRating = guests;
+    if (guestRatingMin && guestRatingMax) {
+      filters.guest_rating_min = Number(guestRatingMin);
+      filters.guest_rating_max = Number(guestRatingMax);
     }
+    // if (typeof rawGuestRatings === "string") {
+    //   const guests = rawGuestRatings
+    //     .split(",")
+    //     .map(s => Number(s.trim()))
+    //     .filter(n => !isNaN(n));
+    //   //if (guests.length > 0) filters.guest_rating = guests;
+    //   const minGuest = Math.min(...guests);
+    //   filters.guest_rating = minGuest;
+    // }
 
     // Price Ranges
     console.log(typeof(rawPriceRanges));
