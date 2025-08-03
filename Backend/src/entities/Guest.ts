@@ -5,7 +5,7 @@ export class Guest {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: "varchar", length: 100 })
+  @Column({ type: "varchar", length: 200 })
   booking_id!: string;
 
   @Column({ type: "enum", enum: ["adult", "child"] })
@@ -14,10 +14,10 @@ export class Guest {
   @Column({ type: "varchar", length: 10 })
   salutation!: string;
 
-  @Column({ type: "varchar", length: 50 })
+  @Column({ type: "varchar", length: 100 })
   first_name!: string;
 
-  @Column({ type: "varchar", length: 50 })
+  @Column({ type: "varchar", length: 100 })
   last_name!: string;
 
   @Column({ type: "varchar", length: 20 })
@@ -26,6 +26,6 @@ export class Guest {
   @Column({ type: "varchar", length: 100 })
   email!: string;
 
-  @Column({ type: "varchar", length: 50 })
+  @Column({ type: "varchar", length: 100 })
   country!: string;
 }

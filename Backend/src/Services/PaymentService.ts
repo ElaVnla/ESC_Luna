@@ -6,11 +6,22 @@ export async function createPayment(payment: PaymentModel) {
 
   await db.query(
     `INSERT INTO payments (
-      booking_id, payment_reference, masked_card_number
-    ) VALUES (?, ?, ?)`,
-    [payment.booking_id, payment.payment_reference, payment.masked_card_number]
+      booking_id,
+      payment_reference,
+      encrypted_card_number,
+      encrypted_expiry,
+      encrypted_cardholder_name
+    ) VALUES (?, ?, ?, ?, ?)`,
+    [
+      payment.booking_id,
+      payment.payment_reference,
+      payment.encrypted_card_number,
+      payment.encrypted_expiry,
+      payment.encrypted_cardholder_name
+    ]
   );
 }
+
 
 // Optional: Fetch payments for a specific booking
 export async function getPaymentsByBookingId(booking_id: string): Promise<PaymentModel[]> {

@@ -5,13 +5,13 @@ export class Booking {
     @PrimaryColumn()
     id!: string;
 
-    @Column({ length: 10 })
+    @Column({ length: 100 })
     destination_id!: string;
 
-    @Column({ length: 10 })
+    @Column({ length: 100 })
     hotel_id!: string;
 
-    @Column({ length: 20 })
+    @Column({ length: 200 })
     room_id!: string;
 
     @Column({ type: "date" })

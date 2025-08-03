@@ -54,12 +54,18 @@ export async function createBooking(
   // 3. Insert payment
   await db.query(
     `INSERT INTO payments (
-      booking_id, payment_reference, masked_card_number
-    ) VALUES (?, ?, ?)`,
+      booking_id,
+      payment_reference,
+      encrypted_card_number,
+      encrypted_expiry,
+      encrypted_cardholder_name
+    ) VALUES (?, ?, ?, ?, ?)`,
     [
       booking.id,
       payment.payment_reference,
-      payment.masked_card_number
+      payment.encrypted_card_number,
+      payment.encrypted_expiry,
+      payment.encrypted_cardholder_name
     ]
   );
 

@@ -1,5 +1,5 @@
 import { HotelData } from '@/models/HotelDetailsApi'
-import { RoomData } from '@/models/RoomDetailsApi'
+import { RoomData, Rooms } from '@/models/RoomDetailsApi'
 import { type Control } from 'react-hook-form'
 
 export type StepProps = {
@@ -7,16 +7,16 @@ export type StepProps = {
 };
 
 export type HotelRoomProps = {
-  hotelData: any;
-  roomData: any;  
+  hotelData: HotelData;
+  roomData: Rooms;  
 };
 
 export type hotelProps = {
-  hotelData: any;
+  hotelData: HotelData;
 }
 
 export type roomProps = {
-  roomData: any;
+  roomData: Rooms;
 }
 
 export type Step1Props = StepProps & HotelRoomProps;
