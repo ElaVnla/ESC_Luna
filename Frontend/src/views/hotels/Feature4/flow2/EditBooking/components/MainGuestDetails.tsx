@@ -1,18 +1,16 @@
-import { CheckFormInput, SelectFormInput, TextFormInput } from '@/components'
-import { Alert, Button, Card, CardBody, CardHeader, Col } from 'react-bootstrap'
-import { useForm } from 'react-hook-form'
-import { BsPeopleFill } from 'react-icons/bs'
-import { FaPlus } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
+import { useFormContext, Controller } from 'react-hook-form';
+import { SelectFormInput, TextFormInput } from '@/components';
+import { Card, CardBody, CardHeader, Col } from 'react-bootstrap';
+import { BsPeopleFill } from 'react-icons/bs';
 
-const SpecialRequest = ['Smoking room', 'Late check-in', 'Early check-in', 'Room on a high floor', 'Large bed', 'Airport transfer', 'Twin beds']
-const GuestDetails = () => {
-  const { control } = useForm()
+const MainGuestDetails = () => {
+  const { control } = useFormContext();
+
   return (
     <Card className="shadow mb-4">
       <CardHeader className="card-header border-bottom p-4">
         <h4 className="card-title mb-0 items-center">
-          <BsPeopleFill className=" me-2" />
+          <BsPeopleFill className="me-2" />
           Main Guest Details
         </h4>
       </CardHeader>
@@ -21,15 +19,21 @@ const GuestDetails = () => {
           <Col md={2}>
             <div className="form-size-lg">
               <label className="form-label">Title</label>
-              <SelectFormInput className="form-select js-choice">
-                <option value={-1}>Title</option>
-                <option>Mr</option>
-                <option>Mrs</option>
-              </SelectFormInput>
+              <Controller
+                name="customer.salutation"
+                control={control}
+                render={({ field }) => (
+                  <SelectFormInput {...field} className="form-select js-choice">
+                    <option value="">Title</option>
+                    <option value="Mr">Mr</option>
+                    <option value="Mrs">Mrs</option>
+                  </SelectFormInput>
+                )}
+              />
             </div>
           </Col>
           <TextFormInput
-            name="fName"
+            name="customer.first_name"
             type="text"
             label="First Name"
             control={control}
@@ -38,7 +42,7 @@ const GuestDetails = () => {
             containerClass="col-md-3"
           />
           <TextFormInput
-            name="lName"
+            name="customer.last_name"
             label="Last Name"
             type="text"
             control={control}
@@ -47,22 +51,26 @@ const GuestDetails = () => {
             containerClass="col-md-3"
           />
           <TextFormInput
-            name="Country"
-            label="Country"
+            name="customer.billing_address"
+            label="Billing Address"
             type="text"
             control={control}
-            placeholder="Enter your country"
+            placeholder="Enter your Billing Address"
             className="form-control-lg"
             containerClass="col-md-4"
           />
           <Col md={6}>
-            <TextFormInput name="email" label="Email id" type="text" control={control} placeholder="Enter your email" className="form-control-lg" />
-            <div id="emailHelp" className="form-text">
-              (Booking confirmation will be sent to this email)
-            </div>
+            <TextFormInput
+              name="customer.email"
+              label="Email"
+              type="text"
+              control={control}
+              placeholder="Enter your email"
+              className="form-control-lg"
+            />
           </Col>
           <TextFormInput
-            name="mobileNo"
+            name="customer.phone_number"
             label="Mobile number"
             type="text"
             control={control}
@@ -70,11 +78,10 @@ const GuestDetails = () => {
             className="form-control-lg"
             containerClass="col-md-6"
           />
-          
         </form>
       </CardBody>
     </Card>
-  )
-}
+  );
+};
 
-export default GuestDetails
+export default MainGuestDetails;

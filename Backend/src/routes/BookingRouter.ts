@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createBooking } from '../Services/BookingService';
+import { cancelBooking, createBooking } from '../Services/BookingService';
 
 const router = Router();
 
@@ -22,5 +22,18 @@ router.post('/create', async (req, res) => {
     res.status(500).json({ error: 'Failed to create booking' });
   }
 });
+
+router.delete('/:bookingId', async (req, res) => {
+  const { bookingId } = req.params;
+
+  try {
+    await cancelBooking(bookingId);
+    res.status(200).json({ message: 'Booking and associated data deleted' });
+  } catch (error) {
+    console.error('Cancellation error:', error);
+    res.status(500).json({ error: 'Failed to cancel booking' });
+  }
+});
+
 
 export default router;

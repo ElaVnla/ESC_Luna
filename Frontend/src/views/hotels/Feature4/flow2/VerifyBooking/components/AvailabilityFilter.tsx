@@ -1,63 +1,59 @@
-import { SelectFormInput, TextFormInput } from '@/components'
+import { TextFormInput } from '@/components'
 import { useState } from 'react'
-import { Button, Col, Container, Dropdown, DropdownDivider, DropdownMenu, DropdownToggle, Image, Row } from 'react-bootstrap'
-import { BsCalendar, BsDashCircle, BsGeoAlt, BsPlusCircle } from 'react-icons/bs'
-import { FaToriiGate } from 'react-icons/fa'
-import { FaUserGroup } from 'react-icons/fa6'
+import { Button, Col, Container, Image, Row } from 'react-bootstrap'
+import { Controller, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 import backgroundImg from '@/assets/images/bg/09.jpg'
 import decoration from '@/assets/images/element/decoration.svg'
-import Flatpicker from '@/components/Flatpicker'
-import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
 
-type AvailabilityFormType = {
-  guests: {
-    adults: number
-    children: number
-    rooms: number
-  }
+type FormFields = {
+  BookingID: string
+  Email: string
 }
 
 const AvailabilityFilter = () => {
-  const initialValue: AvailabilityFormType = {
-    guests: {
-      adults: 2,
-      rooms: 1,
-      children: 0,
-    },
+  const { control, handleSubmit, formState: { errors } } = useForm<FormFields>()
+
+  const [errorMsg, setErrorMsg] = useState('')
+  const navigate = useNavigate()
+
+  const onSubmit = async (data: FormFields) => {
+    console.log(' onSubmit called with:', data)
+
+    try {
+      const res = await fetch('http://localhost:3000/customers/verify-book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bookingId: data.BookingID.trim(),
+          email: data.Email.trim().toLowerCase()
+        }),
+      })
+
+      if (!res.ok) {
+        console.error(' Backend responded with status:', res.status)
+        setErrorMsg('Booking not found. Please check your Booking ID and Email.')
+        return
+      }
+
+      const response = await res.json()
+
+      if (response.valid) {
+        sessionStorage.setItem('pendingBooking', JSON.stringify({
+          bookingId: data.BookingID,
+          email: data.Email,
+        }))
+        navigate('/hotels/verify-email-booking')
+      } else {
+        setErrorMsg('Booking not found. Please check your Booking ID and Email.')
+      }
+    } catch (error) {
+      console.error(' Booking verification error:', error)
+      setErrorMsg('Booking not found. Please check your Booking ID and Email.')
+    }
   }
 
-  const [formValue, setFormValue] = useState<AvailabilityFormType>(initialValue)
-
-  const updateGuests = (type: keyof AvailabilityFormType['guests'], increase: boolean = true) => {
-    const val = formValue.guests[type]
-    setFormValue({
-      ...formValue,
-      guests: {
-        ...formValue.guests,
-        [type]: increase ? val + 1 : val > 1 ? val - 1 : 0,
-      },
-    })
-  }
-
-  const getGuestsValue = (): string => {
-    let value = ''
-    const guests = formValue.guests
-    if (guests.adults) {
-      value += guests.adults + (guests.adults > 1 ? ' Adults ' : ' Adult ')
-    }
-    if (guests.children) {
-      value += guests.children + (guests.children > 1 ? ' Children ' : ' Child ')
-    }
-    if (guests.rooms) {
-      value += guests.rooms + (guests.rooms > 1 ? ' Rooms ' : ' Room ')
-    }
-    return value
-  }
-
-  const { control } = useForm()
-  
   return (
     <section className="position-relative">
       <div className="position-absolute top-50 start-0 translate-middle-y d-none d-md-block">
@@ -66,41 +62,69 @@ const AvailabilityFilter = () => {
       <Container>
         <Row className="g-4 g-lg-5 align-items-center">
           <Col lg={6} className="position-relative">
-            <h6 className="text-uppercase">🤩 Easy Way To manage your bookings</h6>
-            <h1 className="mb-2">Managed Your Bookings Now!</h1>
-            <p className="mb-4">Users do not need to create a login account to access their hotel booking. 
+            <h6 className="text-uppercase">Easy Way To manage your bookings</h6>
+            <h1 className="mb-2">Manage Your Bookings Now!</h1>
+            <p className="mb-4">
+              Users do not need to create a login account to access their hotel booking. 
               Simply enter the Booking ID along with the main guest’s email address used during the reservation, 
-              and you will be able to view and make amendments to your booking directly through this page.</p>
-            <form className="row g-4">
+              and you will be able to view and make amendments to your booking directly through this page.
+            </p>
+
+            <form className="row g-4" onSubmit={handleSubmit(onSubmit)}>
               <Col xs={12}>
-                <TextFormInput
+                <Controller
                   name="BookingID"
-                  type="text"
-                  label="Booking ID"
                   control={control}
-                  placeholder="Enter your booking ID"
-                  className="form-control-lg"
-                  containerClass="col-md-12"
+                  rules={{ required: 'Booking ID is required' }}
+                  render={({ field }) => (
+                    <TextFormInput
+                      {...field}
+                      control={control}
+                      name="BookingID"
+                      type="text"
+                      label="Booking ID"
+                      placeholder="Enter your booking ID"
+                      className="form-control-lg"
+                      containerClass="col-md-12"
+                    />
+                  )}
                 />
               </Col>
+
               <Col xs={12}>
-                <TextFormInput
+                <Controller
                   name="Email"
-                  type="text"
-                  label="Email"
                   control={control}
-                  placeholder="Enter your email"
-                  className="form-control-lg"
-                  containerClass="col-md-12"
+                  rules={{ required: 'Email is required' }}
+                  render={({ field }) => (
+                    <TextFormInput
+                      {...field}
+                      control={control}
+                      name="Email"
+                      type="email"
+                      label="Email"
+                      placeholder="Enter your email"
+                      className="form-control-lg"
+                      containerClass="col-md-12"
+                    />
+                  )}
                 />
               </Col>
+
+              {errorMsg && (
+                <div className="col-12 text-danger fw-bold">
+                  {errorMsg}
+                </div>
+              )}
+
               <div className="col-12">
-                <Link to="/hotels/verify-email-booking" className="btn btn-primary w-100 mb-0">
-                      Retrieve Booking
-                </Link>
+                <Button type="submit" className="btn btn-primary w-100 mb-0">
+                  Retrieve Booking
+                </Button>
               </div>
             </form>
           </Col>
+
           <div className="col-lg-6 position-relative">
             <Image src={backgroundImg} className="rounded" />
           </div>

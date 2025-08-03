@@ -20,15 +20,82 @@ const Hero = () => {
 
   const handleCancelClick = () => setShowCancelModal(true)
   const handleCloseModal = () => setShowCancelModal(false)
-  const handleProceedCancellation = () => {
-    // TODO: Add cancellation logic here
-    alert('Booking has been cancelled.')
-    setShowCancelModal(false)
-  }
-  const handleeditbookingclick = () => 
-  {
+  const handleProceedCancellation = async () => {
+    const stored = sessionStorage.getItem('pendingBooking');
+    if (!stored) return alert('No booking ID found');
+
+      let parsed: any;
+      try {
+        parsed = JSON.parse(stored);
+        if (typeof parsed === 'string') {
+          parsed = JSON.parse(parsed); // handle double-stringify
+        }
+      } catch (err) {
+        console.error('Failed to parse pendingBooking:', err);
+        alert('Invalid session data.');
+        return;
+      }
+
+const bookingId = parsed?.bookingId;
+if (!bookingId) return alert('Booking ID missing in session');
+
+  
+    try {
+      const res = await fetch(`http://localhost:3000/bookings/${bookingId}`, {
+        method: 'DELETE',
+      });
+  
+      if (!res.ok) throw new Error('Delete failed');
+  
+      alert('Booking has been cancelled.');
+      sessionStorage.removeItem('pendingBooking');
+      navigate('/'); // or navigate to confirmation/cancellation page
+    } catch (err) {
+      console.error('Cancel error:', err);
+      alert('Failed to cancel booking. Please try again.');
+    }
+  
+    setShowCancelModal(false);
+  };
+  
+  const handleeditbookingclick = () => {
+    const stored = sessionStorage.getItem('pendingBooking');
+    if (!stored) {
+      alert('No booking info found.');
+      return;
+    }
+  
+    let parsed: any;
+    try {
+      parsed = JSON.parse(stored);
+      if (typeof parsed === 'string') {
+        parsed = JSON.parse(parsed); // handle double-stringify
+      }
+    } catch (err) {
+      console.error('❌ Failed to parse pendingBooking:', err);
+      alert('Invalid session data format.');
+      return;
+    }
+  
+    if (!parsed || typeof parsed !== 'object' || !parsed.bookingId) {
+      alert('Missing booking ID in session.');
+      return;
+    }
+  
     navigate('/hotels/edit-booking');
-  }
+  };
+  
+  let bookingId = 'N/A';
+  try {
+    const stored = sessionStorage.getItem('pendingBooking');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      bookingId = parsed?.bookingId || 'N/A';
+    }
+  } catch (err) {
+  console.error('Error parsing pendingBooking:', err);
+}
+
 
   return (
     <section className="py-0 mb-1">
@@ -43,7 +110,8 @@ const Hero = () => {
 
           {/* Booking Info */}
           <Row className="align-items-center justify-content-between text-center g-3 mb-4">
-            <Col xs={4}><p className="mb-1"><strong>Booking ID:</strong> #ABC123456</p></Col>
+          <p className="mb-1"><strong>Booking ID:</strong> #{bookingId || 'N/A'}</p>
+
             <Col xs={4}><p className="mb-1"><strong>Booking Date:</strong> 14 July 2025</p></Col>
             <Col xs={4}><p className="mb-1"><strong>Time:</strong> 3:30 PM</p></Col>
           </Row>

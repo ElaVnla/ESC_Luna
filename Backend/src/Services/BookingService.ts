@@ -85,3 +85,17 @@ export async function createBooking(
 
   return booking.id;
 }
+
+
+export async function cancelBooking(bookingId: string) {
+    const db = Database;
+  
+    // delete related records first (order matters due to FK constraints)
+    await db.query(`DELETE FROM guests WHERE booking_id = ?`, [bookingId]);
+    await db.query(`DELETE FROM payments WHERE booking_id = ?`, [bookingId]);
+    await db.query(`DELETE FROM customers WHERE booking_id = ?`, [bookingId]);
+  
+    // finally, delete the booking itself
+    await db.query(`DELETE FROM bookings WHERE id = ?`, [bookingId]);
+  }
+  
