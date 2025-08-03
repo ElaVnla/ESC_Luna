@@ -12,11 +12,33 @@ export type HotelsListType = {
   name: string
   address: string
   images: string[]
-  rating: number
+  star_rating: number
+  guest_rating: number
   amenities: string[]
   price: number
   // schemes?: string[]
 }
+// export type HotelsListType = {
+//   id: string,
+//   name: string,
+//   address: string,
+//   guest_rating: number,
+//   star_rating: number,
+//   latitude: number,
+//   longitude: number,
+//   phone_number: string,
+//   contact_email: string,
+//   fax_number: string,
+//   price: number,
+//   amenities: string,
+//   description: string,
+//   postal_code: string,
+//   city: string,
+//   state: string,
+//   country_code: string,
+//   image_count: number,
+//   primary_destination_id: string
+// }
 
 // export type HotelsListType = {
 //   id: string;
