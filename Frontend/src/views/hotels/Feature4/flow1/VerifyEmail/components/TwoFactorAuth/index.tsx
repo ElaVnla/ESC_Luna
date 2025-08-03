@@ -52,6 +52,9 @@ const VerifyEmail = () => {
     input4: '',
     input5: '',
   });
+  const [otpError, setOtpError] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange: HandleInputChangeType = (inputId, value) => {
     setInputValues((prev) => ({ ...prev, [inputId]: value }));
@@ -60,26 +63,19 @@ const VerifyEmail = () => {
   useEffect(() => {
     const payload = sessionStorage.getItem('booking_payload');
     if (!payload) return;
-  
+
     try {
       const parsed = JSON.parse(payload);
       const customerEmail = parsed?.customer?.email;
-  
+
       if (customerEmail) {
         setEmail(customerEmail);
-  
-        // Check if OTP was already sent for this email
-        const sentFlag = sessionStorage.getItem(`otp_sent_to_${customerEmail}`);
-        if (!sentFlag) {
-          sendOTP(customerEmail);
-          sessionStorage.setItem(`otp_sent_to_${customerEmail}`, 'true');
-        }
+        sendOTP(customerEmail); // Always send OTP when screen opens
       }
     } catch (err) {
       console.error('Error parsing payload from sessionStorage:', err);
     }
   }, []);
-  
 
   const sendOTP = async (email: string) => {
     setSendStatus('sending');
@@ -98,75 +94,170 @@ const VerifyEmail = () => {
     }
   };
 
-  const navigate = useNavigate();
-const [otpError, setOtpError] = useState('');
-const [verifying, setVerifying] = useState(false);
-
-const handleVerify = async () => {
-  const enteredOtp = Object.values(inputValues).join('');
-  if (enteredOtp.length !== 5) {
-    setOtpError('Please enter the full 5-digit code.');
-    return;
-  }
-
-  setVerifying(true);
-  setOtpError('');
-
-  try {
-    const res = await fetch('http://localhost:3000/email/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp: enteredOtp }),
-    });
-
-    const data = await res.json();
-    if (!data.verified) {
-      setOtpError('Invalid code. Please try again.');
-      setVerifying(false);
+  const handleVerify = async () => {
+    const enteredOtp = Object.values(inputValues).join('');
+    if (enteredOtp.length !== 5) {
+      setOtpError('Please enter the full 5-digit code.');
       return;
     }
 
-    // ✅ OTP verified — now send booking
-    const storedPayload = sessionStorage.getItem('booking_payload');
-    if (!storedPayload) throw new Error('Missing booking payload');
+    setVerifying(true);
+    setOtpError('');
 
-    const raw = JSON.parse(storedPayload);
+    try {
+      // Step 1: Verify OTP
+      const res = await fetch('http://localhost:3000/email/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: enteredOtp }),
+      });
 
-    // Patch missing fields with placeholders (for now)
-    const payload = {
-      ...raw,
-      booking: {
-        // use placeholders for this just to test otp
-      ...raw.booking,
-      destination_id: raw.booking.destination_id || 'sg01',
-      hotel_id: raw.booking.hotel_id || 'diH7',
-      room_id: raw.booking.room_id || 'rm01',
-      start_date: raw.booking.start_date || '2025-01-01',
-      end_date: raw.booking.end_date || '2025-01-03',
-      price: raw.booking.price || 999.99 
-    },
-    guests: raw.guests || []
+      if (!res.ok) {
+        const errorData = await res.json();
+        setOtpError(errorData.message || 'Server error. Please try again.');
+        setVerifying(false);
+        return;
+      }
+
+      const data = await res.json();
+      if (!data.verified) {
+        setOtpError('Invalid code. Please try again.');
+        setVerifying(false);
+        return;
+      }
+
+      // Step 2: Create booking
+      const storedPayload = sessionStorage.getItem('booking_payload');
+      if (!storedPayload) throw new Error('Missing booking payload');
+
+      const raw = JSON.parse(storedPayload);
+      const payload = {
+        ...raw,
+        booking: {
+          ...raw.booking,
+          destination_id: raw.booking.destination_id || 'sg01',
+          hotel_id: raw.booking.hotel_id || 'diH7',
+          room_id: raw.booking.room_id || 'rm01',
+          start_date: raw.booking.start_date || '2025-01-01',
+          end_date: raw.booking.end_date || '2025-01-03',
+          price: raw.booking.price || 999.99,
+        },
+        guests: raw.guests || [],
+      };
+
+      const bookingRes = await fetch('http://localhost:3000/bookings/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!bookingRes.ok) throw new Error('Booking failed');
+      const confirmed = await bookingRes.json();
+      console.log("BOOKING DONE, VALUE: ", bookingRes)
+      //   const confirmedBooking = {
+      //   hotel: {
+      //     name: raw.selectedHotel?.name,
+      //     address: raw.selectedHotel?.address,
+      //     rating: raw.selectedHotel?.rating,
+      //     amenities: Object.keys(raw.selectedHotel?.amenities || {}),
+      //     image_url: raw.selectedHotel?.cloudflare_image_url || '',
+      //     description: raw.selectedHotel?.description,
+      //   },
+      //   room: {
+      //     name: raw.selectedRoom?.type || raw.selectedRoom?.roomNormalizedDescription || 'Standard Room',
+      //     amenities: raw.selectedRoom?.amenities,
+      //     price: raw.selectedRoom?.price,
+      //   },
+      //   customer: raw.customer,
+      //   mainGuest: {
+      //     title: raw.customer?.title || 'Mr',
+      //     firstName: raw.customer?.first_name,
+      //     lastName: raw.customer?.last_name,
+      //     country: raw.customer?.country,
+      //     email: raw.customer?.email,
+      //     mobile: raw.customer?.phone_number,
+      //   },
+      //   booking: confirmed.booking, // ✅ confirmed backend booking object replaces draft
+      //   guests: raw.guests || [],
+      //   price: {
+      //     roomCharges: raw.selectedRoom?.price,
+      //     discountAmount: 2560,
+      //     discountLabel: '10% off',
+      //     priceAfterDiscount: raw.selectedRoom?.price,
+      //     taxesAndFees: 350,
+      //     totalPaid: raw.selectedRoom?.price || 0,
+      //   },
+      //   payment: {
+      //     payment_reference: `PAY-${Date.now()}`,
+      //     masked_card_number:
+      //       raw.cardNo?.toString().slice(-4).
+      //       padStart(16, '*') || '**** **** **** 1234',
+      //   },
+      //   specialRequests: raw.specialRequests || '',
+      // };
+
+
+      //     sessionStorage.setItem('confirmed_booking', JSON.stringify(confirmedBooking));
+
+      //   console.log('✅ Booking Payload Sent:', payload);
+      //   console.log('✅ Booking Created:', confirmed);
+
+      // Construct simplified summary
+      const bookingSummary = {
+        bookingId: confirmed || 'N/A',
+        checkIn: raw.booking?.start_date || 'N/A',
+        checkOut: raw.booking?.end_date || 'N/A',
+        roomName: raw.booking?.adults + " adults " + raw.booking?.children + " child" || "0 adult 0 child",
+        totalPrice: raw.booking?.price || 'N/A',
+      };
+
+      // Save summary to sessionStorage
+      sessionStorage.setItem('booking_summary', JSON.stringify(bookingSummary));
+
+      console.log("START DATE: ", confirmed.booking?.start_date)
+      console.log("END DATE: ", confirmed.booking?.end_date)
+      console.log("BOOKING ID: ",confirmed.booking_reference)
+      console.log("inside booking variable: ", confirmed);
+
+      await fetch('http://localhost:3000/email/send-confirmation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          booking: {
+            hotel: {
+              name: raw.hotel?.name,
+              address: raw.hotel?.address,
+            },
+            booking: {
+              start_date: raw.booking?.start_date || 'N/A',
+              end_date: raw.booking?.end_date || 'N/A',
+            },
+            guests: {
+              adults: raw.booking?.adults || 1,
+              children: raw.booking?.children || 0,
+            },
+            price: {
+              totalPaid: raw.selectedRoom?.price || 0,
+            },
+            mainGuest: {
+              email: raw.customer?.email,
+            },
+            booking_reference: confirmed.booking_reference || 'N/A', // ✅ from backend
+          }
+        }),
+      });
+
+
+
+
+      navigate('/hotels/confirmed-booking');
+    } catch (err) {
+      console.error('❌ Error during booking:', err);
+      setOtpError('An error occurred');
+    } finally {
+      setVerifying(false);
+    }
   };
-
-
-    const bookingRes = await fetch('http://localhost:3000/bookings/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    if (!bookingRes.ok) throw new Error('Booking failed');
-
-    // Success!
-    navigate('/hotels/verify-payment');
-  } catch (err) {
-    console.error(err);
-    setOtpError('An error occurred. Please try again.');
-  } finally {
-    setVerifying(false);
-  }
-};
-
 
   return (
     <Container>
@@ -228,29 +319,6 @@ const handleVerify = async () => {
                         {verifying ? 'Verifying...' : 'Verify and proceed'}
                       </button>
                     </div>
-
-                    
-               
-            
-                    {/* <div className="d-sm-flex justify-content-between small mb-4">
-                      <span>Didn't receive a code?</span>
-                      {otpError && <p className="text-danger small">{otpError}</p>}
-                      <button
-                        type="button"
-                        className="btn btn-primary w-100 mb-0"
-                        onClick={handleVerify}
-                        disabled={verifying}
-                      >
-                        {verifying ? 'Verifying...' : 'Verify and proceed'}
-                      </button>
-
-                    </div> */}
-
-                    {/* <div>
-                      <Link to="/hotels/verify-payment" className="btn btn-primary w-100 mb-0">
-                        Verify and proceed
-                      </Link>
-                    </div> */}
 
                     <div className="text-primary-hover mt-3 text-center">
                       Copyrights ©{currentYear} Booking. Build by{' '}

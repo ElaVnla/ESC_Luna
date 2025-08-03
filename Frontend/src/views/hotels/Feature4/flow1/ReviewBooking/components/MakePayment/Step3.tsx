@@ -7,27 +7,37 @@ import type { Step1Props } from '../types';
 import { useNavigate } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
 import { useGuestCount } from '../../contexts/GuestCountContext';
+import { toast } from 'react-toastify';
+import { encrypt } from '@/utils/encryption'; // ✅ NEW
 
-
-const Step3 = ({ control }: Step1Props) => {
+const Step3 = ({ control, roomData, hotelData }: Step1Props) => {
   const { previousStep } = useWizard();
   const { getValues, trigger } = useFormContext();
   const { guests } = useGuestCount();
   const navigate = useNavigate();
 
   const handleProceed = async () => {
-    const isValid = await trigger(); // Ensures guest fields are collected
-  
+    const isValid = await trigger([
+      'cardNo',
+      'expiryMonth',
+      'expiryYear',
+      'cvv',
+      'cardHolderName',
+    ]);
+
     if (!isValid) {
-      console.warn("Form is invalid");
+      toast.error('Please fill in all required payment fields before proceeding.', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return;
     }
-  
+
     const formData = getValues();
-    console.log("✅ guest formData:", formData.guests); // 🔍 Debug here
-    console.log("✅ adult guests:", formData.guests?.adults);
-    console.log("✅ child guests:", formData.guests?.children);
-  
     const bookingId = `BOOK-${Date.now()}`;
     const allGuests = [
       ...(formData.guests?.adults?.map((g: any) => ({
@@ -41,34 +51,63 @@ const Step3 = ({ control }: Step1Props) => {
         booking_id: bookingId,
       })) || []),
     ];
-  
-    console.log("✅ transformed guests for backend:", allGuests);
-  
 
-    const payload = {
-      booking: {
-        id: bookingId, // Temporary ID (real one set after email verify)
-        destination_id: '',        // 🟡 Placeholder (from Feature 3)
-        hotel_id: '',              // 🟡 Placeholder
-        room_id: '',               // 🟡 Placeholder
-        start_date: '',            // 🟡 Placeholder (from Feature 3 — check-in)
-        end_date: '',              // 🟡 Placeholder (from Feature 3 — check-out)
-        adults: guests.adults,
-        children: guests.children,
-        message_to_hotel: formData.booking?.message_to_hotel || '',
-        num_nights: formData.booking?.num_nights || 1,
-        price: formData.booking?.price || 999.99, // 🟡 Placeholder until Feature 3 is wired
-      },
-      customer: formData.customer,
-      guests: allGuests,
-      payment: {
-        payment_reference: `PAY-${Date.now()}`,
-        masked_card_number: formData.cardNo?.toString().slice(-4).padStart(16, '*') || '**** **** **** 1234',
-      },
+    // ✅ Encrypt card details
+    const encryptedPayment = {
+      payment_reference: `PAY-${Date.now()}`,
+      encrypted_card_number: encrypt(formData.cardNo?.toString() || ''),
+      encrypted_expiry: encrypt(`${formData.expiryMonth}/${formData.expiryYear}`),
+      encrypted_cardholder_name: encrypt(formData.cardHolderName || ''),
     };
 
-    // Store in session to use later
-    sessionStorage.setItem('booking_payload', JSON.stringify(payload));
+    const payload2 = {
+      hotel: {
+        name: hotelData.name,
+        address: hotelData.address,
+        rating: hotelData.rating,
+        amenities: Object.keys(hotelData.amenities || {}),
+        image_url: hotelData.cloudflare_image_url || '',
+        description: hotelData.description,
+      },
+      room: {
+        name: roomData.type || roomData.roomNormalizedDescription || 'Standard Room',
+        amenities: roomData.amenities,
+        price: roomData.price,
+        images: roomData.images
+      },
+      customer: formData.customer,
+      mainGuest: {
+        title: formData.customer?.title || 'Mr',
+        firstName: formData.customer?.first_name,
+        lastName: formData.customer?.last_name,
+        country: formData.customer?.country,
+        email: formData.customer?.email,
+        mobile: formData.customer?.phone_number,
+      },
+      booking: {
+        id: bookingId,
+        destination_id: '',
+        hotel_id: hotelData.id,
+        room_id: roomData.key,
+        start_date: '',
+        end_date: '',
+        adults: guests.adults,
+        children: guests.children,
+        message_to_hotel: formData.special_request?.shortDescription || '',
+        num_nights: formData.booking?.num_nights || 1,
+        price: formData.booking?.price || 999.99,
+      },
+      guests: allGuests,
+      price: {
+        totalPaid: roomData.price,
+      },
+      payment: encryptedPayment, // ✅ encrypted instead of masked
+      start_date: formData.booking?.start_date,
+      end_date: formData.booking?.end_date,
+      specialRequests: formData.special_request?.shortDescription || '',
+    };
+
+    sessionStorage.setItem('booking_payload', JSON.stringify(payload2));
     navigate('/hotels/verify-email');
   };
 
