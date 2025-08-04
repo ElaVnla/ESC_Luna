@@ -75,7 +75,6 @@ function mapHotelsWithPricesAndImages(hotels: any[], priceData: any[]): any[] {
   });
 }
 
-
 const HotelLists = () => {
   const { isOpen, toggle } = useToggle();
 
@@ -135,14 +134,14 @@ const HotelLists = () => {
         console.log("Hotels fetched from DB:", dbData);
 
         // Step 3: Fetch prices by destination
-        console.log({
-          city,
-          state,
-          destination_id: destinationId,
-          checkin,
-          checkout,
-          guests,
-        });
+        // console.log({
+        //   city,
+        //   state,
+        //   destination_id: destinationId,
+        //   checkin,
+        //   checkout,
+        //   guests,
+        // });
 
         const priceParams = new URLSearchParams({
           city: city,
@@ -210,16 +209,6 @@ const HotelLists = () => {
   const startIndex = (currentPage - 1) * hotelsPerPage;
   const endIndex = startIndex + hotelsPerPage;
 
-  // const sortedHotels = [...hotels];
-  // if (sortBy === "price") {
-  //   sortedHotels.sort((a, b) =>
-  //     sortOrder === "asc" ? a.price - b.price : b.price - a.price
-  //   );
-  // } else if (sortBy === "rating") {
-  //   sortedHotels.sort((a, b) =>
-  //     sortOrder === "asc" ? a.star_rating - b.star_rating : b.star_rating - a.star_rating
-  //   );
-  // }
   // split hotels sorting in primary (sort option) and secondary (guest rating high to low)
   const sortedHotels = [...hotels].sort((a, b) => {
     let primary = 0;
@@ -325,7 +314,7 @@ const HotelLists = () => {
       console.log("Final price URL HotelLists:", `/api/hotels/prices?${priceParams.toString()}`);
       const priceRes = await fetch(`http://localhost:3000/api/hotels/prices?${priceParams}`);
       if (!priceRes.ok) throw new Error("Failed to fetch prices");
-      const priceData = await priceRes.json(); // assumed to be [{ hotel_id: "...", price: 123 }, ...]
+      const priceData = await priceRes.json();
       console.log("Fetched prices:", priceData);
 
       // Step 4: Map prices by hotel id
@@ -335,8 +324,6 @@ const HotelLists = () => {
         priceMap.set(hotel.id, hotel.lowest_converted_price);
       }
       console.log(priceMap);
-
-      //const data = await response.json();
 
       // Apply the same image mapping logic as the initial fetch
       const filteredDbData = dbData.filter((hotel: any) => priceMap.has(hotel.id));
@@ -491,9 +478,17 @@ const HotelLists = () => {
               ) : (
                 <>
                   {currentHotels.map((hotel, idx) => (
-                    <HotelListCard key={idx} hotel={hotel} />
+                    <HotelListCard
+                      key={idx}
+                      hotel={hotel}
+                      destinationId={destinationId}
+                      city={city}
+                      state={state}
+                      checkin={checkin}
+                      checkout={checkout}
+                      guests={guests}
+                    />
                   ))}
-
                   <nav className="d-flex justify-content-center" aria-label="navigation">
                     <nav
                       className="d-flex justify-content-center"

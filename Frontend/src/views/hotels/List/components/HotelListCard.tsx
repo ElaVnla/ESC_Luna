@@ -29,10 +29,20 @@ import {
 } from "react-icons/fa";
 import { FaCopy, FaHeart, FaStar } from "react-icons/fa6";
 import { type TinySliderSettings } from "tiny-slider";
+import { useNavigate, Link } from "react-router-dom";
 import { type HotelsListType } from "../data";
 
 import "tiny-slider/dist/tiny-slider.css";
-import { Link } from "react-router-dom";
+
+type HotelProps = {
+  hotel: HotelsListType;
+  destinationId?: string;
+  city?: string;
+  state?: string;
+  checkin?: string;
+  checkout?: string;
+  guests?: string;
+};
 
 const getGuestRatingDetails = (score: number) => {
   if (score >= 4.5) return { label: "Excellent", color: "success" };
@@ -43,15 +53,14 @@ const getGuestRatingDetails = (score: number) => {
   return { label: "No Rating", color: "secondary" };
 };
 
-const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
+const HotelListCard = ({ hotel, destinationId, city, state, checkin, checkout, guests }: HotelProps) => {
   // const { address, amenities, images, name, price, rating, sale, schemes } = hotel;
-  const { address, amenities, images, name, price, star_rating, guest_rating } = hotel;
+  const { id, name, address, amenities, images, price, star_rating, guest_rating } = hotel;
 
-  console.log("Rendering hotel star rating:", hotel.name, star_rating );
+  console.log("Rendering hotel star rating:", hotel.name, hotel.id, star_rating );
   const numericStarRating = Number(star_rating);
-  console.log("Rendering hotel guest rating:", hotel.name, guest_rating );
+  console.log("Rendering hotel guest rating:", hotel.name, hotel.id, guest_rating );
   const numericGuestRating = Number(guest_rating);
-
 
   const { dir } = useLayoutContext();
   const normalizedAmenities = Array.isArray(amenities)
@@ -74,6 +83,27 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
     items: 1,
     autoplayDirection: dir === "ltr" ? "forward" : "backward",
     nav: false,
+  };
+
+  const navigate = useNavigate();
+
+  const handleNavigateToDetail = () => {
+    const params = new URLSearchParams({
+      hotel_id: id.toString(),
+      city: city || "",
+      state: state || "",
+      destination_id: destinationId || "",
+      checkin: checkin || "",
+      checkout: checkout || "",
+      guests: guests || "1",
+      rooms: "1",
+      lang: "en_US",
+      currency: "SGD",
+      partner_id: "1089",
+      landing_page: "wl-acme-earn",
+      product_type: "earn",
+    });
+    navigate(`/hotels/detail?${params.toString()}`);
   };
 
   return (
@@ -180,11 +210,6 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                   </div>
                 </div>
               )}
-              {/* {normalizedAmenities.map((amenity: string, idx: number) => (
-                <li key={idx} className="nav-item">
-                  {amenity}
-                </li>
-              ))} */}
             </ul>
 
             <div className="d-sm-flex justify-content-sm-between align-items-center mt-3 mt-md-auto">
@@ -196,7 +221,7 @@ const HotelListCard = ({ hotel }: { hotel: HotelsListType }) => {
                 <span className="mb-0 me-2">total</span>
               </div>
               <div className="mt-3 mt-sm-0">
-                <Button variant="dark" size="sm" className="mb-0 w-100">
+                <Button variant="dark" size="sm" className="mb-0 w-100" onClick={handleNavigateToDetail}>
                   Select Room
                 </Button>
               </div>
