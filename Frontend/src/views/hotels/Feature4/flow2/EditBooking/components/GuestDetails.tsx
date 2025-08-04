@@ -35,13 +35,21 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               <Controller
                 name={`${prefix}.salutation`}
                 control={control}
-                defaultValue={guest.salutation}
-                render={({ field }) => (
-                  <FormSelect {...field} className="form-select js-choice">
-                    <option value="">Title</option>
-                    <option value="Mr">Mr</option>
-                    <option value="Mrs">Mrs</option>
-                  </FormSelect>
+                rules={{ required: 'Title is required' }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <FormSelect
+                      {...field}
+                      className={`form-select js-choice ${fieldState.invalid ? 'is-invalid' : ''}`}
+                    >
+                      <option value="">Title</option>
+                      <option value="Mr">Mr</option>
+                      <option value="Mrs">Mrs</option>
+                    </FormSelect>
+                    {fieldState.error?.message && (
+                      <div className="invalid-feedback">{fieldState.error.message}</div>
+                    )}
+                  </>
                 )}
               />
             </Col>
@@ -50,6 +58,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               label="First Name"
               type="text"
               control={control}
+              rules={{ required: 'First name is required' }}
               className="form-control-lg"
               containerClass="col-md-3"
             />
@@ -58,6 +67,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               label="Last Name"
               type="text"
               control={control}
+              rules={{ required: 'Last name is required' }}
               className="form-control-lg"
               containerClass="col-md-3"
             />
@@ -66,6 +76,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               label="Country"
               type="text"
               control={control}
+              rules={{ required: 'Country is required' }}
               className="form-control-lg"
               containerClass="col-md-4"
             />
@@ -75,6 +86,13 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
                 label="Email"
                 type="text"
                 control={control}
+                rules={{
+                  required: 'Email is required',
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: 'Please enter a valid email address',
+                  },
+                }}
                 className="form-control-lg"
               />
             </Col>
@@ -83,6 +101,13 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               label="Mobile number"
               type="text"
               control={control}
+              rules={{
+                required: 'Phone number is required',
+                pattern: {
+                  value: /^\+\d{1,4}\s?\d{6,14}$/,
+                  message: 'Include country code (e.g. +65 81234567)',
+                },
+              }}
               className="form-control-lg"
               containerClass="col-md-6"
             />

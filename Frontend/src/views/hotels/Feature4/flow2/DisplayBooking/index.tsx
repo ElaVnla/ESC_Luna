@@ -72,34 +72,65 @@ import PriceSummary from './components/PriceSummary'
 import MainGuestDetails from './components/MainGuestDetails'
 import GuestDetails from './components/GuestDetails'
 import SpecialRequest from './components/SpecialRequest'
+import { HotelData } from '@/models/HotelDetailsApi'
+import { RoomData } from '@/models/RoomDetailsApi'
 
 const DisplayBooking = () => {
   const [mainGuest, setMainGuest] = useState<any>(null)
   const [guests, setGuests] = useState<any[]>([])
+  const [hotelData, setHotelData] = useState<HotelData>();
+  const [roomData, setRoomData] = useState<RoomData>();
+  const [mockRoom, setMockRoom] = useState<RoomData>();
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('pendingBooking')
-    if (!stored) return
+  const stored = sessionStorage.getItem('pendingBooking');
+  if (!stored) return;
 
-    const { bookingId } = JSON.parse(stored)
+  const { bookingId } = JSON.parse(stored);
 
-    // Fetch main guest info
-    fetch(`http://localhost:3000/customers/${bookingId}`)
-      .then((res) => res.json())
-      .then(setMainGuest)
-      .catch((err) => console.error('❌ Failed to fetch main guest:', err))
+  // Fetch main guest info
+  fetch(`http://localhost:3000/customers/${bookingId}`)
+    .then((res) => res.json())
+    .then(setMainGuest)
+    .catch((err) => console.error('❌ Failed to fetch main guest:', err));
 
-    // Fetch guest list
-    // Fetch guest list
-    fetch(`http://localhost:3000/guests/${bookingId}`)
+  // Fetch guest list
+  fetch(`http://localhost:3000/guests/${bookingId}`)
     .then(async (res) => {
-      if (!res.ok) throw new Error(`Guest fetch failed with status ${res.status}`)
-      const data = await res.json()
-      setGuests(data)
+      if (!res.ok) throw new Error(`Guest fetch failed with status ${res.status}`);
+      const data = await res.json();
+      setGuests(data);
     })
-    .catch((err) => console.error('❌ Failed to fetch guests:', err))
+    .catch((err) => console.error('❌ Failed to fetch guests:', err));
 
-  }, [])
+  // Fetch hotel data
+  if (hotelData) return;
+
+  const fetchHotel = async () => {
+    try {
+      // Step 1: Get hotel_id using booking ID
+      const hotelIdRes = await fetch(`http://localhost:3000/api/bookings/${bookingId}/hotel-id`);
+      if (!hotelIdRes.ok) throw new Error("Failed to fetch hotel_id");
+
+      const hotelIdData = await hotelIdRes.json();
+      const hotelId = hotelIdData.hotel_id;
+      if (!hotelId) throw new Error("hotel_id is undefined");
+
+      // Step 2: Fetch full hotel data
+      const response = await fetch(`http://localhost:3000/api/hotels/${hotelId}`);
+      const data = await response.json();
+      const parsedHotel = data as HotelData;
+      setHotelData(parsedHotel);
+      console.log("🏨 Hotel data fetched successfully.", parsedHotel);
+    } catch (error) { 
+      console.error("❌ Failed to fetch hotel data:", error);
+    }
+  };
+
+  fetchHotel();
+
+}, []);
+
 
   return (
     <>

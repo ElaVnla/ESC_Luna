@@ -141,6 +141,7 @@ const VerifyEmail = () => {
           start_date: raw.booking.start_date || '2025-01-01',
           end_date: raw.booking.end_date || '2025-01-03',
           price: raw.booking.price || 999.99,
+          currency: raw.booking.currency || "SGD"
         },
         guests: raw.guests || [],
       };

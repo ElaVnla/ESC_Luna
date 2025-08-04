@@ -14,25 +14,26 @@ export async function createBooking(
 
   // 1. Insert booking
   await db.query(
-    `INSERT INTO bookings (
-      id, destination_id, hotel_id, room_id,
-      start_date, end_date, adults, children,
-      message_to_hotel, num_nights, price
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      booking.id,
-      booking.destination_id,
-      booking.hotel_id,
-      booking.room_id,
-      booking.start_date,
-      booking.end_date,
-      booking.adults,
-      booking.children,
-      booking.message_to_hotel,
-      booking.num_nights,
-      booking.price
-    ]
-  );
+  `INSERT INTO bookings (
+    id, destination_id, hotel_id, room_id,
+    start_date, end_date, adults, children,
+    message_to_hotel, num_nights, price, currency
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  [
+    booking.id,
+    booking.destination_id,
+    booking.hotel_id,
+    booking.room_id,
+    booking.start_date,
+    booking.end_date,
+    booking.adults,
+    booking.children,
+    booking.message_to_hotel,
+    booking.num_nights,
+    booking.price,
+    booking.currency // ✅ Add this
+  ]
+);
 
   // 2. Insert main customer
   await db.query(
@@ -105,3 +106,13 @@ export async function cancelBooking(bookingId: string) {
     await db.query(`DELETE FROM bookings WHERE id = ?`, [bookingId]);
   }
   
+export async function getHotelIdFromBooking(bookingId: string): Promise<string | null> {
+  const db = Database;
+
+  const result = await db.query(
+    `SELECT hotel_id FROM bookings WHERE id = ?`,
+    [bookingId]
+  );
+
+  return result.length > 0 ? result[0].hotel_id : null;
+}

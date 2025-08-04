@@ -96,6 +96,7 @@ const Step3 = ({ control, roomData, hotelData }: Step1Props) => {
         message_to_hotel: formData.special_request?.shortDescription || '',
         num_nights: formData.booking?.num_nights || 1,
         price: formData.booking?.price || 999.99,
+        currency: formData.booking?.currency || 'SGD' // ✅ ADD THIS LINEx`
       },
       guests: allGuests,
       price: {
