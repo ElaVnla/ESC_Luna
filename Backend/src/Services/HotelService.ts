@@ -44,7 +44,11 @@ function processAmenities(amenities: Record<string,boolean>) : string[] {
     carRentDesk: "Car-rent Desk",
     inHouseBar: "In-house Bar",
     coffeeTeaMaker: "Coffee & Tea Maker",
-    valetParking: "Valet Parking"
+    valetParking: "Valet Parking",
+    handicapAccessible: "Handicap Accessible",
+    petsAllowed: "Pets Allowed",
+    childrenAllowed: "Children Allowed",
+    golfCourse: "Golf Course"
 
   }
   return Object.entries(amenities)

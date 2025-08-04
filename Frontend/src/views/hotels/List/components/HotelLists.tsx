@@ -80,11 +80,10 @@ const HotelLists = () => {
 
   const [hotels, setHotels] = useState<HotelsListType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [destinationId, setDestinationId] = useState<string>('');
+  const [destinationId, setDestinationId] = useState<string>("");
 
   const [sortBy, setSortBy] = useState<"price" | "rating" | "">("rating");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
 
   const navigate = useNavigate();
 
@@ -97,7 +96,6 @@ const HotelLists = () => {
   console.log(guests);
   console.log(checkin, checkout);
 
-
   useEffect(() => {
     if (!city) return;
 
@@ -109,14 +107,18 @@ const HotelLists = () => {
       setLoading(true);
       try {
         let cityQuery = `city=${encodeURIComponent(city)}`;
-        
+
         let searchQuery = `city=${encodeURIComponent(city)}`;
         if (state) searchQuery += `&state=${encodeURIComponent(state)}`;
         searchQuery += `&guests=${encodeURIComponent(guests)}
-        &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`;
+        &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(
+          checkout
+        )}`;
 
         // Step 1: Sync with external API
-        const syncRes = await fetch(`http://localhost:3000/api/hotels/syncByCity?${cityQuery}`);
+        const syncRes = await fetch(
+          `http://localhost:3000/api/hotels/syncByCity?${cityQuery}`
+        );
 
         if (!syncRes.ok) throw new Error("Sync failed");
         const syncData = await syncRes.json();
@@ -150,15 +152,20 @@ const HotelLists = () => {
           checkin,
           checkout,
           guests: (guests as string).trim(),
-          rooms: '1',
-          lang: 'en_US',
-          currency: 'SGD',
-          partner_id: '1089',
-          landing_page: 'wl-acme-earn',
-          product_type: 'earn',
+          rooms: "1",
+          lang: "en_US",
+          currency: "SGD",
+          partner_id: "1089",
+          landing_page: "wl-acme-earn",
+          product_type: "earn",
         });
-        console.log("Final price URL HotelLists:", `/api/hotels/prices?${priceParams.toString()}`);
-        const priceRes = await fetch(`http://localhost:3000/api/hotels/prices?${priceParams}`);
+        console.log(
+          "Final price URL HotelLists:",
+          `/api/hotels/prices?${priceParams.toString()}`
+        );
+        const priceRes = await fetch(
+          `http://localhost:3000/api/hotels/prices?${priceParams}`
+        );
         if (!priceRes.ok) throw new Error("Failed to fetch prices");
         const priceData = await priceRes.json(); // assumed to be [{ hotel_id: "...", price: 123 }, ...]
         console.log("Fetched prices:", priceData);
@@ -172,16 +179,22 @@ const HotelLists = () => {
         console.log(priceMap);
 
         console.log("Price Map IDs:", Array.from(priceMap.keys()));
-        console.log("DB Data IDs:", dbData.map((h: any) => h.id));
-
+        console.log(
+          "DB Data IDs:",
+          dbData.map((h: any) => h.id)
+        );
 
         // Step 5: Filter dbData to only hotels with price info
-        const filteredDbData = dbData.filter((hotel: any) => priceMap.has(hotel.id));
-        console.log("Filtered DB Data IDs:", filteredDbData.map((h: any) => h.id));
+        const filteredDbData = dbData.filter((hotel: any) =>
+          priceMap.has(hotel.id)
+        );
+        console.log(
+          "Filtered DB Data IDs:",
+          filteredDbData.map((h: any) => h.id)
+        );
 
         const mapped = mapHotelsWithPricesAndImages(filteredDbData, priceData);
         setHotels(mapped);
-
       } catch (err) {
         console.error("Failed to sync or fetch hotels:", err);
         setHotels([]); // clear hotels if an error occurs
@@ -194,7 +207,10 @@ const HotelLists = () => {
   }, [city, state, guests, checkin, checkout]);
 
   // Sorting section
-  const handleSortChange = (type: "price" | "rating", order: "asc" | "desc") => {
+  const handleSortChange = (
+    type: "price" | "rating",
+    order: "asc" | "desc"
+  ) => {
     setSortBy(type);
     setSortOrder(order);
   };
@@ -214,13 +230,12 @@ const HotelLists = () => {
     let primary = 0;
 
     if (sortBy === "rating") {
-      primary = sortOrder === "asc"
-        ? a.star_rating - b.star_rating
-        : b.star_rating - a.star_rating;
+      primary =
+        sortOrder === "asc"
+          ? a.star_rating - b.star_rating
+          : b.star_rating - a.star_rating;
     } else if (sortBy === "price") {
-      primary = sortOrder === "asc"
-        ? a.price - b.price
-        : b.price - a.price;
+      primary = sortOrder === "asc" ? a.price - b.price : b.price - a.price;
     } else {
       primary = b.guest_rating - a.guest_rating;
     }
@@ -267,11 +282,17 @@ const HotelLists = () => {
       if (state) queryParams.append("state", state);
 
       if (rawFilters.starRatings.length > 0) {
-        queryParams.append("rawStarRatings", rawFilters.starRatings.map(Number).join(","));
+        queryParams.append(
+          "rawStarRatings",
+          rawFilters.starRatings.map(Number).join(",")
+        );
       }
 
       if (rawFilters.guestRatings.length > 0) {
-        queryParams.append("rawGuestRatings", rawFilters.guestRatings.join(","));
+        queryParams.append(
+          "rawGuestRatings",
+          rawFilters.guestRatings.join(",")
+        );
       }
 
       if (rawFilters.guestRatingRange) {
@@ -304,15 +325,20 @@ const HotelLists = () => {
         checkin,
         checkout,
         guests: (guests as string).trim(),
-        rooms: '1',
-        lang: 'en_US',
-        currency: 'SGD',
-        partner_id: '1089',
-        landing_page: 'wl-acme-earn',
-        product_type: 'earn',
+        rooms: "1",
+        lang: "en_US",
+        currency: "SGD",
+        partner_id: "1089",
+        landing_page: "wl-acme-earn",
+        product_type: "earn",
       });
-      console.log("Final price URL HotelLists:", `/api/hotels/prices?${priceParams.toString()}`);
-      const priceRes = await fetch(`http://localhost:3000/api/hotels/prices?${priceParams}`);
+      console.log(
+        "Final price URL HotelLists:",
+        `/api/hotels/prices?${priceParams.toString()}`
+      );
+      const priceRes = await fetch(
+        `http://localhost:3000/api/hotels/prices?${priceParams}`
+      );
       if (!priceRes.ok) throw new Error("Failed to fetch prices");
       const priceData = await priceRes.json();
       console.log("Fetched prices:", priceData);
@@ -326,13 +352,17 @@ const HotelLists = () => {
       console.log(priceMap);
 
       // Apply the same image mapping logic as the initial fetch
-      const filteredDbData = dbData.filter((hotel: any) => priceMap.has(hotel.id));
-      console.log("Filtered DB Data IDs:", filteredDbData.map((h: any) => h.id));
+      const filteredDbData = dbData.filter((hotel: any) =>
+        priceMap.has(hotel.id)
+      );
+      console.log(
+        "Filtered DB Data IDs:",
+        filteredDbData.map((h: any) => h.id)
+      );
 
       // Step 6: Map hotel data with better image logic
       const mapped = mapHotelsWithPricesAndImages(filteredDbData, priceData);
       setHotels(mapped);
-
     } catch (err) {
       console.error("Failed to fetch filtered hotels:", err);
     }
@@ -356,7 +386,6 @@ const HotelLists = () => {
     resetFilters();
   }, [city, state, guests, checkin, checkout]);
 
-
   useEffect(() => {
     setCurrentPage(1);
 
@@ -368,7 +397,6 @@ const HotelLists = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [sortBy, sortOrder]);
-
 
   return (
     <section className="pt-0">
@@ -415,13 +443,26 @@ const HotelLists = () => {
         <Row>
           <Col xl={4} xxl={3}>
             <div className="d-none d-xl-block">
-              <HotelListFilter filters={rawFilters} setFilters={setRawFilters} />
+              <HotelListFilter
+                filters={rawFilters}
+                setFilters={setRawFilters}
+              />
               <div className="d-flex justify-content-between p-2 p-xl-0 mt-xl-4">
-                <button className="btn btn-link p-0 mb-0" onClick={resetFilters}>Clear all</button>
-                <button className="btn btn-primary mb-0" onClick={() => {
-                  handleFilterChange();
-                  //toggle();
-                }}>Filter Result</button>
+                <button
+                  className="btn btn-link p-0 mb-0"
+                  onClick={resetFilters}
+                >
+                  Clear all
+                </button>
+                <button
+                  className="btn btn-primary mb-0"
+                  onClick={() => {
+                    handleFilterChange();
+                    //toggle();
+                  }}
+                >
+                  Filter Result
+                </button>
               </div>
             </div>
             <Offcanvas
@@ -439,34 +480,52 @@ const HotelLists = () => {
                 </h5>
               </OffcanvasHeader>
               <OffcanvasBody className="offcanvas-body flex-column p-3 p-xl-0">
-                <HotelListFilter filters={rawFilters} setFilters={setRawFilters} />
+                <HotelListFilter
+                  filters={rawFilters}
+                  setFilters={setRawFilters}
+                />
               </OffcanvasBody>
               <div className="d-flex justify-content-between p-2 p-xl-0 mt-xl-4">
-                <button className="btn btn-link p-0 mb-0" onClick={resetFilters}>Clear all</button>
-                <button className="btn btn-primary mb-0" onClick={() => {
-                  handleFilterChange();
-                }}>Filter Result</button>
+                <button
+                  className="btn btn-link p-0 mb-0"
+                  onClick={resetFilters}
+                >
+                  Clear all
+                </button>
+                <button
+                  className="btn btn-primary mb-0"
+                  onClick={() => {
+                    handleFilterChange();
+                  }}
+                >
+                  Filter Result
+                </button>
               </div>
             </Offcanvas>
           </Col>
           <Col xl={8} xxl={9}>
-          <div className="mb-3 d-flex gap-2 align-items-center">
-            <label htmlFor="sort-by" className="fw-semibold mb-0">Sort by:</label>
-            <select
-              id="sort-by"
-              className="form-select w-auto"
-              value={`${sortBy}-${sortOrder}`}
-              onChange={(e) => {
-                const [type, order] = e.target.value.split("-");
-                handleSortChange(type as "price" | "rating", order as "asc" | "desc");
-              }}
-            >
-              <option value="rating-desc">Star Rating (High to Low)</option>
-              <option value="rating-asc">Star Rating (Low to High)</option>
-              <option value="price-desc">Price (High to Low)</option>
-              <option value="price-asc">Price (Low to High)</option>
-            </select>
-          </div>
+            <div className="mb-3 d-flex gap-2 align-items-center">
+              <label htmlFor="sort-by" className="fw-semibold mb-0">
+                Sort by:
+              </label>
+              <select
+                id="sort-by"
+                className="form-select w-auto"
+                value={`${sortBy}-${sortOrder}`}
+                onChange={(e) => {
+                  const [type, order] = e.target.value.split("-");
+                  handleSortChange(
+                    type as "price" | "rating",
+                    order as "asc" | "desc"
+                  );
+                }}
+              >
+                <option value="rating-desc">Star Rating (High to Low)</option>
+                <option value="rating-asc">Star Rating (Low to High)</option>
+                <option value="price-desc">Price (High to Low)</option>
+                <option value="price-asc">Price (Low to High)</option>
+              </select>
+            </div>
             <div className="vstack gap-4" ref={hotelListRef}>
               {loading ? (
                 <div className="text-center py-5">Loading hotels...</div>
@@ -489,7 +548,10 @@ const HotelLists = () => {
                       guests={guests}
                     />
                   ))}
-                  <nav className="d-flex justify-content-center" aria-label="navigation">
+                  <nav
+                    className="d-flex justify-content-center"
+                    aria-label="navigation"
+                  >
                     <nav
                       className="d-flex justify-content-center"
                       aria-label="navigation"
