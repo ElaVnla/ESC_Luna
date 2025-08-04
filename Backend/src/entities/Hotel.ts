@@ -12,7 +12,10 @@ export class Hotel {
     address!: string;
 
     @Column({ type: "decimal", precision: 2, scale: 1, nullable: true })
-    rating!: number;
+    star_rating!: number;
+
+    @Column({ type: "decimal", precision: 2, scale: 1, nullable: true })
+    guest_rating!: number;
 
     @Column({ type: "decimal", precision: 10, scale: 7, nullable: true })
     latitude!: number;

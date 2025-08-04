@@ -179,131 +179,22 @@ router.get('/hotels/prices', async (req, res) => {
   }
 });
 
-
-// router.get('/hotels/syncByCity', async (req, res) => {
-//   const { city, state, guests, checkin, checkout } = req.query;
-//   console.log(city);
-//   console.log(state);
-//   console.log(guests);
-//   console.log(checkin);
-//   console.log(checkout);
-//   //const city = Array.isArray(cityRaw) ? cityRaw[0] : cityRaw;
-
-//   if (!city || typeof city !== 'string') {
-//     return res.status(400).json({ error: 'City is required and must be a string' });
-//   }
-
-//   if (!city || !guests || !checkin || !checkout) {
-//     return res.status(400).json({ error: 'Missing required query parameters' });
-//   }
-
-//   const filePath = path.join(__dirname, '../../destinations.csv');
-//   let destinationId: string;
-
-//   // Step 1: Get destinationId from CSV
+// NOT CURRENTLY USED
+// router.get('/hotels/sync/:id', async (req, res) => {
+//   const { id } = req.params;
+//   console.log(`Fetching hotel with id: ${id}`);
 //   try {
-//     destinationId = await new Promise<string>((resolve, reject) => {
-//       const results: any[] = [];
-
-//       fs.createReadStream(filePath)
-//         .pipe(csv())
-//         .on('data', (row) => {
-//           if (row.term && row.term.toLowerCase() === city.toLowerCase()) {
-//             results.push(row);
-//           }
-//         })
-//         .on('end', () => {
-//           if (results.length === 0) {
-//             return reject(new Error('City not found in destinations.csv'));
-//           }
-//           resolve(results[0].uid);
-//         })
-//         .on('error', reject);
-//     });
-
-//     console.log(`Found destination_id ${destinationId} for city ${city}`);
-
-//   } catch (err) {
-//     console.error('Error processing destinations.csv:', err);
-//     return res.status(404).json({ error: 'City not found or CSV processing failed' });
-//   }
-
-//   // Step 2: Fetch hotels using destinationId
-//   try {
-//     const response = await fetch(`http://hotelapi.loyalty.dev/api/hotels?destination_id=${destinationId}`);
-//     if (!response.ok) throw new Error('API returned non-200');
+//     const response = await fetch(`http://hotelapi.loyalty.dev/api/hotels?destination_id=${id}`);
 //     const data = await response.json();
 
-//     await storeHotels(data);
-//     console.log(`Stored ${data.length} hotels for destinationId ${destinationId}`);
-//   } catch (apiErr) {
-//     console.error('Error syncing hotels from external API:', apiErr);
-//     // Don’t return error to frontend
-//   }
+//     await storeHotels(data); // sync to DB
 
-//   // Step 3: Fetch hotel prices using same destinationId
-//   try {
-//     const externalQuery = new URLSearchParams({
-//       destination_id: destinationId,
-//       checkin: checkin as string,
-//       checkout: checkout as string,
-//       lang: 'en_US',
-//       currency: 'SGD',
-//       country_code: 'SG',
-//       guests: (guests as string).trim(),
-//       partner_id: '1089',
-//       landing_page: 'wl-acme-earn',
-//       product_type: 'earn',
-//     });
-//     console.log(externalQuery);
-//     console.log(externalQuery.toString())
-
-//     const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?${externalQuery}`);
-//     //const apiRes = await fetch(`https://hotelapi.loyalty.dev/api/hotels/prices?destination_id=RsBU&checkin=2025-10-01&checkout=2025-10-07&lang=en_US&currency=SGD&country_code=SG&guests=2&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`);  
-//     const bodyText = await apiRes.text();
-
-//     let parsed;
-//     try {
-//       parsed = JSON.parse(bodyText);
-//       console.log(parsed);
-//     } catch {
-//       return res.status(500).json({ error: 'Failed to parse price API response' });
-//     }
-
-//     if (!apiRes.ok) {
-//       console.error("Hotel price API error response:", parsed);
-//       return res.status(200).json({
-//         warning: `Hotel price API returned ${apiRes.status}, possibly no results`,
-//         response: parsed
-//       });
-//     }
-
-//     return res.status(200).json(parsed);
-
-//     // return res.status(200).json(apiData);
+//     res.json(data);
 //   } catch (err) {
-//     console.error('Error fetching hotel prices:', err);
-//     return res.status(200).json({ warning: 'Hotel price API failed, but hotel list synced if available' });
+//     console.error('Error syncing hotels:', err);
+//     res.status(500).json({ error: 'Failed to sync hotels from API' });
 //   }
 // });
-
-
-// NOT CURRENTLY USED
-router.get('/hotels/sync/:id', async (req, res) => {
-  const { id } = req.params;
-  console.log(`Fetching hotel with id: ${id}`);
-  try {
-    const response = await fetch(`http://hotelapi.loyalty.dev/api/hotels?destination_id=${id}`);
-    const data = await response.json();
-
-    await storeHotels(data); // sync to DB
-
-    res.json(data);
-  } catch (err) {
-    console.error('Error syncing hotels:', err);
-    res.status(500).json({ error: 'Failed to sync hotels from API' });
-  }
-});
 
 router.get('/hotels/:id', async (req, res) => {
   const { id } = req.params;

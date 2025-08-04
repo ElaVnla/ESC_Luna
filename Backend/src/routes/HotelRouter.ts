@@ -37,7 +37,6 @@ router.get("/getHotelsByCity", async (req, res) => {
       state = parts[1];
     }
 
-    // Now call your service function with these parameters
     const hotels = await getHotelsByCity(city);
     //const hotels = await getHotelsByCity(cityParam);
 
@@ -50,7 +49,8 @@ router.get("/getHotelsByCity", async (req, res) => {
 
 router.get("/getFilteredHotels", async (req, res) => {
   try {
-    const { rawStarRatings, rawGuestRatings, rawPriceRanges } = req.query;
+    const { rawStarRatings, guestRatingMin, guestRatingMax, rawPriceRanges } = req.query;
+    console.log(rawStarRatings, guestRatingMin, guestRatingMax, rawPriceRanges);
     const filters: any = {};
     let priceRanges: string[] = [];
 
@@ -60,25 +60,43 @@ router.get("/getFilteredHotels", async (req, res) => {
         .split(",")
         .map(s => Number(s.trim()))
         .filter(n => !isNaN(n));
-      if (stars.length > 0) filters.rating = stars;
+      if (stars.length > 0) filters.star_rating = stars;
     }
 
     // Guest Ratings
-    if (typeof rawGuestRatings === "string") {
-      const guests = rawGuestRatings
-        .split(",")
-        .map(s => Number(s.trim()))
-        .filter(n => !isNaN(n));
-      if (guests.length > 0) filters.guestRating = guests;
+    if (guestRatingMin && guestRatingMax) {
+      filters.guest_rating_min = Number(guestRatingMin);
+      filters.guest_rating_max = Number(guestRatingMax);
     }
+    // if (typeof rawGuestRatings === "string") {
+    //   const guests = rawGuestRatings
+    //     .split(",")
+    //     .map(s => Number(s.trim()))
+    //     .filter(n => !isNaN(n));
+    //   //if (guests.length > 0) filters.guest_rating = guests;
+    //   const minGuest = Math.min(...guests);
+    //   filters.guest_rating = minGuest;
+    // }
 
     // Price Ranges
+    console.log(typeof(rawPriceRanges));
     if (typeof rawPriceRanges === "string") {
       priceRanges = rawPriceRanges
         .split(",")
         .map(s => s.trim())
         .filter(Boolean); // keep strings like "100-200"
-      if (priceRanges.length > 0) filters.priceRanges = priceRanges;
+
+      const parsedRanges = priceRanges
+        .map(range => {
+          const [min, max] = range.split("-").map(Number);
+          if (!isNaN(min) && !isNaN(max)) return { min, max };
+          return null;
+        })
+        .filter(Boolean); // Remove any nulls from invalid format
+
+      if (parsedRanges.length > 0) filters.priceRanges = parsedRanges;
+      console.log("Parsed price ranges:", filters.priceRanges);
+      //if (priceRanges.length > 0) filters.priceRanges = priceRanges;
     }
 
     const hotels = await getFilteredHotels(filters);

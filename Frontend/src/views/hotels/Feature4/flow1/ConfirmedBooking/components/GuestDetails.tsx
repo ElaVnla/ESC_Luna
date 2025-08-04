@@ -1,32 +1,38 @@
-import { CheckFormInput, SelectFormInput, TextFormInput } from '@/components'
-import { Alert, Button, Card, CardBody, CardHeader, CardTitle, Col, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { useForm } from 'react-hook-form'
-import { BsPeopleFill } from 'react-icons/bs'
-import { FaPlus } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  ListGroup,
+  ListGroupItem
+} from 'react-bootstrap';
+import { BsPeopleFill } from 'react-icons/bs';
 
-const SpecialRequest = ['Smoking room', 'Late check-in', 'Early check-in', 'Room on a high floor', 'Large bed', 'Airport transfer', 'Twin beds']
-const GuestDetails = () => {
-  const guests = [
-    {
-      label: 'Adult 1',
-      title: 'Mr',
-      firstName: 'John',
-      lastName: 'Doe',
-      country: 'Singapore',
-      email: 'john.doe@example.com',
-      mobile: '+65 9876 5432',
-    },
-    {
-      label: 'Child 1',
-      title: 'Miss',
-      firstName: 'Emma',
-      lastName: 'Tan',
-      country: 'Singapore',
-      email: 'emma.tan@example.com',
-      mobile: '+65 8123 4567',
-    },
-  ]
+type Guest = {
+  type: 'adult' | 'child';
+  title: string;
+  firstName: string;
+  lastName: string;
+  country: string;
+  email: string;
+  mobile: string;
+};
+
+type GuestDetailsProps = {
+  guests: Guest[];
+};
+
+const GuestDetails = ({ guests }: GuestDetailsProps) => {
+  // Count occurrences to label Adult 1, Child 1, etc.
+  let adultCount = 0;
+
+  let childCount = 0;
+
+  console.log("GUEST DETAILS PASSED: ", guests);
+  const getLabel = (type: 'adult' | 'child') => {
+    if (type === 'adult') return `Adult ${++adultCount}`;
+    return `Child ${++childCount}`;
+  };
 
   return (
     <Card className="shadow rounded-2 mb-1">
@@ -38,12 +44,12 @@ const GuestDetails = () => {
       </CardHeader>
 
       <CardBody className="p-4">
-        {guests.map((guest, idx) => (
+        {guests?.map((guest, idx) => (
           <Card key={idx} className="mb-3 shadow-sm border-0">
             <CardHeader className="border-bottom p-3">
               <h6 className="mb-0 d-flex align-items-center">
                 <BsPeopleFill className="me-2" />
-                {guest.label}
+                {getLabel(guest.type)}
               </h6>
             </CardHeader>
             <CardBody className="p-3">
@@ -70,8 +76,7 @@ const GuestDetails = () => {
         ))}
       </CardBody>
     </Card>
-  )
-}
+  );
+};
 
-
-export default GuestDetails
+export default GuestDetails;
