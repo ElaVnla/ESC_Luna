@@ -10,6 +10,7 @@ export class BookingModel {
         public children: number,
         public message_to_hotel: string,
         public num_nights: number,
-        public price: number
+        public price: number,
+        public currency: string
     ) {}
 }

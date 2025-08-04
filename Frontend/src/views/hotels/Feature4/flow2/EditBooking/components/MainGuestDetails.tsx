@@ -17,26 +17,34 @@ const MainGuestDetails = () => {
       <CardBody className="p-4">
         <form className="row g-4">
           <Col md={2}>
-            <div className="form-size-lg">
-              <label className="form-label">Title</label>
-              <Controller
-                name="customer.salutation"
-                control={control}
-                render={({ field }) => (
-                  <SelectFormInput {...field} className="form-select js-choice">
+            <label className="form-label">Title</label>
+            <Controller
+              name="customer.salutation"
+              control={control}
+              rules={{ required: 'Title is required' }}
+              render={({ field, fieldState }) => (
+                <>
+                  <SelectFormInput
+                    {...field}
+                    className={`form-select js-choice ${fieldState.invalid ? 'is-invalid' : ''}`}
+                  >
                     <option value="">Title</option>
                     <option value="Mr">Mr</option>
                     <option value="Mrs">Mrs</option>
                   </SelectFormInput>
-                )}
-              />
-            </div>
+                  {fieldState.error?.message && (
+                    <div className="invalid-feedback">{fieldState.error.message}</div>
+                  )}
+                </>
+              )}
+            />
           </Col>
           <TextFormInput
             name="customer.first_name"
             type="text"
             label="First Name"
             control={control}
+            rules={{ required: 'First name is required' }}
             placeholder="Enter your first name"
             className="form-control-lg"
             containerClass="col-md-3"
@@ -46,6 +54,7 @@ const MainGuestDetails = () => {
             label="Last Name"
             type="text"
             control={control}
+            rules={{ required: 'Last name is required' }}
             placeholder="Enter your last name"
             className="form-control-lg"
             containerClass="col-md-3"
@@ -55,6 +64,7 @@ const MainGuestDetails = () => {
             label="Billing Address"
             type="text"
             control={control}
+            rules={{ required: 'Billing address is required' }}
             placeholder="Enter your Billing Address"
             className="form-control-lg"
             containerClass="col-md-4"
@@ -65,6 +75,13 @@ const MainGuestDetails = () => {
               label="Email"
               type="text"
               control={control}
+              rules={{
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Enter a valid email address',
+                },
+              }}
               placeholder="Enter your email"
               className="form-control-lg"
             />
@@ -74,6 +91,13 @@ const MainGuestDetails = () => {
             label="Mobile number"
             type="text"
             control={control}
+            rules={{
+              required: 'Phone number is required',
+              pattern: {
+                value: /^\+\d{1,4}\s?\d{6,14}$/,
+                message: 'Include country code (e.g. +65 81234567)',
+              },
+            }}
             placeholder="Enter your mobile number"
             className="form-control-lg"
             containerClass="col-md-6"

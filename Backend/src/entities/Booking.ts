@@ -29,6 +29,9 @@ export class Booking {
     @Column({ type: "text", nullable: true })
     message_to_hotel!: string;
 
+    @Column({ type: "text"})
+    currency!: string;
+
     @Column({ type: "int" })
     num_nights!: number;
 

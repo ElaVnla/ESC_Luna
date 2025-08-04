@@ -1,10 +1,11 @@
 import { Button, Card, CardBody, Col, Container, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 const Hero = () => {
   const navigate = useNavigate();
-  const { getValues } = useFormContext();
+  const { getValues, trigger } = useFormContext();
 
   type GuestInput = {
     salutation: string;
@@ -19,7 +20,7 @@ const Hero = () => {
   const handleUpdate = async () => {
     const stored = sessionStorage.getItem('pendingBooking');
     if (!stored) return alert('Booking ID not found.');
-  
+
     let parsed: any;
     try {
       parsed = JSON.parse(stored);
@@ -29,15 +30,41 @@ const Hero = () => {
       alert('Invalid session data.');
       return;
     }
-  
+
     const bookingId = parsed?.bookingId;
     if (!bookingId) {
       alert('Missing booking ID.');
       return;
     }
-  
+
     const formData = getValues();
-  
+
+    // 1. Validate all fields before submitting
+    const customerFields = [
+      'customer.salutation',
+      'customer.first_name',
+      'customer.last_name',
+      'customer.billing_address',
+      'customer.email',
+      'customer.phone_number',
+    ];
+
+    const guestFields = formData.guests.flatMap((_: any, i: number) => [
+      `guests.${i}.salutation`,
+      `guests.${i}.first_name`,
+      `guests.${i}.last_name`,
+      `guests.${i}.country`,
+      `guests.${i}.email`,
+      `guests.${i}.phone_number`,
+    ]);
+
+    const isValid = await trigger([...customerFields, ...guestFields]);
+
+    if (!isValid) {
+      toast.error('Please complete all required fields.');
+      return;
+    }
+
     try {
       // 🔄 Update Customer
       const customerRes = await fetch(`http://localhost:3000/customers/${bookingId}`, {
@@ -45,9 +72,9 @@ const Hero = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData.customer),
       });
-  
+
       if (!customerRes.ok) throw new Error(`Customer update failed: ${customerRes.status}`);
-  
+
       // 🔄 Update Guests
       const guestsRes = await fetch(`http://localhost:3000/guests/${bookingId}`, {
         method: 'PUT',
@@ -56,17 +83,16 @@ const Hero = () => {
           guests: formData.guests.map((g: GuestInput) => ({ ...g, booking_id: bookingId }))
         }),
       });
-  
+
       if (!guestsRes.ok) throw new Error(`Guests update failed: ${guestsRes.status}`);
-  
-      alert('Booking updated successfully!');
+
+      toast.success('Booking updated successfully!');
       navigate('/hotels/display-booking');
     } catch (err) {
       console.error('Update failed:', err);
-      alert('Failed to update booking. Please try again.');
+      toast.error('Failed to update booking. Please try again.');
     }
   };
-  
 
   return (
     <section className="py-0">
@@ -81,11 +107,19 @@ const Hero = () => {
                   </CardBody>
                 </Col>
                 <div className="col-sm-3 text-end d-none d-sm-block">
-                  <Button variant="secondary" className="next-btn mb-0 m-2" onClick={() => window.history.back()}>
+                  <Button
+                    variant="secondary"
+                    className="next-btn mb-0 m-2"
+                    onClick={() => window.history.back()}
+                  >
                     <i className="bi bi-arrow-left me-1" />
                     Back
                   </Button>
-                  <Button onClick={handleUpdate} variant="primary" className="next-btn mb-0 m-2">
+                  <Button
+                    onClick={handleUpdate}
+                    variant="primary"
+                    className="next-btn mb-0 m-2"
+                  >
                     Update
                   </Button>
                 </div>
