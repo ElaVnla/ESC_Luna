@@ -19,7 +19,7 @@
     roomDataf4: Rooms;
     }
     
-    const RoomCard = ({ features, images, name, price, ammenities, schemes, count, hotelData, roomDataf4 }: RoomCardProps ) => {
+    const RoomCard = ({ features, images, name, price, amenities, schemes, count, hotelData, roomDataf4 }: RoomCardProps ) => {
     const { isOpen, toggle } = useToggle();
     const [isExpand, setExpand] = useState<boolean>(false);
     const [isExpand2, setExpand2] = useState<boolean>(false);
@@ -57,8 +57,9 @@
     }
 
     const chunk_size = 2
-    const amenitiesChunks = splitArray(ammenities.slice(0,14), chunk_size)
-    const extraChunks = splitArray(ammenities.slice(14), chunk_size)
+    const safeAmenities = amenities || [];
+    const amenitiesChunks = splitArray(safeAmenities.slice(0, 14), chunk_size);
+    const extraChunks = splitArray(safeAmenities.slice(14), chunk_size);
     console.log(extraChunks)
     return (
         <Card className="shadow py-4 px-3">
@@ -102,7 +103,7 @@
 
             <Col md={7}>
             <div className="card-body d-flex flex-column h-100 p-0 position-relative">
-                <h5 className="card-title mb-0">Ammenities</h5>
+                <h5 className="card-title mb-0">Amenities</h5>
                 {amenitiesChunks.map((chunk, idx) => {
                         return (
                         <Row key={idx}>
