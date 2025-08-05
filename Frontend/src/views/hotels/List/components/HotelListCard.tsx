@@ -130,7 +130,15 @@ const HotelListCard = ({
       landing_page: "wl-acme-earn",
       product_type: "earn",
     });
-    navigate(`/hotels/detail?${params.toString()}`);
+    navigate(`/hotels/detail`,{
+      state: {
+        id,
+        destinationId,
+        checkin,
+        checkout,
+        guests,
+      }
+    });
   };
 
   return (
