@@ -74,7 +74,7 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
   };
 
   return (
-    <form className="rounded-3 shadow">
+    <form className="rounded-3 shadow" aria-label="form">
       <hr className="my-0" />
       <div className="card card-body rounded-0 p-4">
         <h6 className="mb-2">Star Ratings</h6>
@@ -106,8 +106,10 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
       <div className="card card-body rounded-0 p-4">
         <h6 className="mb-2">Guest Rating</h6>
         <span className="fw-bold">
-          {minRating.toFixed(1)} <FaStar color="#ffc107" /> –{" "}
-          {maxRating.toFixed(1)} <FaStar color="#ffc107" />
+          {minRating.toFixed(1)}{" "}
+          <FaStar color="#ffc107" data-testid="guest-rating-min-star" /> –{" "}
+          {maxRating.toFixed(1)}{" "}
+          <FaStar color="#ffc107" data-testid="guest-rating-max-star" />
           {/* {filters.guestRatingRange[0].toFixed(1)} <FaStar color="#ffc107" /> – {filters.guestRatingRange[1].toFixed(1)} <FaStar color="#ffc107" /> */}
         </span>
         <Box sx={{ width: 1, mt: 2 }}>
