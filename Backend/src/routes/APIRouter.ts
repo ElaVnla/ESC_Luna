@@ -277,25 +277,30 @@ router.get('/hotels/:id/price', async (req, res) => {
     const delayBetweenRetriesMs = 2000;  // smaller delay for testing
     const maxRetries = 3;
     let attempt = 0;
-    let taskId = "";
+    // let taskId = "";
     let data;
 
     while (attempt < maxRetries) {
       const currentQueryParams = new URLSearchParams(queryParams);
-      if (taskId) {
-        currentQueryParams.set('taskId', taskId);
-      }
+      // if (taskId) {
+      //   currentQueryParams.set('taskId', taskId);
+      // }
 
-      const apiUrl = `https://hotelapi.loyalty.dev/api/hotels/${id}/price?${currentQueryParams.toString()}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
+      currentQueryParams.set('partner_id', '1089');
+      currentQueryParams.set('landing_page', 'wl-acme-earn');
+      currentQueryParams.set('product_type', 'earn');
+
+      const apiUrl = `https://hotelapi.loyalty.dev/api/hotels/${id}/price?${currentQueryParams.toString()}`;
+
       console.log(`Calling Loyalty API: ${apiUrl}`);
       const response = await fetch(apiUrl);
       data = await response.json();
+      console.log("Loyalty raw response:", JSON.stringify(data, null, 2));
+      console.log(`Attempt ${attempt + 1}: Completed = ${data.completed}`);
 
-      console.log(`Attempt ${attempt + 1}: Completed = ${data.completed}, TaskId = ${data.taskId}`);
-
-      if (data.taskId && !taskId) {
-        taskId = data.taskId;  // Capture the taskId from first response
-      }
+      // if (data.taskId && !taskId) {
+      //   taskId = data.taskId;  // Capture the taskId from first response
+      // }
 
       if (data.completed) {
         break;  // Data is ready

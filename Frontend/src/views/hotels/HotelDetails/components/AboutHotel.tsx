@@ -176,7 +176,9 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
 
         <RoomOptions roomData={roomData} hotelData={hotelData}/> 
         
-        <HotelPolicies roomPolicies = {roomData.rooms[0].roomAdditionalInfo} />
+        {roomData.rooms?.length > 0 && (
+        <HotelPolicies roomPolicies={roomData.rooms[0].roomAdditionalInfo} />
+        )}
 
       </Container>
       

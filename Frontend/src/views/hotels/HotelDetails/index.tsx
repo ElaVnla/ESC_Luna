@@ -55,62 +55,62 @@
       
     }, []);
 
-    useEffect(() => {
-    const fetchRoom = async () => {
-      try {
-        const response = await fetch(roomDetailApi);
-        const data = await response.json();
-        setRoomData(data);
-        console.log("Room data fetched successfully.", data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-      fetchRoom();
-    }, []);
-
-
     // useEffect(() => {
-      
-
-    //   const fetchRoom = async () => {
-    //     try {
-    //       const response = await fetch(`${roomDetailApi}&_=${Date.now()}`, {
-    //         cache: 'no-store',
-    //         // credentials: 'include', 
-    //       });
-    //       const data = await response.json();
-    //       console.log(data.completed, "ROOM");  // <-- Your debug print
-
-    //       // Stop polling if completed == true
-    //       if (data.completed) {
-    //         console.log("Polling stopped: Task completed.");
-    //         setRoomData(data);
-    //         polling.current = false;
-    //         console.log("Room data fetched successfully.");
-    //         console.log(data);  // <-- Your debug print
-    //         return;
-    //       }
-
-    //       if (polling.current) {
-    //         console.log("Polling again in 500ms...");  // <-- Debug polling continuation
-    //         setTimeout(fetchRoom, 500);
-    //       }
-
-    //     } catch (error) {
-    //       console.error(error);
-    //     }
-    //   };
+    // const fetchRoom = async () => {
+    //   try {
+    //     const response = await fetch(roomDetailApi);
+    //     const data = await response.json();
+    //     setRoomData(data);
+    //     console.log("Room data fetched successfully.", data);
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // };
 
     //   fetchRoom();
-
-    //   // Cleanup on component unmount
-    //   return () => {
-    //     console.log("Component unmounted. Stopping polling.");  // <-- Debug unmount
-    //     polling.current = false;
-    //   };
     // }, []);
+
+
+    useEffect(() => {
+      
+
+      const fetchRoom = async () => {
+        try {
+          const response = await fetch(`${roomDetailApi}&_=${Date.now()}`, {
+            cache: 'no-store',
+            // credentials: 'include', 
+          });
+          const data = await response.json();
+          console.log(data.completed, "ROOM");  // <-- Your debug print
+
+          // Stop polling if completed == true
+          if (data.completed) {
+            console.log("Polling stopped: Task completed.");
+            setRoomData(data);
+            polling.current = false;
+            console.log("Room data fetched successfully.");
+            console.log(data);  // <-- Your debug print
+            return;
+          }
+
+          if (polling.current) {
+            console.log("Polling again in 500ms...");  // <-- Debug polling continuation
+            setTimeout(fetchRoom, 500);
+          }
+
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      fetchRoom();
+
+      // Cleanup on component unmount
+      return () => {
+        console.log("Component unmounted. Stopping polling.");  // <-- Debug unmount
+        polling.current = false;
+      };
+    }, []);
 
     // useEffect(() => {
     //   // let intervalId:any;

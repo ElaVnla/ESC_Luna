@@ -136,7 +136,7 @@ const HotelListCard = ({
         destinationId,
         checkin,
         checkout,
-        guests,
+        guests: String(guests).replace(/\D/g, '') || '1',
       }
     });
   };
