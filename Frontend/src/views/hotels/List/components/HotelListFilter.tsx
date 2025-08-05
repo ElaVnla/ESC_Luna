@@ -1,11 +1,11 @@
-import { useToggle } from '@/hooks'
-import { useState } from 'react';
-import { currency } from '@/states'
-import { Card, CardBody, Col, Collapse } from 'react-bootstrap'
-import { BsStarFill } from 'react-icons/bs'
-import { FaAngleDown } from 'react-icons/fa6'
-import { Link } from 'react-router-dom'
-import { Slider, Box } from '@mui/material';
+import { useToggle } from "@/hooks";
+import { useState } from "react";
+import { currency } from "@/states";
+import { Card, CardBody, Col, Collapse } from "react-bootstrap";
+import { BsStarFill } from "react-icons/bs";
+import { FaAngleDown } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import { Slider, Box } from "@mui/material";
 import { FaStar } from "react-icons/fa";
 
 // temporary, will move to proper file later
@@ -39,7 +39,6 @@ type HotelListFilterProps = {
 const minDistance = 0.1;
 
 const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
-
   const minRating = filters?.guestRatingRange?.[0] ?? 0;
   const maxRating = filters?.guestRatingRange?.[1] ?? 5;
   console.log(minRating);
@@ -56,7 +55,11 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
     setFilters({ ...filters, [key]: updatedList });
   };
 
-  const handleGuestRatingChange = (_: Event, newValue: number[], activeThumb: number) => {
+  const handleGuestRatingChange = (
+    _: Event,
+    newValue: number[],
+    activeThumb: number
+  ) => {
     const [min, max] = filters.guestRatingRange;
 
     if (!Array.isArray(newValue)) return;
@@ -76,20 +79,23 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
       <div className="card card-body rounded-0 p-4">
         <h6 className="mb-2">Star Ratings</h6>
         <ul className="list-inline mb-0 g-3">
-          {['1', '2', '3', '4', '5'].map(star => (
+          {["1", "2", "3", "4", "5"].map((star) => (
             <li className="list-inline-item mb-0" key={star}>
               <input
                 type="checkbox"
                 className="btn-check"
                 id={`star-${star}`}
                 checked={filters.starRatings.includes(star)}
-                onChange={() => handleCheckboxChange(star, filters.starRatings, "starRatings")}
+                onChange={() =>
+                  handleCheckboxChange(star, filters.starRatings, "starRatings")
+                }
               />
               <label
                 className="btn btn-sm btn-light btn-primary-soft-check items-center"
                 htmlFor={`star-${star}`}
               >
-                {star}<BsStarFill />
+                {star}
+                <BsStarFill />
               </label>
             </li>
           ))}
@@ -100,12 +106,13 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
       <div className="card card-body rounded-0 p-4">
         <h6 className="mb-2">Guest Rating</h6>
         <span className="fw-bold">
-          {minRating.toFixed(1)} <FaStar color="#ffc107" /> – {maxRating.toFixed(1)} <FaStar color="#ffc107" />
+          {minRating.toFixed(1)} <FaStar color="#ffc107" /> –{" "}
+          {maxRating.toFixed(1)} <FaStar color="#ffc107" />
           {/* {filters.guestRatingRange[0].toFixed(1)} <FaStar color="#ffc107" /> – {filters.guestRatingRange[1].toFixed(1)} <FaStar color="#ffc107" /> */}
         </span>
-        <Box sx={{ width: 300, mt: 2 }}>
+        <Box sx={{ width: 1, mt: 2 }}>
           <Slider
-            getAriaLabel={() => 'Guest Rating Range'}
+            getAriaLabel={() => "Guest Rating Range"}
             value={filters.guestRatingRange}
             onChange={handleGuestRatingChange}
             step={0.1}
@@ -141,11 +148,11 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
         <h6 className="mb-2">Price range</h6>
         <div className="col-12">
           {[
-            { id: '0-500', label: `Up to ${currency}500` },
-            { id: '500-1000', label: `${currency}500 - ${currency}1000` },
-            { id: '1000-1500', label: `${currency}1000 - ${currency}1500` },
-            { id: '1500-2000', label: `${currency}1500 - ${currency}2000` },
-            { id: '2000+', label: `${currency}2000+` }
+            { id: "0-500", label: `Up to ${currency}500` },
+            { id: "500-1000", label: `${currency}500 - ${currency}1000` },
+            { id: "1000-1500", label: `${currency}1000 - ${currency}1500` },
+            { id: "1500-2000", label: `${currency}1500 - ${currency}2000` },
+            { id: "2000+", label: `${currency}2000+` },
           ].map(({ id, label }) => (
             <div className="form-check" key={id}>
               <input
@@ -153,7 +160,9 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
                 type="checkbox"
                 id={`priceRange${id}`}
                 checked={filters.priceRanges.includes(id)}
-                onChange={() => handleCheckboxChange(id, filters.priceRanges, "priceRanges")}
+                onChange={() =>
+                  handleCheckboxChange(id, filters.priceRanges, "priceRanges")
+                }
               />
               <label className="form-check-label" htmlFor={`priceRange${id}`}>
                 {label}
@@ -163,8 +172,7 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
         </div>
       </div>
     </form>
-    
-  )
-}
+  );
+};
 
-export default HotelListFilter
+export default HotelListFilter;
