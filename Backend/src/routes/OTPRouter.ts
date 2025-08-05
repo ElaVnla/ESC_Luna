@@ -1,10 +1,7 @@
-// src/routes/OTPRouter.ts
 import { Router } from 'express';
-import { sendOTPEmail } from '../Services/EmailService';
+import { sendOTPEmail, sendConfirmationEmail } from '../Services/EmailService';
 
 const router = Router();
-
-// For simplicity, we'll store OTPs in memory for now.
 const otpStore: Record<string, string> = {}; // email -> otp
 
 router.post('/send-otp', async (req, res) => {
@@ -19,34 +16,42 @@ router.post('/send-otp', async (req, res) => {
     await sendOTPEmail(email, otp);
     res.json({ message: 'OTP sent to email' });
   } catch (err) {
-    console.error('Failed to send OTP:', err);
+    console.error('❌ Failed to send OTP:', err);
     res.status(500).json({ error: 'Failed to send OTP' });
   }
 });
-
-router.post('/verify', (req, res) => {
-  const { email, otp } = req.body;
-
-  if (otpStore[email] === otp) {
-    delete otpStore[email]; // OTP is single-use
-    return res.json({ verified: true });
-  }
-
-  return res.status(400).json({ verified: false, error: 'Invalid OTP' });
-});
-
-export default router;
-
 
 router.post('/verify-otp', (req, res) => {
   const { email, otp } = req.body;
 
   const validOtp = otpStore[email];
   if (validOtp && otp === validOtp) {
-    // Optionally clear it after use
     delete otpStore[email];
     res.json({ verified: true });
   } else {
     res.status(401).json({ verified: false, error: 'Invalid OTP' });
   }
 });
+
+router.post('/send-confirmation', async (req, res) => {
+  try {
+    const booking = req.body.booking;
+
+    const email = booking.mainGuest?.email || booking.customer?.email;
+    if (!booking || !email) {
+      console.error('❌ Missing booking or email info:', booking);
+      return res.status(400).json({ message: 'Missing booking or email info.' });
+    }
+
+    console.log('📦 Sending booking confirmation for:', booking);
+
+    await sendConfirmationEmail(booking);  // booking passed in full
+    res.status(200).json({ message: 'Confirmation email sent.' });
+  } catch (error) {
+    console.error('❌ Failed to send confirmation email:', error);
+    res.status(500).json({ error: 'Failed to send confirmation email' });
+  }
+});
+
+
+export default router;

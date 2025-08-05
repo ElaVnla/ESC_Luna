@@ -1,25 +1,42 @@
-import Flatpicker from '@/components/Flatpicker'
-import { SelectFormInput } from '@/components/form'
-import { useState, useEffect } from 'react'
-import { Button, Card, Col, Dropdown, DropdownDivider, DropdownMenu, DropdownToggle, FormLabel, Row } from 'react-bootstrap'
+import Flatpicker from "@/components/Flatpicker";
+import { SelectFormInput } from "@/components/form";
+import { useState, useEffect } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  Dropdown,
+  DropdownDivider,
+  DropdownMenu,
+  DropdownToggle,
+  FormLabel,
+  Row,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-import { BsCalendar, BsDashCircle, BsGeoAlt, BsPerson, BsPlusCircle, BsSearch } from 'react-icons/bs'
-import { parsedestinations } from '../fetchdestinations';
-import { destinationinterface } from '../destinationinterface';
+import {
+  BsCalendar,
+  BsDashCircle,
+  BsGeoAlt,
+  BsPerson,
+  BsPlusCircle,
+  BsSearch,
+} from "react-icons/bs";
+import { parsedestinations } from "../fetchdestinations";
+import { destinationinterface } from "../destinationinterface";
 
 type AvailabilityFormType = {
-  location: string
-  stayFor: Date | Array<Date>
+  location: string;
+  stayFor: Date | Array<Date>;
   guests: {
-    totalguests: number
-    rooms: number
-  }
-}
+    totalguests: number;
+    rooms: number;
+  };
+};
 
 const AvailabilityFilter = () => {
   const initialValue: AvailabilityFormType = {
-    location: '00Hr',
+    location: "00Hr",
     //stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     stayFor: [
       new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // today + 3 days
@@ -29,50 +46,52 @@ const AvailabilityFilter = () => {
       totalguests: 1,
       rooms: 1,
     },
-  }
+  };
 
-  const [formValue, setFormValue] = useState<AvailabilityFormType>(initialValue)
+  const [formValue, setFormValue] =
+    useState<AvailabilityFormType>(initialValue);
 
-  const updateGuests = (type: keyof AvailabilityFormType['guests'], increase: boolean = true) => {
-    const val = formValue.guests[type]
+  const updateGuests = (
+    type: keyof AvailabilityFormType["guests"],
+    increase: boolean = true
+  ) => {
+    const val = formValue.guests[type];
     setFormValue({
       ...formValue,
       guests: {
         ...formValue.guests,
         [type]: increase ? val + 1 : val > 1 ? val - 1 : val,
       },
-    })
-  }
+    });
+  };
 
   const getGuestsValue = (): string => {
-  
     const guests = formValue.guests;
-    const  total = guests.totalguests;
+    const total = guests.totalguests;
     let rooms = guests.rooms;
     let value = "";
-    do
-    {
+    do {
       rooms -= 1;
       value += total;
-      if(rooms > 0)
-      {
-        value += "|"
+      if (rooms > 0) {
+        value += "|";
       }
-    }
-    while(rooms > 0);
+    } while (rooms > 0);
     return value;
-  }
-  const [locations, setLocations] = useState<destinationinterface[]>([])
+  };
+  const [locations, setLocations] = useState<destinationinterface[]>([]);
   useEffect(() => {
-    parsedestinations().then(setLocations)
-  }, [])
-  console.log('Locations:', locations);
+    parsedestinations().then(setLocations);
+  }, []);
+  console.log("Locations:", locations);
 
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const selectedLocation = locations.find(loc => loc.uid === formValue.location);
+    const selectedLocation = locations.find(
+      (loc) => loc.uid === formValue.location
+    );
     if (!selectedLocation) return;
 
     const city = selectedLocation.term;
@@ -81,18 +100,29 @@ const AvailabilityFilter = () => {
     const checkin = encodeURIComponent(start.toISOString());
     const checkout = encodeURIComponent(end.toISOString());
 
-    const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}&guests=${getGuestsValue()}
-    &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(checkout)}`;
+    const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(
+      state
+    )}&guests=${getGuestsValue()}
+    &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(
+      checkout
+    )}`;
+    console.log(city);
+    console.log(state);
     navigate(`/hotels/list?${query}`);
   };
-
 
   return (
     <Row>
       <Col xl={10} className="position-relative mt-n3 mt-xl-n9">
-        <h6 className="d-none d-xl-block mb-3">Check Availability</h6>
+        <h6 style={{ color: "white" }} className="d-none d-xl-block mb-3">
+          Check Availability
+        </h6>
 
-        <Card as="form" onSubmit={handleSubmit} className="shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4">
+        <Card
+          as="form"
+          onSubmit={handleSubmit}
+          className="shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4"
+        >
           <Row className="g-4 align-items-center">
             <Col lg={4}>
               <div className="form-control-border form-control-transparent form-fs-md flex-centered gap-2">
@@ -101,15 +131,17 @@ const AvailabilityFilter = () => {
                 <div className="flex-grow-1">
                   <FormLabel className="form-label">Location</FormLabel>
                   <SelectFormInput
-                  value={formValue.location}
-                  onChange={(val) => setFormValue({ ...formValue, location: val })}
+                    value={formValue.location}
+                    onChange={(val) =>
+                      setFormValue({ ...formValue, location: val })
+                    }
                   >
                     <option value={-1} disabled>
                       Select location
                     </option>
                     {locations.map((loc) => (
                       <option key={loc.uid} value={loc.uid}>
-                        {loc.term}, {loc.state ? `, ${loc.state}` : ''}
+                        {loc.term}, {loc.state ? `, ${loc.state}` : ""}
                       </option>
                     ))}
                   </SelectFormInput>
@@ -128,13 +160,13 @@ const AvailabilityFilter = () => {
                   <Flatpicker
                     value={formValue.stayFor}
                     getValue={(val) => {
-                      setFormValue({ ...formValue, stayFor: val })
+                      setFormValue({ ...formValue, stayFor: val });
                     }}
                     options={{
-                      mode: 'range',
-                      dateFormat: 'd M',
-                      closeOnSelect:false,
-                      minDate:"today"
+                      mode: "range",
+                      dateFormat: "d M",
+                      closeOnSelect: false,
+                      minDate: "today",
                     }}
                   />
                 </div>
@@ -157,18 +189,31 @@ const AvailabilityFilter = () => {
                       onChange={() => {}}
                     />
 
-                    <DropdownMenu className="guest-selector-dropdown" renderOnMount>
+                    <DropdownMenu
+                      className="guest-selector-dropdown"
+                      renderOnMount
+                    >
                       <li className="d-flex justify-content-between">
                         <div>
                           <h6 className="mb-0">Guests</h6>
                           <small>Per Room</small>
                         </div>
                         <div className="hstack gap-1 align-items-center">
-                          <Button variant="link" className="adult-remove p-0 mb-0" onClick={() => updateGuests('totalguests', false)}>
+                          <Button
+                            variant="link"
+                            className="adult-remove p-0 mb-0"
+                            onClick={() => updateGuests("totalguests", false)}
+                          >
                             <BsDashCircle className=" fs-5 fa-fw" />
                           </Button>
-                          <h6 className="guest-selector-count mb-0 adults">{formValue.guests.totalguests ?? 0}</h6>
-                          <Button variant="link" className="adult-add p-0 mb-0" onClick={() => updateGuests('totalguests')}>
+                          <h6 className="guest-selector-count mb-0 adults">
+                            {formValue.guests.totalguests ?? 0}
+                          </h6>
+                          <Button
+                            variant="link"
+                            className="adult-add p-0 mb-0"
+                            onClick={() => updateGuests("totalguests")}
+                          >
                             <BsPlusCircle className=" fs-5 fa-fw" />
                           </Button>
                         </div>
@@ -182,11 +227,23 @@ const AvailabilityFilter = () => {
                           <small>Per No. Of Guests</small>
                         </div>
                         <div className="hstack gap-1 align-items-center">
-                          <Button variant="link" type="button" className="room-remove p-0 mb-0" onClick={() => updateGuests('rooms', false)}>
+                          <Button
+                            variant="link"
+                            type="button"
+                            className="room-remove p-0 mb-0"
+                            onClick={() => updateGuests("rooms", false)}
+                          >
                             <BsDashCircle className=" fs-5 fa-fw" />
                           </Button>
-                          <h6 className="guest-selector-count mb-0 rooms">{formValue.guests.rooms ?? 0}</h6>
-                          <Button variant="link" type="button" className="btn btn-link room-add p-0 mb-0" onClick={() => updateGuests('rooms')}>
+                          <h6 className="guest-selector-count mb-0 rooms">
+                            {formValue.guests.rooms ?? 0}
+                          </h6>
+                          <Button
+                            variant="link"
+                            type="button"
+                            className="btn btn-link room-add p-0 mb-0"
+                            onClick={() => updateGuests("rooms")}
+                          >
                             <BsPlusCircle className=" fs-5 fa-fw" />
                           </Button>
                         </div>
@@ -199,14 +256,17 @@ const AvailabilityFilter = () => {
           </Row>
 
           <div className="btn-position-md-middle">
-            <button type="submit" className="icon-lg btn btn-round btn-primary mb-0 flex-centered">
+            <button
+              type="submit"
+              className="icon-lg btn btn-round btn-primary mb-0 flex-centered"
+            >
               <BsSearch className=" fa-fw" />
             </button>
           </div>
         </Card>
       </Col>
     </Row>
-  )
-}
+  );
+};
 
-export default AvailabilityFilter
+export default AvailabilityFilter;

@@ -42,7 +42,7 @@ const Header = () => {
         </div>
       </div>
       <div className="line" />
-      <div className={`step ${activeStep === 2 && 'active'}`} onClick={() => goToStep(2)}>
+      <div className={`step ${activeStep === 2 && 'active'}`}>
         <div className="text-center">
           <button type="button" className="btn btn-link step-trigger mb-0" role="tab" id="steppertrigger3" aria-controls="step-3">
             <span className="bs-stepper-circle">3</span>

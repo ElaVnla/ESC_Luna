@@ -1,6 +1,6 @@
-import bgImg5 from '@/assets/images/bg/05.jpg'
-import { Col, Container, Row } from 'react-bootstrap'
-import AvailabilityFilter from '../../Home/components/AvailabilityFilter'
+import bgImg5 from "@/assets/images/bg/05.jpg";
+import { Col, Container, Row } from "react-bootstrap";
+import AvailabilityFilter from "../../Home/components/AvailabilityFilter";
 
 const Hero = () => {
   return (
@@ -8,18 +8,23 @@ const Hero = () => {
       <Container>
         <div
           className="rounded-3 p-3 p-sm-5"
-          style={{ backgroundImage: `url(${bgImg5})`, backgroundPosition: 'center center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}
+          style={{
+            backgroundImage: `url(${bgImg5})`,
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+          }}
         >
           <Row className="row my-2 my-xl-5">
             <Col md={8} className="mx-auto">
-              <h1 className="text-center text-white">Hotels in Singapore</h1>
+              <h1 className="text-center text-white">Search for hotels now!</h1>
             </Col>
           </Row>
           <AvailabilityFilter />
         </div>
       </Container>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

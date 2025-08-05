@@ -1,6 +1,6 @@
 // src/Routes/GuestRouter.ts
 import { Router } from 'express';
-import { insertGuests, getGuestsByBookingId } from '../Services/GuestService';
+import { insertGuests, getGuestsByBookingId, updateGuestsByBookingId } from '../Services/GuestService';
 import { GuestModel } from '../models/GuestModel';
 
 const router = Router();
@@ -35,4 +35,20 @@ router.post('/create', async (req, res) => {
   }
 });
 
+// PUT update guests by booking_id
+//flow 2
+router.put('/:booking_id', async (req, res) => {
+    const { booking_id } = req.params;
+    const guests = req.body.guests;
+  
+    try {
+      const result = await updateGuestsByBookingId(booking_id, guests);
+      res.status(200).json({ message: 'Guests updated', result });
+    } catch (err) {
+      console.error('Guest update error:', err);
+      res.status(500).json({ error: 'Failed to update guests' });
+    }
+  });
+
+  
 export default router;

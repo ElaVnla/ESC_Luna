@@ -38,7 +38,18 @@ function processAmenities(amenities: Record<string,boolean>) : string[] {
     exteriorRoomEntrance: "Exterior Room Entrance",
     videoCheckOut: "Video Check-out",
     sauna: "Sauna",
-    dryCleaning: "Dry Cleaning"
+    dryCleaning: "Dry Cleaning",
+    airportTransportation: "Airport Transportation",
+    restrictedAccess: "Restricted Access",
+    carRentDesk: "Car-rent Desk",
+    inHouseBar: "In-house Bar",
+    coffeeTeaMaker: "Coffee & Tea Maker",
+    valetParking: "Valet Parking",
+    handicapAccessible: "Handicap Accessible",
+    petsAllowed: "Pets Allowed",
+    childrenAllowed: "Children Allowed",
+    golfCourse: "Golf Course"
+
   }
   return Object.entries(amenities)
     .filter(([_, value]) => value)
@@ -53,9 +64,9 @@ export async function getHotelsByCity(city: string, state?: string) {
     city
   };
 
-  if (state) {
-    query.state = state;
-  }
+  // if (state) {
+  //   query.state = state;
+  // }
 
   const hotels = await hotelsRepo.findBy(query);
   return hotels;
@@ -100,11 +111,15 @@ export async function storeHotels(hotelsData: any[]) {
   console.log(`Attempting to store ${hotelsData.length} hotels`);
 
   for (const data of hotelsData) {
+    //console.log(data.original_metadata?.city);
+    //console.log(data.original_metadata?.state);
+    //console.log(data.original_metadata?.country);
     const hotel: Hotel = {
       id: data.id,
       name: data.name,
       address: data.address,
-      rating: data.rating,
+      star_rating: data.rating,
+      guest_rating: data.trustyou?.score?.kaligo_overall,
       latitude: data.latitude,
       longitude: data.longitude,
       phone_number: "null",
@@ -116,11 +131,15 @@ export async function storeHotels(hotelsData: any[]) {
       postal_code: "null",
       city: data.original_metadata?.city || "",
       state: data.original_metadata?.state || "",
-      country_code: data.original_metadata?.country || "SG",
+      // city: [data.original_metadata?.city, data.original_metadata?.country]
+      //    .filter(Boolean)
+      //    .join(", "),
+      //state: data.original_metadata?.state || "",
+      country_code: data.original_metadata?.country || "",
       image_count: data.image_details?.count || 0,
       primary_destination_id: data.primary_destination_id,
       img_baseurl: data.image_details?.prefix || null,
-      default_img_index: data.image_details?.default_image_index || null,
+      default_img_index: data.default_image_index || null,
       img_suffix: data.image_details?.suffix || null
     };
     // await repo.save(hotel);
@@ -158,26 +177,48 @@ export async function getFilteredHotels(filters: any) {
     qb.andWhere("hotel.city = :city", { city: filters.city });
   }
 
-  if (filters.rating && Array.isArray(filters.rating)) {
-    qb.andWhere("hotel.rating IN (:...ratings)", { ratings: filters.rating });
+  if (filters.star_rating && Array.isArray(filters.star_rating)) {
+    qb.andWhere("hotel.star_rating IN (:...ratings)", { ratings: filters.star_rating });
   }
 
-  if (filters.guestRating && Array.isArray(filters.guestRating)) {
-    qb.andWhere("hotel.guestRating IN (:...guestRatings)", { guestRatings: filters.guestRating });
+  if (filters.guest_rating_min !== undefined && filters.guest_rating_max !== undefined) {
+    qb.andWhere(
+      "hotel.guest_rating BETWEEN :minGuest AND :maxGuest",
+      {
+        minGuest: filters.guest_rating_min,
+        maxGuest: filters.guest_rating_max,
+      }
+    );
   }
+
+  // if (filters.guest_rating && Array.isArray(filters.guest_rating)) {
+  //   //qb.andWhere("hotel.guest_rating IN (:...guestRatings)", { guestRatings: filters.guest_rating });
+  //   qb.andWhere("hotel.guest_rating >= :minGuestRating", { guestRatings: filters.guest_rating });
+  // }
 
   if (filters.priceRanges && Array.isArray(filters.priceRanges)) {
-    const rangeConditions = filters.priceRanges.map((range: string, index: number) => {
-      const [min, max] = range.split('-').map(Number);
+    const rangeConditions = filters.priceRanges.map((range: { min: number; max: number }, index: number) => {
+      //const [min, max] = range.split('-').map(Number);
       return `(hotel.price BETWEEN :min${index} AND :max${index})`;
     });
 
     const rangeParams = Object.fromEntries(
-      filters.priceRanges.flatMap((range: string, index: number) => {
-        const [min, max] = range.split('-').map(Number);
-        return [[`min${index}`, min], [`max${index}`, max]];
-      })
+      filters.priceRanges.flatMap((range: { min: number; max: number }, index: number) => [
+        [`min${index}`, range.min],
+        [`max${index}`, range.max],
+      ])
     );
+
+    console.log(filters.star_rating);
+    console.log(filters.guest_rating);
+    console.log(filters.priceRanges);
+
+    // const rangeParams = Object.fromEntries(
+    //   filters.priceRanges.flatMap((range: string, index: number) => {
+    //     const [min, max] = range.split('-').map(Number);
+    //     return [[`min${index}`, min], [`max${index}`, max]];
+    //   })
+    // );
 
     qb.andWhere(rangeConditions.join(' OR '), rangeParams);
   }

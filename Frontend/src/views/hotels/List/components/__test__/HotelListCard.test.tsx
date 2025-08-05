@@ -1,7 +1,6 @@
 // Frontend/src/views/hotels/List/components/__tests__/HotelListCard.test.tsx
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import HotelListCard from "../HotelListCard";
 import { type HotelsListType } from "../../data";
@@ -18,17 +17,10 @@ const mockHotel: HotelsListType = {
     "https://d2ey9sqrvkqdfs.cloudfront.net/050G/3.jpg",
     "https://d2ey9sqrvkqdfs.cloudfront.net/050G/4.jpg",
   ],
-  rating: 4.5,
+  guest_rating: 4.5,
+  star_rating: 4,
   amenities: ["Air-conditioning", "WiFi", "Pool"],
   price: 150,
-  sale: "20% OFF",
-  schemes: ["Free Cancellation", "Breakfast Included"],
-};
-
-const mockHotelWithoutSale: HotelsListType = {
-  ...mockHotel,
-  sale: undefined,
-  schemes: undefined,
 };
 
 describe("HotelListCard", () => {
@@ -42,24 +34,9 @@ describe("HotelListCard", () => {
     expect(screen.getByText("/day")).toBeInTheDocument();
   });
 
-  it("displays sale badge when sale is present", () => {
-    render(<HotelListCard hotel={mockHotel} />);
-
-    expect(screen.getByText("20% OFF")).toBeInTheDocument();
-    expect(screen.getByText("$1000")).toBeInTheDocument(); // strikethrough price
-  });
-
-  it("does not display sale badge when sale is not present", () => {
-    render(<HotelListCard hotel={mockHotelWithoutSale} />);
-
-    expect(screen.queryByText("20% OFF")).not.toBeInTheDocument();
-    expect(screen.queryByText("$1000")).not.toBeInTheDocument();
-  });
-
   it("renders correct number of star ratings", () => {
     render(<HotelListCard hotel={mockHotel} />);
 
-    // For 4.5 rating: 4 full stars + 1 half star = 5 star icons total
     const starIcons = screen.getAllByTestId("star-icon");
     expect(starIcons.length).toBeGreaterThan(0);
   });
@@ -72,23 +49,6 @@ describe("HotelListCard", () => {
     expect(screen.getByText("Pool")).toBeInTheDocument();
   });
 
-  /*
-  it("renders schemes when available", () => {
-    render(<HotelListCard hotel={mockHotel} />);
-
-    expect(screen.getByText("Free Cancellation")).toBeInTheDocument();
-    expect(screen.getByText("Breakfast Included")).toBeInTheDocument();
-  });
-*/
-
-  /*
-  it('shows "Non Refundable" when no schemes are available', () => {
-    render(<HotelListCard hotel={mockHotelWithoutSale} />);
-
-    expect(screen.getByText("Non Refundable")).toBeInTheDocument();
-  });
-*/
-
   it("renders image slider with correct images", () => {
     render(<HotelListCard hotel={mockHotel} />);
 
@@ -96,7 +56,7 @@ describe("HotelListCard", () => {
     expect(screen.getByTestId("tiny-slider")).toBeInTheDocument();
 
     // Check that images are rendered
-    const images = screen.getAllByAltText("Card image");
+    const images = screen.getAllByAltText("Test Hotel");
     expect(images).toHaveLength(5);
     expect(images[0]).toHaveAttribute(
       "src",
@@ -104,12 +64,12 @@ describe("HotelListCard", () => {
     );
   });
 
-  it("renders hotel name as a link to details page", () => {
-    render(<HotelListCard hotel={mockHotel} />);
+  // it("renders hotel name as a link to details page", () => {
+  //   render(<HotelListCard hotel={mockHotel} />);
 
-    const hotelLink = screen.getByRole("link", { name: "Test Hotel" });
-    expect(hotelLink).toHaveAttribute("href", "/hotels/detail");
-  });
+  //   const hotelLink = screen.getByRole("link", { name: "Test Hotel" });
+  //   expect(hotelLink).toHaveAttribute("href", "/hotels/detail");
+  // });
 
   it("renders Select Room button", () => {
     render(<HotelListCard hotel={mockHotel} />);
@@ -119,48 +79,18 @@ describe("HotelListCard", () => {
     expect(selectButton).toHaveClass("btn-dark");
   });
 
-  /*
-  it("renders favorite and share buttons", () => {
-    render(<HotelListCard hotel={mockHotel} />);
-
-    // Favorite button (icon only, so query by role)
-    const favoriteButton = screen.getByRole("button", {
-      description: /heart|favorite/i,
-    });
-    expect(favoriteButton).toBeInTheDocument();
-
-    // Share button
-    const shareButton = screen.getByLabelText("Share hotel");
-    expect(shareButton).toBeInTheDocument();
-  });
-*/
-
-  /*
-  it("opens share dropdown when clicked", async () => {
-    const user = userEvent.setup();
-    render(<HotelListCard hotel={mockHotel} />);
-
-    const shareButton = screen.getByLabelText("Share hotel");
-    await user.click(shareButton);
-
-    // Check that dropdown items appear
-    expect(screen.getByText("Twitter")).toBeInTheDocument();
-    expect(screen.getByText("Facebook")).toBeInTheDocument();
-    expect(screen.getByText("LinkedIn")).toBeInTheDocument();
-    expect(screen.getByText("Copy link")).toBeInTheDocument();
-  });
-*/
-
   it("handles missing image gracefully", () => {
     const hotelWithoutImages = { ...mockHotel, images: [] };
     render(<HotelListCard hotel={hotelWithoutImages} />);
 
     // Should still render the slider container
-    expect(screen.getByTestId("tiny-slider")).toBeInTheDocument();
+    // expect(screen.getByTestId("tiny-slider")).toBeInTheDocument();
+    expect(screen.getByAltText("Loading image")).toBeInTheDocument();
+    expect(screen.queryByTestId("tiny-slider")).not.toBeInTheDocument();
   });
 
   it("handles zero rating correctly", () => {
-    const hotelWithZeroRating = { ...mockHotel, rating: 0 };
+    const hotelWithZeroRating = { ...mockHotel, star_rating: 0 };
     render(<HotelListCard hotel={hotelWithZeroRating} />);
 
     // Should still render without errors

@@ -9,6 +9,7 @@ import { RoomData } from '@/models/RoomDetailsApi'
 import SplashScreen from '@/components/SplashScreen'
 
 import roomMockData2 from './price.json'
+import TopNavBar from '@/layouts/UserLayout/TopNavBar'
 const HotelDetails = () => {
   const [hotelData, setHotelData] = useState<HotelData>();
   const [roomData, setRoomData] = useState<RoomData>();
@@ -90,7 +91,7 @@ const HotelDetails = () => {
     <>
       <PageMetaData title="Hotel - Details" />
 
-      <TopNavBar4 />
+      <TopNavBar />
 
       <main>
         <AvailabilityFilter />

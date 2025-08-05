@@ -11,13 +11,34 @@ export type HotelsListType = {
   id: number
   name: string
   address: string
-  sale?: string
   images: string[]
-  rating: number
+  star_rating: number
+  guest_rating: number
   amenities: string[]
   price: number
-  schemes?: string[]
+  // schemes?: string[]
 }
+// export type HotelsListType = {
+//   id: string,
+//   name: string,
+//   address: string,
+//   guest_rating: number,
+//   star_rating: number,
+//   latitude: number,
+//   longitude: number,
+//   phone_number: string,
+//   contact_email: string,
+//   fax_number: string,
+//   price: number,
+//   amenities: string,
+//   description: string,
+//   postal_code: string,
+//   city: string,
+//   state: string,
+//   country_code: string,
+//   image_count: number,
+//   primary_destination_id: string
+// }
 
 // export type HotelsListType = {
 //   id: string;
@@ -75,26 +96,7 @@ export type NotificationType = {
 //     features: ['Air Conditioning', 'Wifi', 'Kitchen', 'Pool'],
 //     rating: 4.5,
 //     schemes: ['Free Cancellation till 7 Jan 2022'],
-//   },
-//   {
-//     id: 4,
-//     name: 'Park Plaza Lodge Hotel',
-//     address: '5855 W Century Blvd, Los Angeles - 9004',
-//     images: [hotel8, hotel2, hotel3, hotel7],
-//     price: 845,
-//     features: ['Air Conditioning', 'Wifi', 'Kitchen', 'Pool'],
-//     rating: 3.5,
-//     schemes: ['Free Cancellation till 7 Jan 2022', 'Free Breakfast'],
-//   },
-//   {
-//     id: 5,
-//     name: 'Beverly Hills Marriott',
-//     address: '31J W Spark Street, California - 24578',
-//     images: [hotel11],
-//     price: 645,
-//     features: ['Air Conditioning', 'Wifi', 'Kitchen', 'Pool'],
-//     rating: 4.5,
-//   },
+//   }
 // ]
 
 export const notificationData: NotificationType[] = [
