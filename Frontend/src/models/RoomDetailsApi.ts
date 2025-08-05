@@ -84,7 +84,7 @@ export type HotelsRoomCardType = {
   images: RoomImage[]
   features: string
   price: number
-  ammenities: string[]
+  amenities: string[]
   schemes?: string[]
   count: number
 }
