@@ -57,8 +57,9 @@
     }
 
     const chunk_size = 2
-    const amenitiesChunks = splitArray(amenities.slice(0,14), chunk_size)
-    const extraChunks = splitArray(amenities.slice(14), chunk_size)
+    const safeAmenities = amenities || [];
+    const amenitiesChunks = splitArray(safeAmenities.slice(0, 14), chunk_size);
+    const extraChunks = splitArray(safeAmenities.slice(14), chunk_size);
     console.log(extraChunks)
     return (
         <Card className="shadow py-4 px-3">

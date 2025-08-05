@@ -161,7 +161,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
               <Col>
                 {hotelData.amenities_ratings? (hotelData.amenities_ratings.map((amenity,__)=>{
                     return(
-                    <div className=' d-flex align-items-center pb-1' style={{minHeight:"25px"}}>
+                    <div  key={amenity.name} className=' d-flex align-items-center pb-1' style={{minHeight:"25px"}}>
                       <span className='' style={{ minWidth:"20%"}}>{amenity.name}</span>
                       <ProgressBar className='flex-grow-1' now={amenity.score} variant="success" style={{minHeight:"1.2rem", maxWidth:"400px"}}/>
                       <span className='mx-2 pe-4 ps-3'>{amenity.score}</span>
