@@ -32,7 +32,7 @@ const amenityNames = new Map<string, string>(
 
 const AboutHotel = ({hotelData}: Props) => {
   if (!hotelData) return null;
-  // console.log(roomData, "In About Hotel");
+
   function splitString(inputString: string) {
     const [mainText, remainText] = inputString.split("Distances are displayed to the nearest 0.1 mile and kilometer. <br /> ")
     const stringSplitter = "The nearest airports are:"
@@ -42,7 +42,6 @@ const AboutHotel = ({hotelData}: Props) => {
   }
 
   const {mainText, distText, extraText} = splitString(hotelData.description)
-  // console.log(extraText, "textetxte extra", distText)
 
 
   function camelCaseToString(camel: string) {
@@ -53,8 +52,6 @@ const AboutHotel = ({hotelData}: Props) => {
 
     return result;
   }
-  console.log(Object.keys(hotelData.amenities).length == 0 , "In About Hotel")
-
 
   const { isOpen, toggle } = useToggle()
   const cleanedDistText = distText.replace(/\/\s*[\d.]+\s*mi/g, '');

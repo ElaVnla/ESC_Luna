@@ -116,3 +116,15 @@ export async function getHotelIdFromBooking(bookingId: string): Promise<string |
 
   return result.length > 0 ? result[0].hotel_id : null;
 }
+
+export async function getBookedRoomId(hotelId: string, checkIn: string, checkOut: string): Promise<string | null> {
+  const db = Database;
+
+  const roomIds = await db.query(
+    `SELECT room_id FROM bookings WHERE hotel_id = ? AND NOT (end_date <= ? OR start_date >= ?)`,
+    [hotelId, checkIn, checkOut]
+  );
+
+  return roomIds
+}
+

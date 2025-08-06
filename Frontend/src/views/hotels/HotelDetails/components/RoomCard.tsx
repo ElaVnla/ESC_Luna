@@ -1,13 +1,9 @@
-    import { TinySlider } from '@/components'
     import { useToggle } from '@/hooks'
-    import { useLayoutContext } from '@/states'
     import { splitArray } from '@/utils'
     import { Button, Card, CardBody, CardHeader, Carousel, Col, Collapse, Image, Modal, ModalBody, ModalHeader, Row } from 'react-bootstrap'
-    import { renderToString } from 'react-dom/server'
-    import { BsArrowLeft, BsArrowRight, BsEyeFill } from 'react-icons/bs'
+    import { BsEyeFill } from 'react-icons/bs'
     import { FaAngleDown, FaAngleUp, FaCheckCircle } from 'react-icons/fa'
     import { Link } from 'react-router-dom'
-    import { type TinySliderSettings } from 'tiny-slider'
     import { Fragment, useState } from 'react'
     import 'tiny-slider/dist/tiny-slider.css'
     import { HotelsRoomCardType, Rooms } from '@/models/RoomDetailsApi'
@@ -34,20 +30,19 @@
     }
 
     const handleSelectRoom = () => {
-    navigate('/hotels/review-booking', {
-      state: {
-        hotelData,
-        roomDataf4,
-        hotelParams
-      }
-    });
-  }
+        navigate('/hotels/review-booking', {
+            state: {
+                hotelData,
+                roomDataf4,
+                hotelParams
+        }
+        });
+    }
 
     const chunk_size = 2
     const safeAmenities = amenities || [];
     const amenitiesChunks = splitArray(safeAmenities.slice(0, 14), chunk_size);
     const extraChunks = splitArray(safeAmenities.slice(14), chunk_size);
-    console.log(extraChunks)
     return (
         <Card className="shadow py-4 px-3">
         <Row className="g-4">

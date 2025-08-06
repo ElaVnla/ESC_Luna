@@ -5,11 +5,9 @@
   import { useEffect, useRef, useState } from 'react'
   import { HotelData, HotelParams } from '@/models/HotelDetailsApi'
   import { RoomData } from '@/models/RoomDetailsApi'
-  import SplashScreen from '@/components/SplashScreen'
-
   // import roomMockData2 from './price.json'
   import TopNavBar from '@/layouts/UserLayout/TopNavBar'
-  import { useLocation, useParams, useSearchParams } from 'react-router-dom'
+  import { useLocation} from 'react-router-dom'
   import RoomOptions from './components/RoomOptions'
   import HotelPolicies from './components/HotelPolicies'
   import { Container } from 'react-bootstrap'
@@ -18,24 +16,25 @@
   const HotelDetails = () => {
     const location = useLocation();
     const { hotelParams } = location.state as { hotelParams: HotelParams };
-    console.log(hotelParams)
     const { hotelId, destinationId, checkIn, checkOut, guests } = hotelParams;
 
     const roomDetailApi = `http://localhost:3000/api/hotels/${hotelId}/price?destination_id=${destinationId}&checkin=${checkIn}&checkout=${checkOut}&lang=en_US&currency=SGD&partner_id=16&country_code=SG&guests=${guests}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
     const hotelDetailApi = `http://localhost:3000/api/hotels/${hotelId}`;
 
-    console.log(hotelDetailApi);
-    const polling = useRef(true);  // <-- useRef for proper state sharing in closures
+    console.log("Room Api link:", roomDetailApi);
+    console.log("Hotel Api link:",hotelDetailApi);
+
+    const polling = useRef(true);  //useRef for proper state sharing in closures
     const [hotelData, setHotelData] = useState<HotelData>();
     const [roomData, setRoomData] = useState<RoomData>();
     const [loaded, setLoaded] = useState(false);
     
-
     // useEffect(() => {
     //   // Cast JSON to RoomData
     //   setMockRoom(roomMockData2 as RoomData);
     // }, []);
 
+    // Get Hotel Details
     useEffect(() => {
       
       const fetchHotel = async () => {
@@ -50,10 +49,9 @@
         }
       };
       fetchHotel();
-
-      
     }, []);
 
+    // Get Room Details
     useEffect(() => {
       const fetchRoom = async () => {
         try {
@@ -92,14 +90,13 @@
       };
     }, []);
 
+
+    // To show "Load room details" only after "Load Hotel" is gone
     useEffect(() => {
       if (hotelData) {
         setLoaded(true);
       }
     }, [hotelData]);
-
-    console.log(hotelData?.id, "In Index");
-    console.log(roomData?.completed, "In Index");
     
     return (
       <>
