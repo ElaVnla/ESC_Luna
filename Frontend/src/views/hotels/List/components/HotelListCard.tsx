@@ -102,6 +102,7 @@ const HotelListCard = ({
   const navigate = useNavigate();
 
   const handleNavigateToDetail = () => {
+    const cleanedGuests = String(guests).replace(/\D/g, '') || '1';
     navigate(getHotelDetailUrl({
       hotel_id: hotel.id.toString(),
       city,
@@ -109,7 +110,7 @@ const HotelListCard = ({
       destination_id: destinationId,
       checkin,
       checkout,
-      guests,
+      guests: cleanedGuests,
     }));
   };
 
