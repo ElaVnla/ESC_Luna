@@ -70,8 +70,8 @@ const mockRoomCardProps = {
   },
 
   roomDataf4: {
-    features: '<p>Test room feature</p>',
-    roomAdditionalInfo: '<p>No smoking</p>',
+    features: 'Test room feature',
+    roomAdditionalInfo: 'No smoking',
   },
 };
 
