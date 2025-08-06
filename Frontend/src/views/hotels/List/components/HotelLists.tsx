@@ -8,13 +8,11 @@ import {
   OffcanvasHeader,
   Row,
 } from "react-bootstrap";
-import {
-  BsExclamationOctagonFill
-} from "react-icons/bs";
+import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaAngleLeft, FaAngleRight, FaSliders } from "react-icons/fa6";
 import HotelListCard from "./HotelListCard";
 import HotelListFilter from "./HotelListFilter";
-import MapComponent from "./HotelsMaps"
+import MapComponent from "./HotelsMaps";
 
 import { HotelsListType } from "../utils/HotelTypes";
 import { useEffect, useState, useRef } from "react";
@@ -426,8 +424,7 @@ const HotelLists = () => {
                 className="nav nav-pills nav-pills-dark"
                 id="tour-pills-tab"
                 role="tablist"
-              >
-              </ul>
+              ></ul>
             </div>
           </Col>
         </Row>
