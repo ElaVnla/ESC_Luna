@@ -24,6 +24,7 @@ import { HotelFetchProps } from "../utils/HotelTypes";
 import { getHotelDetailUrl } from "../utils/HotelNavigation";
 
 import "tiny-slider/dist/tiny-slider.css";
+import { HotelParams } from "@/models/HotelDetailsApi";
 
 const getGuestRatingDetails = (score: number) => {
   if (score >= 4.5) return { label: "Excellent", color: "success" };
@@ -102,7 +103,18 @@ const HotelListCard = ({
   const navigate = useNavigate();
 
   const handleNavigateToDetail = () => {
-    const cleanedGuests = String(guests).replace(/\D/g, '') || '1';
+    navigate(`/hotels/detail`,{
+      state: {
+        hotelParams:{
+          hotelId: id.toString(),
+          destinationId: destinationId || "",
+          checkIn: checkin || "",
+          checkOut: checkout || "",
+          guests: String(guests).replace(/\D/g, '') || '1',
+        } as HotelParams
+      }  
+    });
+<!--     const cleanedGuests = String(guests).replace(/\D/g, '') || '1';
     navigate(getHotelDetailUrl({
       hotel_id: hotel.id.toString(),
       city,
@@ -111,7 +123,7 @@ const HotelListCard = ({
       checkin,
       checkout,
       guests: cleanedGuests,
-    }));
+    })); -->
   };
 
   return (

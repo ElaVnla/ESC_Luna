@@ -3,40 +3,38 @@
   import AvailabilityFilter from './components/AvailabilityFilter'
   import HotelGallery from './components/HotelGallery'
   import { useEffect, useRef, useState } from 'react'
-  import { HotelData } from '@/models/HotelDetailsApi'
+  import { HotelData, HotelParams } from '@/models/HotelDetailsApi'
   import { RoomData } from '@/models/RoomDetailsApi'
-  import SplashScreen from '@/components/SplashScreen'
-
-  import roomMockData2 from './price.json'
+  // import roomMockData2 from './price.json'
   import TopNavBar from '@/layouts/UserLayout/TopNavBar'
-  import { useLocation, useParams, useSearchParams } from 'react-router-dom'
+  import { useLocation} from 'react-router-dom'
+  import RoomOptions from './components/RoomOptions'
+  import HotelPolicies from './components/HotelPolicies'
+  import { Container } from 'react-bootstrap'
+
+
   const HotelDetails = () => {
     const location = useLocation();
-    const { id, destinationId, checkin, checkout, guests } = location.state as {
-      id: string;
-      destinationId: string;
-      checkin: string;
-      checkout: string;
-      guests: string;
-    };
+    const { hotelParams } = location.state as { hotelParams: HotelParams };
+    const { hotelId, destinationId, checkIn, checkOut, guests } = hotelParams;
 
-    const roomDetailApi = `http://localhost:3000/api/hotels/${id}/price?destination_id=${destinationId}&checkin=${checkin}&checkout=${checkout}&lang=en_US&currency=SGD&partner_id=16&country_code=SG&guests=${guests}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
-    const hotelDetailApi = `http://localhost:3000/api/hotels/${id}`;
+    const roomDetailApi = `http://localhost:3000/api/hotels/${hotelId}/price?destination_id=${destinationId}&checkin=${checkIn}&checkout=${checkOut}&lang=en_US&currency=SGD&partner_id=16&country_code=SG&guests=${guests}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
+    const hotelDetailApi = `http://localhost:3000/api/hotels/${hotelId}`;
 
-    console.log(roomDetailApi);
-    const polling = useRef(true);  // <-- useRef for proper state sharing in closures
+    console.log("Room Api link:", roomDetailApi);
+    console.log("Hotel Api link:",hotelDetailApi);
+
+    const polling = useRef(true);  //useRef for proper state sharing in closures
     const [hotelData, setHotelData] = useState<HotelData>();
     const [roomData, setRoomData] = useState<RoomData>();
-    const [mockRoom, setMockRoom] = useState<RoomData>();
-    // const [found, setFound] = useState(false);
-    // const [count, setCount] = useState(1);
+    const [loaded, setLoaded] = useState(false);
+    
+    // useEffect(() => {
+    //   // Cast JSON to RoomData
+    //   setMockRoom(roomMockData2 as RoomData);
+    // }, []);
 
-
-    useEffect(() => {
-      // Cast JSON to RoomData
-      setMockRoom(roomMockData2 as RoomData);
-    }, []);
-
+    // Get Hotel Details
     useEffect(() => {
       
       const fetchHotel = async () => {
@@ -51,29 +49,10 @@
         }
       };
       fetchHotel();
-
-      
     }, []);
 
-    // useEffect(() => {
-    // const fetchRoom = async () => {
-    //   try {
-    //     const response = await fetch(roomDetailApi);
-    //     const data = await response.json();
-    //     setRoomData(data);
-    //     console.log("Room data fetched successfully.", data);
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // };
-
-    //   fetchRoom();
-    // }, []);
-
-
+    // Get Room Details
     useEffect(() => {
-      
-
       const fetchRoom = async () => {
         try {
           const response = await fetch(`${roomDetailApi}&_=${Date.now()}`, {
@@ -89,7 +68,6 @@
             setRoomData(data);
             polling.current = false;
             console.log("Room data fetched successfully.");
-            console.log(data);  // <-- Your debug print
             return;
           }
 
@@ -112,89 +90,14 @@
       };
     }, []);
 
-    // useEffect(() => {
-    //   // let intervalId:any;
-    //   let polling = true;
-    //   const fetchRoom = async () => {
-    //     try {
-    //       const response = await fetch(`${roomDetailApi}&_=${new Date().getTime()}`, {
-    //         cache: 'no-store'
-    //       });
-    //       const data = await response.json();
-    //       console.log(data.completed, "ROOM")
-    //       // if(data.completed){
-    //       //   setFound(true)
-    //       // }
-    //       // Stop polling if completed == true
-    //       if (data.completed) {
-    //         // clearInterval(intervalId);
-    //         console.log("Polling stopped: Task completed.");
-    //         setRoomData(data);
-    //         polling = false;
-    //         console.log(data);
-    //         return;
-    //       }
-    //       if (polling) {
-    //         setTimeout(fetchRoom, 500);
-    //       }
-          
-    //     } catch (error) {
-    //       console.error(error);
-    //     }
-        
-    //   };
-    //   fetchRoom();
 
-    //   // while(!found && count <= 3){
-    //   //     setCount(count + 1)
-    //   //     fetchRoom
-    //   //   }
-
-    //   // Start polling every 3 seconds
-    //   // intervalId = setInterval(fetchRoom, 500);
-      
-
-    //   // Cleanup interval on unmount
-    //   return () => {
-    //     polling = false;
-    //   };  
-        
-    //     //clearInterval(intervalId);
-
-      
-    // }, []);
-    // console.log(roomData?.completed);
-    console.log(hotelData?.id, "In Index");
-    console.log(roomData, "In Index");
+    // To show "Load room details" only after "Load Hotel" is gone
+    useEffect(() => {
+      if (hotelData) {
+        setLoaded(true);
+      }
+    }, [hotelData]);
     
-    
-
-  //   const pollHotelApi = async (
-  //   url: string,
-  //   intervalMs: number = 2000,
-  //   maxRetries: number = 15
-  // ): Promise<HotelApiResponse> => {
-  //   let retries = 0;
-
-  //   while (retries < maxRetries) {
-  //     const response = await fetch(url);
-  //     if (!response.ok) {
-  //       throw new Error(`API error: ${response.status}`);
-  //     }
-
-  //     const data: HotelApiResponse = await response.json();
-
-  //     if (data.completed) {
-  //       return data;
-  //     }
-
-  //     retries++;
-  //     await new Promise((resolve) => setTimeout(resolve, intervalMs));
-  //   }
-
-  //   throw new Error("Polling timed out: 'completed' never became true.");
-  // };
-
     return (
       <>
         <PageMetaData title="Hotel - Details" />
@@ -203,15 +106,28 @@
 
         <main>
           <AvailabilityFilter />
-          {hotelData && roomData ? (
+          {hotelData?
             <>
               <HotelGallery hotelData={hotelData} />
-              <p>Room completed: {roomData?.completed ? "Yes" : "No"}</p>
-              <AboutHotel hotelData={hotelData} roomData={roomData} />
+              <AboutHotel hotelData={hotelData} />
             </>
-          ) : (
-            <SplashScreen />
-          )}
+            :
+            <p className=' flex text-center pt-4'> Loading Hotel Details...</p>
+          }
+          { loaded && (
+            roomData?.completed && hotelData
+              ? 
+                <section>
+                  <Container data-sticky-container>
+                    <RoomOptions roomData={roomData} hotelData={hotelData} hotelParams={hotelParams}/> 
+                    {roomData.rooms?.length > 0 && (
+                      <HotelPolicies roomPolicies={roomData.rooms[0].roomAdditionalInfo} />
+                    )} 
+                  </Container>
+                </section>
+              :
+              <p className=' flex text-center pt-4'> Loading Rooms...</p>)
+          }
         </main>
 
       </>
