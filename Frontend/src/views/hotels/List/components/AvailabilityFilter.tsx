@@ -88,6 +88,7 @@ const AvailabilityFilter = () => {
 
   return (
     <form
+      aria-label="form"
       onSubmit={handleSubmit}
       className="bg-mode shadow rounded-3 position-relative p-4 pe-md-5 pb-5 pb-md-4 mb-4"
     >

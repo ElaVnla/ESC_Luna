@@ -25,14 +25,6 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }))
 
-
-
-// Mock react-router-dom
-// vi.mock('react-router-dom', () => ({
-//   Link: ({ children, to, ...props }: { children: React.ReactNode; to: string; [key: string]: any }) => 
-//     React.createElement('a', { href: to, ...props }, children),
-// }))
-
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom')
   return {
