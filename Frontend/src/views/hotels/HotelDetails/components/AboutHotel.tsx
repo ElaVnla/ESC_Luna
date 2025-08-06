@@ -4,16 +4,9 @@ import { Card, CardBody, CardHeader, Col, Collapse, Container, OverlayTrigger, P
 import { FaCheckCircle, FaConciergeBell, FaSwimmingPool } from 'react-icons/fa'
 import { FaAngleDown, FaAngleUp, FaSnowflake, FaWifi } from 'react-icons/fa6'
 import MapComponent from './HotelMaps'
-import HotelPolicies from './HotelPolicies'
-
 import { HotelData } from '@/models/HotelDetailsApi'
-import { RoomData } from '@/models/RoomDetailsApi'
-
-
-import RoomOptions from './RoomOptions'
 type Props = {
   hotelData : HotelData;
-  roomData: RoomData;
 };
 
 const amenityNames = new Map<string, string>(
@@ -37,9 +30,9 @@ const amenityNames = new Map<string, string>(
 )
 
 
-const AboutHotel = ({hotelData, roomData}: Props) => {
+const AboutHotel = ({hotelData}: Props) => {
   if (!hotelData) return null;
-  console.log(roomData, "In About Hotel");
+  // console.log(roomData, "In About Hotel");
   function splitString(inputString: string) {
     const [mainText, remainText] = inputString.split("Distances are displayed to the nearest 0.1 mile and kilometer. <br /> ")
     const stringSplitter = "The nearest airports are:"
@@ -60,7 +53,7 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
 
     return result;
   }
-
+  console.log(Object.keys(hotelData.amenities).length == 0 , "In About Hotel")
 
 
   const { isOpen, toggle } = useToggle()
@@ -138,48 +131,42 @@ const AboutHotel = ({hotelData, roomData}: Props) => {
             </Card>
           </Col>
         </Row>
-
-        <Card className="bg-transparent">
-          <CardHeader className="border-bottom bg-transparent px-0 pt-0">
-            <h3 className="card-title mb-0">Amenities</h3>
-          </CardHeader>
-          <CardBody className="flex flex-wrap gap-4">
-            <Row>
-              <Col>
-                {
-                  Object.keys(hotelData.amenities).map((amenity, idx: number)=>{
-                    return (
-                      <div key={idx} className="flex items-center gap-2">
-                        <FaCheckCircle className="text-success me-2" />
-                        {amenityNames.get(amenity) || camelCaseToString(amenity)}
-                      </div>
-                    );
-                  }
-                  )
-                }
-              </Col>
-              <Col>
-                {hotelData.amenities_ratings? (hotelData.amenities_ratings.map((amenity,__)=>{
-                    return(
-                    <div  key={amenity.name} className=' d-flex align-items-center pb-1' style={{minHeight:"25px"}}>
-                      <span className='' style={{ minWidth:"20%"}}>{amenity.name}</span>
-                      <ProgressBar className='flex-grow-1' now={amenity.score} variant="success" style={{minHeight:"1.2rem", maxWidth:"400px"}}/>
-                      <span className='mx-2 pe-4 ps-3'>{amenity.score}</span>
-                    </div>
+        {Object.keys(hotelData.amenities).length > 0 && (
+          <Card className="bg-transparent">
+            <CardHeader className="border-bottom bg-transparent px-0 pt-0">
+              <h3 className="card-title mb-0">Amenities</h3>
+            </CardHeader>
+            <CardBody className="flex flex-wrap gap-4">
+              <Row>
+                <Col>
+                  {
+                    Object.keys(hotelData.amenities).map((amenity, idx: number)=>{
+                      return (
+                        <div key={idx} className="flex items-center gap-2">
+                          <FaCheckCircle className="text-success me-2" />
+                          {amenityNames.get(amenity) || camelCaseToString(amenity)}
+                        </div>
+                      );
+                    }
                     )
-                  })): null}
-              
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
-
-        <RoomOptions roomData={roomData} hotelData={hotelData}/> 
-        
-        {roomData.rooms?.length > 0 && (
-        <HotelPolicies roomPolicies={roomData.rooms[0].roomAdditionalInfo} />
+                  }
+                </Col>
+                <Col>
+                  {hotelData.amenities_ratings? (hotelData.amenities_ratings.map((amenity,__)=>{
+                      return(
+                      <div  key={amenity.name} className=' d-flex align-items-center pb-1' style={{minHeight:"25px"}}>
+                        <span className='' style={{ minWidth:"20%"}}>{amenity.name}</span>
+                        <ProgressBar className='flex-grow-1' now={amenity.score} variant="success" style={{minHeight:"1.2rem", maxWidth:"400px"}}/>
+                        <span className='mx-2 pe-4 ps-3'>{amenity.score}</span>
+                      </div>
+                      )
+                    })): null}
+                
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
         )}
-
       </Container>
       
     </section>

@@ -33,6 +33,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { type HotelsListType } from "../data";
 
 import "tiny-slider/dist/tiny-slider.css";
+import { HotelParams } from "@/models/HotelDetailsApi";
 
 type HotelProps = {
   hotel: HotelsListType;
@@ -115,29 +116,16 @@ const HotelListCard = ({
   const navigate = useNavigate();
 
   const handleNavigateToDetail = () => {
-    const params = new URLSearchParams({
-      hotel_id: id.toString(),
-      city: city || "",
-      state: state || "",
-      destination_id: destinationId || "",
-      checkin: checkin || "",
-      checkout: checkout || "",
-      guests: guests || "1",
-      rooms: "1",
-      lang: "en_US",
-      currency: "SGD",
-      partner_id: "1089",
-      landing_page: "wl-acme-earn",
-      product_type: "earn",
-    });
     navigate(`/hotels/detail`,{
       state: {
-        id,
-        destinationId,
-        checkin,
-        checkout,
-        guests: String(guests).replace(/\D/g, '') || '1',
-      }
+        hotelParams:{
+          hotelId: id.toString(),
+          destinationId: destinationId || "",
+          checkIn: checkin || "",
+          checkOut: checkout || "",
+          guests: String(guests).replace(/\D/g, '') || '1',
+        } as HotelParams
+      }  
     });
   };
 
