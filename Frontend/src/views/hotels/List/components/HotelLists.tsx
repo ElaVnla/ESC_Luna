@@ -8,16 +8,12 @@ import {
   OffcanvasHeader,
   Row,
 } from "react-bootstrap";
-import {
-  BsExclamationOctagonFill,
-  BsGridFill,
-  BsListUl,
-  BsXLg,
-} from "react-icons/bs";
+import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaAngleLeft, FaAngleRight, FaSliders } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import HotelListCard from "./HotelListCard";
 import HotelListFilter from "./HotelListFilter";
+import MapComponent from "./HotelsMaps";
 
 import { HotelsListType } from "../data";
 import { useEffect, useState, useRef } from "react";
@@ -419,24 +415,7 @@ const HotelLists = () => {
                 className="nav nav-pills nav-pills-dark"
                 id="tour-pills-tab"
                 role="tablist"
-              >
-                <li className="nav-item">
-                  <Link
-                    className="nav-link rounded-start rounded-0 mb-0 active "
-                    to="/hotels/list"
-                  >
-                    <BsListUl className=" fa-fw mb-1" />
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link
-                    className="nav-link rounded-end rounded-0 mb-0 "
-                    to="/hotels/grid"
-                  >
-                    <BsGridFill className=" fa-fw mb-1" />
-                  </Link>
-                </li>
-              </ul>
+              ></ul>
             </div>
           </Col>
         </Row>
