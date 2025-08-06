@@ -1,40 +1,8 @@
-import { useToggle } from "@/hooks";
-import { useState } from "react";
 import { currency } from "@/states";
-import { Card, CardBody, Col, Collapse } from "react-bootstrap";
 import { BsStarFill } from "react-icons/bs";
-import { FaAngleDown } from "react-icons/fa6";
-import { Link } from "react-router-dom";
 import { Slider, Box } from "@mui/material";
 import { FaStar } from "react-icons/fa";
-
-// temporary, will move to proper file later
-// type HotelListFilterProps = {
-//   filters: {
-//     starRatings: string[];
-//     guestRatings: string[];
-//     priceRanges: string[];
-//     guestRatingRange: [number, number];
-//   };
-//   setFilters: (filters: {
-//     starRatings: string[];
-//     guestRatings: string[];
-//     priceRanges: string[];
-//     guestRatingRange: [number, number];
-//   }) => void;
-// };
-
-type Filters = {
-  starRatings: string[];
-  guestRatings: string[];
-  priceRanges: string[];
-  guestRatingRange: [number, number];
-};
-
-type HotelListFilterProps = {
-  filters: Filters;
-  setFilters: React.Dispatch<React.SetStateAction<Filters>>;
-};
+import { HotelListFilterProps } from "../utils/HotelTypes";
 
 const minDistance = 0.1;
 
@@ -108,7 +76,6 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
         <span className="fw-bold">
           {minRating.toFixed(1)} <FaStar color="#ffc107" /> –{" "}
           {maxRating.toFixed(1)} <FaStar color="#ffc107" />
-          {/* {filters.guestRatingRange[0].toFixed(1)} <FaStar color="#ffc107" /> – {filters.guestRatingRange[1].toFixed(1)} <FaStar color="#ffc107" /> */}
         </span>
         <Box sx={{ width: 1, mt: 2 }}>
           <Slider
@@ -122,25 +89,6 @@ const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
             disableSwap
           />
         </Box>
-        {/* <ul className="list-inline mb-0 g-3">
-          {['3', '3.5', '4', '4.5'].map(rating => (
-            <li className="list-inline-item mb-0" key={rating}>
-              <input
-                type="checkbox"
-                className="btn-check"
-                id={`guestRating-${rating}`}
-                checked={filters.guestRatings.includes(rating)}
-                onChange={() => handleCheckboxChange(rating, filters.guestRatings, "guestRatings")}
-              />
-              <label
-                className="btn btn-sm btn-light btn-primary-soft-check"
-                htmlFor={`guestRating-${rating}`}
-              >
-                {rating}+
-              </label>
-            </li>
-          ))}
-        </ul> */}
       </div>
 
       <hr className="my-0" />
