@@ -184,6 +184,7 @@ const AvailabilityFilter = () => {
                   <Dropdown className="guest-selector me-2">
                     <DropdownToggle
                       as="input"
+                      data-testid="guest-room-toggle"
                       className="form-guest-selector form-control selection-result"
                       value={getGuestsValue()}
                       onChange={() => {}}

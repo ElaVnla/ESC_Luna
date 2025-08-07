@@ -51,3 +51,11 @@ export type HotelData = {
   cloudflare_image_url: string;
   checkin_time: string;
 };
+
+export type HotelParams = {
+  hotelId: string;
+  destinationId: string;
+  checkIn: string;
+  checkOut: string;
+  guests: string;
+}

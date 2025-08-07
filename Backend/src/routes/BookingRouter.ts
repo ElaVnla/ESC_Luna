@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { cancelBooking, createBooking, getHotelIdFromBooking } from '../Services/BookingService';
+import { cancelBooking, createBooking, getBookedRoomId, getHotelIdFromBooking  } from '../Services/BookingService';
 
 const router = Router();
 
@@ -50,6 +50,13 @@ router.get('/:bookingId/hotel-id', async (req, res) => {
     console.error('Error retrieving hotel_id:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Retrieving all unavailable rooms for the given hotel and start and end dates
+router.get('/unavailable-rooms', async (req, res) => {
+    const { hotelId, startDate, endDate } = req.query;
+    const roomIds = await getBookedRoomId(hotelId as string, startDate as string, endDate as string);
+    res.json(roomIds);
 });
 
 export default router;
