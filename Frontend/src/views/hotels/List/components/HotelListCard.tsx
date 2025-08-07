@@ -27,13 +27,13 @@ import {
   FaStarHalfAlt,
   FaTwitterSquare,
 } from "react-icons/fa";
-import { FaCopy, FaHeart, FaStar } from "react-icons/fa6";
+import { FaStar } from "react-icons/fa6";
 import { type TinySliderSettings } from "tiny-slider";
 import { useNavigate, Link } from "react-router-dom";
-import { type HotelsListType } from "../data";
 
 import "tiny-slider/dist/tiny-slider.css";
 import { HotelParams } from "@/models/HotelDetailsApi";
+import { HotelFetchProps } from "../utils/HotelTypes";
 
 const getGuestRatingDetails = (score: number) => {
   if (score >= 4.5) return { label: "Excellent", color: "success" };
@@ -52,7 +52,7 @@ const HotelListCard = ({
   checkin,
   checkout,
   guests,
-}: HotelProps) => {
+}: HotelFetchProps) => {
   // const { address, amenities, images, name, price, rating, sale, schemes } = hotel;
   const {
     id,
