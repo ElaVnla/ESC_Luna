@@ -114,16 +114,16 @@ const HotelListCard = ({
         } as HotelParams
       }  
     });
-<!--     const cleanedGuests = String(guests).replace(/\D/g, '') || '1';
-    navigate(getHotelDetailUrl({
-      hotel_id: hotel.id.toString(),
-      city,
-      state,
-      destination_id: destinationId,
-      checkin,
-      checkout,
-      guests: cleanedGuests,
-    })); -->
+    // const cleanedGuests = String(guests).replace(/\D/g, '') || '1';
+    // navigate(getHotelDetailUrl({
+    //   hotel_id: hotel.id.toString(),
+    //   city,
+    //   state,
+    //   destination_id: destinationId,
+    //   checkin,
+    //   checkout,
+    //   guests: cleanedGuests,
+    // }));
   };
 
   return (
