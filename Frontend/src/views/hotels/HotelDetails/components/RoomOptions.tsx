@@ -1,27 +1,55 @@
 
 import { Card, CardBody, CardHeader} from 'react-bootstrap'
-import { RoomData } from '@/models/RoomDetailsApi';
+import { RoomData, Rooms } from '@/models/RoomDetailsApi';
 import RoomCard from './RoomCard';
-import { HotelData } from '@/models/HotelDetailsApi';
+import { HotelData, HotelParams } from '@/models/HotelDetailsApi';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 
 type Props = {
   roomData: RoomData;
   hotelData: HotelData;
+  hotelParams: HotelParams
 };
 
-const RoomOptions = ({roomData, hotelData}: Props) => {
-    
-    const roomCount = new Map<string, number>()
-    const roomPrice = new Map<string, number>()
-    const roomCheck = new Map<string, boolean>()
-    roomData.rooms.map((room, __)=>{
-    roomCount.set(room.roomDescription, (roomCount.get(room.roomDescription) ?? 0) + 1)
-    roomPrice.set(room.roomDescription, Math.min(roomPrice.get(room.roomDescription)?? Infinity, room.base_rate_in_currency))
-    roomCheck.set(room.roomDescription, false)
-    }
-    )
+const RoomOptions = ({roomData, hotelData, hotelParams}: Props) => {
+  const [unavailableRoomIds, setUnavailableRoomIds] = useState<string[]>([]);
+  const [roomMap, setRoomMap] = useState<
+    Map<string, { count: number; cheapestRoom: Rooms }>
+  >(new Map());
 
+  useEffect(() => {
+        const fetchUnavailableRooms = async () => {
+            const res = await axios.get(`/api/bookings/unavailable-rooms`, {
+                params: { hotelId: hotelParams.hotelId, startDate: hotelParams.checkIn, endDate: hotelParams.checkOut }
+            });
+            setUnavailableRoomIds(res.data);
+        };
+
+        fetchUnavailableRooms();
+    }, [hotelParams.hotelId, hotelParams.checkIn, hotelParams.checkOut]);
+
+  useEffect(() =>{
+    const tempRoomMap = new Map<string, { count: number; cheapestRoom: Rooms }>();
+    roomData.rooms.forEach((room) => {
+      const existing = tempRoomMap.get(room.roomDescription);
+      if (!unavailableRoomIds.includes(room.key)){
+        if (!existing) {
+          // Add room type if not exists
+          tempRoomMap.set(room.roomDescription, { count: 1, cheapestRoom: room });
+        } else {
+          // Update count and lowest price
+          existing.count += 1;
+          if (room.base_rate_in_currency < existing.cheapestRoom.base_rate_in_currency) {
+            existing.cheapestRoom = room;
+          }
+        }
+      }
+    });
+    setRoomMap(tempRoomMap);
+  }, [roomData.rooms, unavailableRoomIds])
+  
     
   return (
     <Card className="bg-transparent mt-5 mb-5" id="room-options">
@@ -32,38 +60,37 @@ const RoomOptions = ({roomData, hotelData}: Props) => {
       </CardHeader>
       <CardBody className="pt-4 p-0">
         <div className="vstack gap-4">
-          {roomData?.rooms?.map((room, idx) => {
-            console.log(room);
+          {Array.from(roomMap.entries()).map(([roomDescription, { count, cheapestRoom }], idx) => {
             const schemes: string[] = [];
-
-            
-            console.log(room.roomAdditionalInfo.breakfastInfo, "RoomDetails")
-            if (room.free_cancellation){schemes.push("Free Cancellation");} else{schemes.push("Non Refundable")}
-            if (room.roomAdditionalInfo.breakfastInfo != ""){schemes.push("Free Breakfast Provided");}
-            const details = room.long_description.replace(/<\/?b>/g, '').replace(/<\/?b>/g, '').replace('<br/>', '').replace('</p>', '')
-            
-            //get rooms
-            if(!roomCheck.get(room.roomDescription)){
-              roomCheck.set(room.roomDescription, true)
-              return (
-                <RoomCard
-                  key={idx}
-                  features={details}  
-                  images={room.images}
-                  id={123}
-                  name={room.roomDescription}
-                  price={roomPrice.get(room.roomDescription)?? 0}
-                  ammenities = {room.amenities}
-                  schemes={schemes}
-                  count = {roomCount.get(room.roomDescription)?? 1}
-                  hotelData = {hotelData}
-                  roomDataf4={room}
-                />
-              )
+            if (cheapestRoom.free_cancellation) {
+              schemes.push("Free Cancellation");
+            } else {
+              schemes.push("Non Refundable");
             }
-            
-            
-            
+            if (cheapestRoom.roomAdditionalInfo.breakfastInfo !== "") {
+              schemes.push("Free Breakfast Provided");
+            }
+
+            const details = cheapestRoom.long_description
+              .replace(/<\/?b>/g, '')
+              .replace('<br/>', '')
+              .replace('</p>', '');
+
+            return (
+              <RoomCard
+                key={idx}
+                features={details}
+                images={cheapestRoom.images}
+                name={roomDescription}
+                price={cheapestRoom.base_rate_in_currency}
+                amenities={cheapestRoom.amenities}
+                schemes={schemes}
+                count={count}
+                hotelData={hotelData}
+                roomDataf4={cheapestRoom}
+                hotelParams={hotelParams}
+              />
+            );
           })}
         </div>
       </CardBody>

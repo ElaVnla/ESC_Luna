@@ -209,64 +209,6 @@ router.get('/hotels/:id', async (req, res) => {
   }
 });
 
-// router.get('/hotels/:id/price', async (req, res) => {
-//   const { id } = req.params;
-//   const queryParams = new URLSearchParams(req.query as Record<string, string>).toString();
-//   console.log(`Fetching hotel with id: ${id} and ${queryParams}`);
-//   let data;
-//   try {
-//     const delayBetweenRetriesMs = 20000;
-//     const maxRetries = 3;
-//     let attempt = 0;
-//     let taskId = "";
-//     let data;
-    
-    
-
-//     while (attempt < maxRetries) {
-//       const currentQueryParams = new URLSearchParams(queryParams);
-//       if (taskId) {
-//           currentQueryParams.set('taskId', taskId);
-//       }
-
-//       const apiUrl = `https://hotelapi.loyalty.dev/api/hotels/${id}/price?${currentQueryParams.toString()}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
-//       const response = await fetch(apiUrl);
-//       data = await response.json();
-
-//       if (data.taskId && !taskId) {
-//           taskId = data.taskId;  // Store taskId from first response
-//       }
-
-//       // const response = await fetch(`https://hotelapi.loyalty.dev/api/hotels/${id}/price?${queryParams}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`);
-//       // data = await response.json();
-
-//       console.log(`Attempt ${attempt + 1}: Completed = ${data.completed}`);
-//       console.log(data.completed)
-
-//       if (data.completed) {
-//         break;  // Stop retrying if task is completed
-//       }
-
-//       attempt++;
-//       if (attempt < maxRetries) {
-//         // await new Promise((resolve) => setTimeout(resolve, delayBetweenRetriesMs));
-//         // await new Promise((resolve) => setTimeout(resolve, delayBetweenRetriesMs));
-//         await setTimeout(delayBetweenRetriesMs);
-
-
-//       }
-//     }
-
-//     // res.json(data);  // Return final data after loop
-
-//   } catch (err) {
-//     console.error('Error fetching hotel data:', err);
-//     res.status(500).json({ error: 'Failed to fetch hotel data' });
-//   }
-
-//   res.json(data);  // Return final data after loop
-
-// });
 
 router.get('/hotels/:id/price', async (req, res) => {
   const { id } = req.params;

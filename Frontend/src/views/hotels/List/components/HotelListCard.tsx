@@ -33,16 +33,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { type HotelsListType } from "../data";
 
 import "tiny-slider/dist/tiny-slider.css";
-
-type HotelProps = {
-  hotel: HotelsListType;
-  destinationId?: string;
-  city?: string;
-  state?: string;
-  checkin?: string;
-  checkout?: string;
-  guests?: string;
-};
+import { HotelParams } from "@/models/HotelDetailsApi";
 
 const getGuestRatingDetails = (score: number) => {
   if (score >= 4.5) return { label: "Excellent", color: "success" };
@@ -115,30 +106,27 @@ const HotelListCard = ({
   const navigate = useNavigate();
 
   const handleNavigateToDetail = () => {
-    const params = new URLSearchParams({
-      hotel_id: id.toString(),
-      city: city || "",
-      state: state || "",
-      destination_id: destinationId || "",
-      checkin: checkin || "",
-      checkout: checkout || "",
-      guests: guests || "1",
-      rooms: "1",
-      lang: "en_US",
-      currency: "SGD",
-      partner_id: "1089",
-      landing_page: "wl-acme-earn",
-      product_type: "earn",
-    });
     navigate(`/hotels/detail`,{
       state: {
-        id,
-        destinationId,
-        checkin,
-        checkout,
-        guests: String(guests).replace(/\D/g, '') || '1',
-      }
+        hotelParams:{
+          hotelId: id.toString(),
+          destinationId: destinationId || "",
+          checkIn: checkin || "",
+          checkOut: checkout || "",
+          guests: String(guests).replace(/\D/g, '') || '1',
+        } as HotelParams
+      }  
     });
+<!--     const cleanedGuests = String(guests).replace(/\D/g, '') || '1';
+    navigate(getHotelDetailUrl({
+      hotel_id: hotel.id.toString(),
+      city,
+      state,
+      destination_id: destinationId,
+      checkin,
+      checkout,
+      guests: cleanedGuests,
+    })); -->
   };
 
   return (
