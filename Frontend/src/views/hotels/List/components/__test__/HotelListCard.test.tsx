@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
 import HotelListCard from "../HotelListCard";
-import { type HotelsListType } from "../../data";
+import { type HotelsListType } from "../../utils/HotelTypes";
 
 // Mock the @/states module
 vi.mock("@/states", () => ({
@@ -33,6 +33,8 @@ const mockHotel: HotelsListType = {
     "https://d2ey9sqrvkqdfs.cloudfront.net/050G/3.jpg",
     "https://d2ey9sqrvkqdfs.cloudfront.net/050G/4.jpg",
   ],
+  latitude: 100.0,
+  longitude: 100.0,
   guest_rating: 4.5,
   star_rating: 4,
   amenities: ["Air-conditioning", "WiFi", "Pool"],
