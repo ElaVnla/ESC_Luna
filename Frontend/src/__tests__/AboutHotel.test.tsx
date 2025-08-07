@@ -67,7 +67,7 @@ const mockHotelData = {
 const mockRoomData = {
   rooms: [
     {
-      roomAdditionalInfo: '<p>No smoking allowed</p>',
+      roomAdditionalInfo: 'No smoking allowed',
     },
   ],
 };

@@ -4,8 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest run --root Frontend",
-    "test:ui": "vitest --ui --root Frontend",
-    "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\""
+    "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:ui": "vitest --ui --root Frontend"
   },
   "repository": {
     "type": "git",
@@ -30,16 +32,18 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
+    "@types/node": "^24.2.0",
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/ui": "^3.2.4",
     "babel-jest": "^30.0.5",
     "concurrently": "^9.2.0",
+    "cypress": "^14.5.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
     "jsdom": "^26.1.0",
     "ts-jest": "^29.4.0",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
   "dependencies": {

@@ -11,7 +11,7 @@ export type RoutesProps = {
 const HotelsHome = lazy(() => import('@/views/hotels/Home'))
 // const HotelsChain = lazy(() => import('@/views/hotels/Chain'))
 // const HotelsResort = lazy(() => import('@/views/hotels/Resort'))
-// const HotelsGrid = lazy(() => import('@/views/hotels/Grid'))
+const HotelsGrid = lazy(() => import('@/views/hotels/Grid'))
 const HotelsList = lazy(() => import('@/views/hotels/List'))
 const HotelDetails = lazy(() => import('@/views/hotels/HotelDetails'))
 const RoomDetails = lazy(() => import('@/views/hotels/RoomDetails'))
@@ -138,11 +138,11 @@ const hotelRoutes: RoutesProps[] = [
   //   name: 'hotels.resort',
   //   element: <HotelsResort />,
   // },
-  // {
-  //   path: '/hotels/grid',
-  //   name: 'hotels.grid',
-  //   element: <HotelsGrid />,
-  // },
+  {
+    path: '/hotels/grid',
+    name: 'hotels.grid',
+    element: <HotelsGrid />,
+  },
   {
     path: '/hotels/list',
     name: 'hotels.list',

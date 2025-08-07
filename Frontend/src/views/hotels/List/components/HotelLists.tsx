@@ -10,36 +10,25 @@ import {
 } from "react-bootstrap";
 import { BsExclamationOctagonFill } from "react-icons/bs";
 import { FaAngleLeft, FaAngleRight, FaSliders } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 import HotelListCard from "./HotelListCard";
 import HotelListFilter from "./HotelListFilter";
 import MapComponent from "./HotelsMaps";
 
-import { HotelsListType } from "../utils/HotelTypes";
+import { HotelsListType } from "../data";
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 // TODO: DONE make checkin, checkout and guests responsive (search button refreshes when checkincheckout/guests change)
-// TODO: DONE make "select room" lead to feature 3
+// TODO: make "select room" lead to feature 3
 // TODO: DONE filter function (stars and price done, left w guest ratings)
 // TODO: DONE change hotellistcard display (made amenities nicer)
 // TODO: DONE change hotellistcard display "/day" "total"
 // TODO: DONE sort hotels by price & ratings, add sort by price/rating option? show rating first
-// TODO: DONEEEE map....
+// TODO: map....
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
-};
-
-const getNumberOfNights = (checkin: string, checkout: string): number => {
-  if (!checkin || !checkout) return 0;
-
-  const checkinDate = new Date(checkin);
-  const checkoutDate = new Date(checkout);
-
-  const timeDiff = checkoutDate.getTime() - checkinDate.getTime();
-  const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-  return nights > 0 ? nights : 0;
 };
 
 function mapHotelsWithPricesAndImages(hotels: any[], priceData: any[]): any[] {
@@ -73,8 +62,6 @@ function mapHotelsWithPricesAndImages(hotels: any[], priceData: any[]): any[] {
       id: hotel.id,
       name: hotel.name,
       address: hotel.address,
-      latitude: hotel.latitude,
-      longitude: hotel.longitude,
       images,
       star_rating: hotel.star_rating || 0,
       guest_rating: hotel.guest_rating || 0,
@@ -100,12 +87,9 @@ const HotelLists = () => {
   const city = query.get("city") || "Singapore, Singapore";
   const state = query.get("state") || "";
   const guests = query.get("guests") || "1";
-  const rooms = guests.split("|").length;
   const checkin = query.get("checkin")?.split("T")[0] || "";
   const checkout = query.get("checkout")?.split("T")[0] || "";
-  const nights = getNumberOfNights(checkin, checkout);
-  console.log("Nights:", nights);
-  console.log(guests, rooms);
+  console.log(guests);
   console.log(checkin, checkout);
 
   useEffect(() => {
@@ -147,6 +131,16 @@ const HotelLists = () => {
         const dbData = await dbRes.json();
         console.log("Hotels fetched from DB:", dbData);
 
+        // Step 3: Fetch prices by destination
+        // console.log({
+        //   city,
+        //   state,
+        //   destination_id: destinationId,
+        //   checkin,
+        //   checkout,
+        //   guests,
+        // });
+
         const priceParams = new URLSearchParams({
           city: city,
           state: state,
@@ -172,7 +166,7 @@ const HotelLists = () => {
         const priceData = await priceRes.json(); // assumed to be [{ hotel_id: "...", price: 123 }, ...]
         console.log("Fetched prices:", priceData);
 
-        // Step 3: Map prices by hotel id
+        // Step 4: Map prices by hotel id
         const priceMap = new Map<string, number>();
         for (const hotel of priceData || []) {
           //console.log(hotel.id, hotel.lowest_converted_price);
@@ -186,7 +180,7 @@ const HotelLists = () => {
           dbData.map((h: any) => h.id)
         );
 
-        // Step 4: Filter dbData to only hotels with price info
+        // Step 5: Filter dbData to only hotels with price info
         const filteredDbData = dbData.filter((hotel: any) =>
           priceMap.has(hotel.id)
         );
@@ -257,9 +251,6 @@ const HotelLists = () => {
   for (let i = startPage; i <= endPage; i++) {
     pageNumbers.push(i);
   }
-
-  // Map section
-  const [mapHotel, setMapHotel] = useState<HotelsListType | null>(null);
 
   // Filter section
   type FiltersType = {
@@ -348,7 +339,7 @@ const HotelLists = () => {
       const priceData = await priceRes.json();
       console.log("Fetched prices:", priceData);
 
-      // Map prices by hotel id
+      // Step 4: Map prices by hotel id
       const priceMap = new Map<string, number>();
       for (const hotel of priceData || []) {
         //console.log(hotel.id, hotel.lowest_converted_price);
@@ -365,7 +356,7 @@ const HotelLists = () => {
         filteredDbData.map((h: any) => h.id)
       );
 
-      // Map hotel data with better image logic
+      // Step 6: Map hotel data with better image logic
       const mapped = mapHotelsWithPricesAndImages(filteredDbData, priceData);
       setHotels(mapped);
     } catch (err) {
@@ -446,6 +437,7 @@ const HotelLists = () => {
                   className="btn btn-primary mb-0"
                   onClick={() => {
                     handleFilterChange();
+                    //toggle();
                   }}
                 >
                   Filter Result
@@ -533,7 +525,6 @@ const HotelLists = () => {
                       checkin={checkin}
                       checkout={checkout}
                       guests={guests}
-                      setShowMap={() => setMapHotel(hotel)}
                     />
                   ))}
                   <nav
@@ -618,16 +609,6 @@ const HotelLists = () => {
             </div>
           </Col>
         </Row>
-        {mapHotel && (
-          <MapComponent
-            hotels={currentHotels}
-            selectedHotel={mapHotel}
-            rooms={rooms}
-            nights={nights}
-            forceExpanded={true}
-            onClose={() => setMapHotel(null)}
-          />
-        )}
       </Container>
     </section>
   );

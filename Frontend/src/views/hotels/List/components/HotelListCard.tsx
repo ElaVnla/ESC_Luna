@@ -1,10 +1,15 @@
 import { TinySlider } from "@/components";
 import { currency, useLayoutContext } from "@/states";
+import { Fragment } from "react";
 import {
   Button,
   Card,
   CardBody,
   Col,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Image,
   Row,
 } from "react-bootstrap";
@@ -13,15 +18,19 @@ import {
   BsArrowLeft,
   BsArrowRight,
   BsGeoAlt,
+  BsPatchCheckFill,
 } from "react-icons/bs";
 import {
-  FaStarHalfAlt
+  FaFacebookSquare,
+  FaLinkedin,
+  FaShareAlt,
+  FaStarHalfAlt,
+  FaTwitterSquare,
 } from "react-icons/fa";
-import { FaCopy, FaHeart, FaStar, FaMapLocationDot } from "react-icons/fa6";
+import { FaCopy, FaHeart, FaStar } from "react-icons/fa6";
 import { type TinySliderSettings } from "tiny-slider";
 import { useNavigate, Link } from "react-router-dom";
-import { HotelFetchProps } from "../utils/HotelTypes";
-import { getHotelDetailUrl } from "../utils/HotelNavigation";
+import { type HotelsListType } from "../data";
 
 import "tiny-slider/dist/tiny-slider.css";
 import { HotelParams } from "@/models/HotelDetailsApi";
@@ -43,8 +52,8 @@ const HotelListCard = ({
   checkin,
   checkout,
   guests,
-  setShowMap
-}: HotelFetchProps) => {
+}: HotelProps) => {
+  // const { address, amenities, images, name, price, rating, sale, schemes } = hotel;
   const {
     id,
     name,
@@ -53,7 +62,7 @@ const HotelListCard = ({
     images,
     price,
     star_rating,
-    guest_rating
+    guest_rating,
   } = hotel;
 
   console.log(
@@ -70,12 +79,6 @@ const HotelListCard = ({
     guest_rating
   );
   const numericGuestRating = Number(guest_rating);
-    console.log(
-    "Rendering hotel longitude and latitude:",
-    hotel.latitude,
-    hotel.longitude,
-    address
-  );
 
   const { dir } = useLayoutContext();
   const normalizedAmenities = Array.isArray(amenities)
@@ -224,27 +227,9 @@ const HotelListCard = ({
             <h5 className="card-title mb-1">
               <Link to="/hotels/detail">{name}</Link>
             </h5>
-            <small className="d-flex flex-column" style={{ fontSize: '1rem' }}>
-              <span className="d-flex align-items-center mb-1">
-                <BsGeoAlt className="me-1" style={{ lineHeight: 1 }} />
-                <span>{address}</span>
-              </span>
-
-              <Button
-                variant="link"
-                className="p-0 d-inline-flex align-items-center text-decoration-underline text-primary"
-                style={{ fontSize: '1.2rem', lineHeight: 1 }}
-                onClick={() =>
-                  setShowMap?.({
-                    latitude: hotel.latitude,
-                    longitude: hotel.longitude,
-                    address: hotel.address,
-                  })
-                }
-              >
-                <FaMapLocationDot className="me-1" style={{ lineHeight: 1 }} />
-                <span style={{ fontSize: '0.9rem' }}>Show on map</span>
-              </Button>
+            <small className="items-center">
+              <BsGeoAlt className="me-2" />
+              {address}
             </small>
             <ul className="nav nav-divider mt-3">
               {normalizedAmenities.length > 0 && (
@@ -288,7 +273,7 @@ const HotelListCard = ({
                   className="mb-0 w-100"
                   onClick={handleNavigateToDetail}
                 >
-                  Select Hotel
+                  Select Room
                 </Button>
               </div>
             </div>
