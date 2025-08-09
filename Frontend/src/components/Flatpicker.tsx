@@ -15,10 +15,16 @@ const Flatpicker = ({ className, options, placeholder, value, getValue }: Flatpi
 
   const handleDateChange = useCallback(
     (selectedDates: Date[]) => {
-      const newDate = selectedDates.length === 1 ? selectedDates[0] : selectedDates
-      getValue?.(newDate)
+
+      const isRange = options?.mode == 'range'
+      const isCompleteRange = selectedDates.length == 2
+
+      if (!isRange || isCompleteRange) {
+        const newDate = selectedDates.length === 1 ? selectedDates[0] : selectedDates
+        getValue?.(newDate)
+      }
     },
-    [getValue],
+    [getValue,options?.mode],
   )
 
   useEffect(() => {

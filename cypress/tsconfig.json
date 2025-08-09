@@ -1,13 +1,13 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM"],
     "types": ["cypress"],
-    "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "strict": true,
-    "jsx": "react-jsx"
+    "baseUrl": "../",
+    "strict": true
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "./support/commands.d.ts"
+, "support/commands.js"  ]
 }
