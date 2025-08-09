@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { cancelBooking, createBooking, getBookedRoomId, getHotelIdFromBooking } from '../Services/BookingService';
+import { cancelBooking, createBooking, getBookedRoomId, getHotelIdFromBooking, getBookingById } from '../Services/BookingService';
 
 const router = Router();
 
@@ -16,6 +16,19 @@ router.post('/create', async (req, res) => {
   } catch (error) {
     console.error('Error creating booking:', error);
     res.status(500).json({ error: 'Failed to create booking' });
+  }
+});
+
+// NEW: get booking row
+router.get('/:bookingId', async (req, res) => {
+  const { bookingId } = req.params;
+  try {
+    const row = await getBookingById(bookingId);
+    if (!row) return res.status(404).json({ error: 'Booking not found' });
+    res.json(row);
+  } catch (error) {
+    console.error('Error retrieving booking:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

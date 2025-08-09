@@ -100,3 +100,26 @@ export async function getBookedRoomId(hotelId: string, checkIn: string, checkOut
   );
   return roomIds;
 }
+
+// add:
+export async function getBookingById(bookingId: string) {
+  const db = Database;
+  const rows = await db.query(
+    `SELECT
+        id,
+        destination_id,
+        hotel_id,
+        room_id,
+        DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
+        DATE_FORMAT(end_date,   '%Y-%m-%d') AS end_date,
+        num_nights,
+        price,
+        currency,
+        guests_total
+     FROM bookings
+     WHERE id = ?`,
+    [bookingId]
+  );
+  return rows[0] ?? null;
+}
+

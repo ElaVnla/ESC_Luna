@@ -15,7 +15,7 @@ interface Step3WithSecretProps extends Step1Props {
 // currencies without fractional units
 const ZERO_DECIMAL = ['jpy', 'krw', 'vnd'];
 
-const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithSecretProps) => {
+const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSecretProps) => {
   const { goToStep } = useWizard();
   const { getValues, trigger } = useFormContext();
   const navigate = useNavigate();
@@ -81,8 +81,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
   };
 
   const buildFallbackPayload = (form: any, bookingId: string) => {
-    const start = form?.booking?.start_date || '2025-01-01';
-    const end   = form?.booking?.end_date   || '2025-01-03';
+    const start = hotelParams?.checkIn || '2025-01-01';
+    const end   = hotelParams?.checkOut || '2025-01-03';
 
     const currencyCode =
       roomData?.included_taxes_and_fees_in_currency?.[0]?.currency?.toUpperCase?.() ||
@@ -115,9 +115,9 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
       customer,
       booking: {
         id: bookingId,
-        destination_id: propHotel?.original_metadata?.city || 'sg01',
-        hotel_id: propHotel?.id || 'hotel01',
-        room_id: propRoom?.type || 'room01',
+        destination_id: hotelParams?.destinationId || 'hotel01',
+        hotel_id: hotelParams?.hotelId || 'sg01',
+        room_id: roomData?.key || 'room01',
         start_date: start,
         end_date: end,
         num_nights: calcNights(start, end),

@@ -1,6 +1,6 @@
 // src/Routes/GuestRouter.ts
 import { Router } from 'express';
-import { insertGuests, getGuestsByBookingId, updateGuestsByBookingId } from '../Services/GuestService';
+import { insertGuests, getGuestsByBookingId, updateGuestsByBookingId, getGuestsCountByBookingId } from '../Services/GuestService';
 import { GuestModel } from '../models/GuestModel';
 
 const router = Router();
@@ -50,5 +50,15 @@ router.put('/:booking_id', async (req, res) => {
     }
   });
 
+  // Count guests for a booking (useful for quick checks / debugging)
+router.get('/:booking_id/count', async (req, res) => {
+  try {
+    const count = await getGuestsCountByBookingId(req.params.booking_id);
+    res.json({ booking_id: req.params.booking_id, count });
+  } catch (err) {
+    console.error('guest count error:', err);
+    res.status(500).json({ error: 'Failed to count guests' });
+  }
+});
   
 export default router;
