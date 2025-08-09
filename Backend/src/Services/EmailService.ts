@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { strict } from 'yargs';
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -35,10 +36,9 @@ export async function sendConfirmationEmail(booking: any) {
   const toEmail = main?.email || booking.customer?.email;
   if (!toEmail) throw new Error('Missing customer email');
 
-  const totalGuests: number =
-    Number(booking.guests?.total) ||
-    Number(booking.booking?.guests_total) ||
-    1;
+  const totalGuests: string =
+    String(booking.guests?.total) ||
+    'N/A';
 
   // accept either otherGuests or legacy list
   const listGuests: EmailGuest[] =
