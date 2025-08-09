@@ -263,7 +263,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
               num_nights: payload.booking.num_nights,
             },
             guests: { 
-              total: totalGuests,
+              total: hotelParams.guests,
               otherGuests, // 👈 for template loop
             },
             price: { totalPaid: humanAmount, currency: chargedCurrency?.toUpperCase() || currencyUpper },
@@ -283,12 +283,13 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
 
       toast.success('Payment successful! Booking confirmed.');
 
+      sessionStorage.clear();
       // 6) save summary for confirmation page
       const summaryForUI = {
         bookingId: confirmed?.booking_reference || bookingId,
         checkIn: payload.booking.start_date,
         checkOut: payload.booking.end_date,
-        guestsTotal: totalGuests,
+        guestsTotal: hotelParams.guests,
         totalPaid: humanAmount,
         currency: chargedCurrency?.toUpperCase() || currencyUpper,
         num_nights: payload.booking.num_nights,
