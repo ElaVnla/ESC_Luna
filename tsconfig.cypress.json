@@ -2,7 +2,7 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "noEmit": false,
-    "types": ["cypress", "node"]
+    "types": ["cypress", "node", "cypress-real-events"]
   },
   "include": [
     "cypress/**/*.ts",
