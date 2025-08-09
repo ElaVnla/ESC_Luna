@@ -11,6 +11,7 @@ export async function createPayment(payment: {
   encrypted_cardholder_name?: string | null;
 }) {
   const db = Database;
+  console.log("INSIDE payment api: ", payment.booking_id);
 
   await db.query(
     `INSERT INTO payments (

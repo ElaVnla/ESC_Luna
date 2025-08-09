@@ -3,7 +3,7 @@ export class GuestModel {
     constructor(
         public id: number,
         public booking_id: string,           // Link to booking ID
-        public guest_type: 'adult' | 'child',
+        public guest_type: 'adult' | 'child' | 'guest',
         public salutation: string,
         public first_name: string,
         public last_name: string,

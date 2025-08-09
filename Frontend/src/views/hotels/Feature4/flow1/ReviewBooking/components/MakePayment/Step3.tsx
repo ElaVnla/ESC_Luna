@@ -27,6 +27,10 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
   const [roomData, setRoomData] = useState<any>(propRoom);
   const [hotelParams, setHotelParams] = useState<any>(null);
   const [cardholderName, setCardholderName] = useState<string>('');
+  const getSpecialRequest = () => {
+    const form = getValues();
+    return form?.special_request?.shortDescription?.trim() || null;
+  };
 
   useEffect(() => {
     try {
@@ -66,13 +70,17 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
       return 1;
     }
   };
+  const readStoredGuestInfo = () => {
+    try {
+      const raw = sessionStorage.getItem('hotel_guest_info');
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      console.error('Failed to parse hotel_guest_info:', e);
+      return null;
+    }
+  };
 
-  const buildFallbackPayload = () => {
-    // Build minimal payload from what we have on this page
-    const form = getValues();
-    const totalGuests = getGuestsFromParams(hotelParams);
-    const bookingId = form?.booking?.id || `BOOK-${Date.now()}`;
-
+  const buildFallbackPayload = (form: any, bookingId: string) => {
     const start = form?.booking?.start_date || '2025-01-01';
     const end   = form?.booking?.end_date   || '2025-01-03';
 
@@ -81,22 +89,30 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
       roomData?.excluded_taxes_and_fees_currency?.toUpperCase?.() ||
       'SGD';
 
+    // Prefer Step‑2 customer/guests if present
+    const stored = readStoredGuestInfo();
+    const customer = stored?.customer ?? {
+      salutation: form?.customer?.salutation || '',
+      first_name: form?.customer?.first_name || '',
+      last_name: form?.customer?.last_name || '',
+      email: form?.customer?.email || '',
+      phone_number: form?.customer?.phone_number || '',
+      billing_address: form?.customer?.billing_address || '',
+      country: form?.customer?.country || '',
+      date_of_birth: form?.customer?.date_of_birth || '',
+      booking_id: bookingId,
+    };
+
+    const guests = Array.isArray(stored?.guests) ? stored!.guests : [];
+
+    console.log("GUESTS ABOUT TO PASS TO API: ", guests);
+
     const payload = {
       hotel: {
         name: hotelData?.name || propHotel?.name || '',
         address: hotelData?.address || propHotel?.address || '',
       },
-      customer: {
-        salutation: form?.customer?.salutation || '',
-        first_name: form?.customer?.first_name || '',
-        last_name: form?.customer?.last_name || '',
-        email: form?.customer?.email || '',
-        phone_number: form?.customer?.phone_number || '',
-        billing_address: form?.customer?.billing_address || '',
-        country: form?.customer?.country || '',
-        date_of_birth: form?.customer?.date_of_birth || '',
-        booking_id: bookingId,
-      },
+      customer,
       booking: {
         id: bookingId,
         destination_id: propHotel?.original_metadata?.city || 'sg01',
@@ -104,12 +120,14 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
         room_id: propRoom?.type || 'room01',
         start_date: start,
         end_date: end,
-        num_nights: calcNights(start, end),           // ✅ set nights
+        num_nights: calcNights(start, end),
         price: roomData?.converted_price ?? roomData?.price ?? 0,
         currency: currencyCode,
-        guests_total: totalGuests, // single total (incl main)
+        // If guests exist, prefer 1 + guests.length; otherwise fall back to hotelParams
+        guests_total: guests.length ? (1 + guests.length) : getGuestsFromParams(hotelParams),
+        message_to_hotel: getSpecialRequest(),
       },
-      guests: [], // add remaining guests here if you collect them elsewhere
+      guests, // ✅ include the Step‑2 guests
     };
 
     sessionStorage.setItem('booking_payload', JSON.stringify(payload));
@@ -126,6 +144,19 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
       toast.error('Stripe is not loaded. Please try again.');
       return;
     }
+
+    const form = getValues();
+    const bookingId =
+      form?.booking?.id ||
+      (() => {
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, "0");
+        const month = now.toLocaleString("en-US", { month: "short" }).toLowerCase(); // e.g., 'aug'
+        const year = now.getFullYear();
+        const timestamp = now.getTime(); // milliseconds since 1970
+        const randomNum = Math.floor(100 + Math.random() * 900); // random 3-digit number
+        return `BK-${day}${month}${year}-${timestamp}-${randomNum}`;
+      })();
 
     // 1) confirm payment
     const result = await stripe.confirmPayment({ elements, redirect: 'if_required' });
@@ -146,9 +177,11 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
     try {
       // 2) get or build booking payload
       let raw: any;
-      const stored = sessionStorage.getItem('booking_payload');
-      raw = stored ? JSON.parse(stored) : buildFallbackPayload();
+      const storedPayloadStr = sessionStorage.getItem('booking_payload');
+      console.log("from step2: ", storedPayloadStr);
+      raw = storedPayloadStr ? JSON.parse(storedPayloadStr) : buildFallbackPayload(form, bookingId);
 
+      console.log('retrieve from session RAW: ', raw);
       const totalGuests = getGuestsFromParams(hotelParams);
 
       const displayPrice =
@@ -182,12 +215,10 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
       if (!bookingRes.ok) throw new Error('Booking failed');
       const confirmed = await bookingRes.json();
 
-      const bookingId =
-        confirmed?.booking?.id ||
-        confirmed?.booking_id ||
-        confirmed?.booking_reference ||
-        raw?.booking?.id ||
-        `BOOK-${Date.now()}`;
+      console.log("before passing to payment api: ", {
+        bookingId
+      });
+
 
       // 4) store payment record
       const payment_reference = `PAY-${Date.now()}`;
@@ -205,10 +236,19 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
         }),
       });
 
-      // 5) send confirmation email
+      // 5) send confirmation email (UPDATED to include guests + phone_number)
       const humanAmount = ZERO_DECIMAL.includes(chargedCurrency)
         ? chargedAmount
         : (chargedAmount / 100).toFixed(2);
+
+      const otherGuests = Array.isArray(raw?.guests)
+        ? raw.guests.map((g: any, i: number) => ({
+            index: i + 1,
+            salutation: g?.salutation || '',
+            first_name: g?.first_name || '',
+            last_name: g?.last_name || '',
+          }))
+        : [];
 
       await fetch('http://localhost:3000/email/send-confirmation', {
         method: 'POST',
@@ -220,15 +260,19 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
               start_date: payload.booking.start_date,
               end_date: payload.booking.end_date,
               guests_total: totalGuests,
-              num_nights: payload.booking.num_nights,      // ✅ include in email payload too (optional)
+              num_nights: payload.booking.num_nights,
             },
-            guests: { total: totalGuests },
+            guests: { 
+              total: totalGuests,
+              otherGuests, // 👈 for template loop
+            },
             price: { totalPaid: humanAmount, currency: chargedCurrency?.toUpperCase() || currencyUpper },
             mainGuest: {
               email: raw.customer?.email,
               salutation: raw.customer?.salutation,
               first_name: raw.customer?.first_name,
               last_name: raw.customer?.last_name,
+              phone_number: raw.customer?.phone_number || '', // 👈 added
               country: raw.customer?.country,
               date_of_birth: raw.customer?.date_of_birth,
             },
@@ -236,6 +280,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
           },
         }),
       });
+
+      toast.success('Payment successful! Booking confirmed.');
 
       // 6) save summary for confirmation page
       const summaryForUI = {
@@ -248,8 +294,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel }: Step3WithS
         num_nights: payload.booking.num_nights,
       };
       sessionStorage.setItem('booking_summary', JSON.stringify(summaryForUI));
-
-      toast.success('Payment successful! Booking confirmed.');
+      
       navigate('/hotels/confirmed-booking');
     } catch (e) {
       console.error('❌ Post-payment flow failed:', e);

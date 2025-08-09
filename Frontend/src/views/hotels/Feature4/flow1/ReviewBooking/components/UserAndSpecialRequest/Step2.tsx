@@ -60,6 +60,7 @@ const Step2 = ({ control, hotelParams, hotelData, roomData }: Step1Props) => {
 
     try {
       sessionStorage.setItem('hotel_guest_info', JSON.stringify(guestInfo));
+      console.log('Guest info saved to sessionStorage:', guestInfo);
       sessionStorage.setItem(
         'hotel_booking_details',
         JSON.stringify({ hotelData, roomData, hotelParams })

@@ -54,6 +54,7 @@ export async function createBooking(
   // 3) DO NOT insert payments here; payments are written by /payments/create after Stripe success
 
   // 4) Insert remaining guests — ✅ include date_of_birth & country
+  console.log('Inserting guests BACKEND:', guests);
   for (const guest of guests) {
     await db.query(
       `INSERT INTO guests (

@@ -26,7 +26,13 @@ type EmailGuest = {
 };
 
 export async function sendConfirmationEmail(booking: any) {
-  const toEmail = booking.mainGuest?.email || booking.customer?.email;
+  // accept either mainGuest or legacy customer field
+  const main =
+    booking.mainGuest ??
+    booking.customer ??
+    {};
+
+  const toEmail = main?.email || booking.customer?.email;
   if (!toEmail) throw new Error('Missing customer email');
 
   const totalGuests: number =
@@ -34,18 +40,23 @@ export async function sendConfirmationEmail(booking: any) {
     Number(booking.booking?.guests_total) ||
     1;
 
-  const listGuests = (booking.guests?.list as EmailGuest[] | undefined)?.filter(Boolean) || [];
+  // accept either otherGuests or legacy list
+  const listGuests: EmailGuest[] =
+    (booking.guests?.otherGuests as EmailGuest[] | undefined) ??
+    (booking.guests?.list as EmailGuest[] | undefined) ??
+    [];
 
-  const guestLines = listGuests.length
-    ? `<ul>${listGuests
-        .map(g => {
-          const name = [g.salutation, g.first_name, g.last_name].filter(Boolean).join(' ');
-          const country = g.country ? ` (${g.country})` : '';
-          const dob = g.date_of_birth ? ` — DOB: ${g.date_of_birth}` : '';
-          return `<li>${name || 'Guest'}${country}${dob}</li>`;
-        })
-        .join('')}</ul>`
-    : '<p>(Guest details on file)</p>';
+  const guestLines =
+    listGuests.length
+      ? `<ul>${listGuests
+          .map((g, i) => {
+            const name = [g.salutation, g.first_name, g.last_name].filter(Boolean).join(' ');
+            const country = g.country ? ` (${g.country})` : '';
+            const dob = g.date_of_birth ? ` — DOB: ${g.date_of_birth}` : '';
+            return `<li>${i + 1}. ${name || 'Guest'}${country}${dob}</li>`;
+          })
+          .join('')}</ul>`
+      : '<p>No guests indicated</p>';
 
   const amount = booking.price?.totalPaid ?? '0.00';
   const currency = (booking.price?.currency || '').toString().toUpperCase();
@@ -62,11 +73,9 @@ export async function sendConfirmationEmail(booking: any) {
 
     <hr/>
     <h4>Main Guest</h4>
-    <p>
-      ${[booking.customer?.salutation, booking.customer?.first_name, booking.customer?.last_name].filter(Boolean).join(' ') || 'N/A'}
-      ${booking.customer?.country ? ` — ${booking.customer.country}` : ''}
-      ${booking.customer?.date_of_birth ? ` — DOB: ${booking.customer.date_of_birth}` : ''}
-    </p>
+    <p>First Name: ${main.first_name || 'N/A'}</p>
+    <p>Last Name: ${main.last_name || 'N/A'}</p>
+    <p>Number: ${main.phone_number || 'N/A'}</p>
 
     <h4>Other Guest(s)</h4>
     ${guestLines}
@@ -84,4 +93,3 @@ export async function sendConfirmationEmail(booking: any) {
 
   await transporter.sendMail(mailOptions);
 }
-  

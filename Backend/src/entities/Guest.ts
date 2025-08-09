@@ -8,8 +8,8 @@ export class Guest {
   @Column({ type: "varchar", length: 200 })
   booking_id!: string;
 
-  @Column({ type: "enum", enum: ["adult", "child"] })
-  guest_type!: "adult" | "child";
+  @Column({ type: "enum", enum: ["adult", "child", "guest"] })
+  guest_type!: "adult" | "child" | "guest";
 
   @Column({ type: "varchar", length: 10 })
   salutation!: string;

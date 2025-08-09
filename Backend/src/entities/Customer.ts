@@ -20,7 +20,7 @@ export class Customer {
   @Column({ length: 100 })
   email!: string;
 
-  @Column({ length: 20 })
+  @Column({ length: 100 })
   booking_id!: string;
 
   @Column({ type: "text", nullable: true })
