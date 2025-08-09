@@ -23,6 +23,7 @@
 
     console.log("Room Api link:", roomDetailApi);
     console.log("Hotel Api link:",hotelDetailApi);
+    console.log("Hotel Params:", hotelParams);
 
     const polling = useRef(true);  //useRef for proper state sharing in closures
     const [hotelData, setHotelData] = useState<HotelData>();

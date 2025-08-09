@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   Button,
   Card,
+  CardBody,
   Col,
   Container,
   Modal,
@@ -98,37 +99,41 @@ if (!bookingId) return alert('Booking ID missing in session');
 
 
   return (
-    <section className="py-0 mb-1">
+    <section className="py-0">
       <Container>
-        <Card className="overflow-hidden px-sm-5 pt-4 pb-3">
-          {/* Title */}
-          <Row className="mb-3">
-            <Col sm={12} className="text-center">
-              <h3 className="m-0 h4 card-title">BOOKING FOUND</h3>
+        <Card className="bg-light overflow-hidden px-sm-5">
+          <Row className="align-items-center g-4">
+            <Col sm={9}>
+              <CardBody>
+                <nav aria-label="breadcrumb">
+                  <ol className="breadcrumb breadcrumb-dots mb-0 mt-3">
+                    <li className="breadcrumb-item">
+                      <Link to="/" className="items-center">
+                        <BsHouse className=" me-2" /> Home
+                      </Link>
+                    </li>
+                    <li className="breadcrumb-item">Book</li>
+                    <li className="breadcrumb-item active">My Bookings</li>
+                  </ol>
+                </nav>
+                <h1 className="m-0 h2 card-title">Review your Booking</h1>
+                <Row className="align-items-center justify-content-between g-3 mt-4"> 
+                  <Col xs={6}><p className="mb-1"><strong>Booking ID:</strong> #{bookingId || 'N/A'}</p></Col>
+                <Col xs={4}><p className="mb-1"><strong>Booking Date:</strong> 14 July 2025</p></Col>
+                <Col xs={2}><p className="mb-1"><strong>Time:</strong> 3:30 PM</p></Col>
+              </Row>
+              </CardBody>
+            </Col>
+            <Col sm={3} className="text-end d-none d-sm-block">
+              <img src={element17} className="mb-n4" alt="Element 17" />
             </Col>
           </Row>
-
-          {/* Booking Info */}
-          <Row className="align-items-center justify-content-between text-center g-3 mb-4">
-          <p className="mb-1"><strong>Booking ID:</strong> #{bookingId || 'N/A'}</p>
-
-            <Col xs={4}><p className="mb-1"><strong>Booking Date:</strong> 14 July 2025</p></Col>
-            <Col xs={4}><p className="mb-1"><strong>Time:</strong> 3:30 PM</p></Col>
-          </Row>
-
-          {/* Description */}
+        </Card>
+      </Container>
+      <Container>
+        {/* Disclaimer */}
           <Row>
-            <Col sm={12}>
-              <h6 style={{ fontWeight: 'normal' }}>
-                Your booking has been successfully retrieved. You may now <strong>view</strong> your reservation details,
-                <strong> amend</strong> guest information or preferences, or <strong>cancel</strong> your booking if needed.
-              </h6>
-            </Col>
-          </Row>
-
-          {/* Disclaimer */}
-          <Row>
-            <Col sm={12} className="text-center mt-3">
+            <Col sm={12} className="text-center mt-2">
               <small className="text-muted">
                 <em>
                   To change your check-in/check-out dates or the number of guests, please cancel your current booking and make a new one.
@@ -140,7 +145,7 @@ if (!bookingId) return alert('Booking ID missing in session');
           </Row>
 
           {/* Buttons */}
-          <Row className="mt-7 text-end justify-content-end">
+          <Row className="mt-5 mb-4 text-end justify-content-end">
             <Col xs={12} md="auto" className="text-md-end text-center">
               <div className="d-flex flex-wrap justify-content-md-end justify-content-center gap-2">
                 <Button variant="warning" onClick={handleeditbookingclick}>Edit</Button>
@@ -148,7 +153,6 @@ if (!bookingId) return alert('Booking ID missing in session');
               </div>
             </Col>
           </Row>
-        </Card>
       </Container>
 
       {/* Cancel Modal */}

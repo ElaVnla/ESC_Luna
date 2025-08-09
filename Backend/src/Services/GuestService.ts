@@ -49,6 +49,15 @@ export async function getGuestsByBookingId(booking_id: string): Promise<GuestMod
   ));
 }
 
+export async function getGuestsCountByBookingId(booking_id: string): Promise<number> {
+  const db = Database;
+  const rows = await db.query(
+    `SELECT COUNT(*) AS cnt FROM guests WHERE booking_id = ?`,
+    [booking_id]
+  );
+  return Number(rows?.[0]?.cnt ?? 0);
+}
+
 export async function updateGuestsByBookingId(booking_id: string, guests: GuestModel[]) {
   const db = Database;
   await db.query(`DELETE FROM guests WHERE booking_id = ?`, [booking_id]);
