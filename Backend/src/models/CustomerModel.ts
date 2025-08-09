@@ -1,3 +1,4 @@
+// Main Guest Model (Customer)
 export class CustomerModel {
     constructor(
         public id: number,
@@ -7,7 +8,8 @@ export class CustomerModel {
         public phone_number: string,
         public email: string,
         public booking_id: string,
-        public billing_address: string
+        public billing_address: string,
+        public country: string,            // Added country for main guest
+        public date_of_birth: string      // Added date_of_birth for main guest
     ) {}
 }
-//this is for the MAIN GUEST only; other guests will be in the GuestModel. 

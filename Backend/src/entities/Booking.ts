@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn } from "typeorm";
 
 @Entity("bookings")
 export class Booking {
-    @PrimaryColumn()
+    @PrimaryColumn({length: 100})
     id!: string;
 
     @Column({ length: 100 })
@@ -20,11 +20,11 @@ export class Booking {
     @Column({ type: "date" })
     end_date!: Date;
 
-    @Column({ type: "int" })
-    adults!: number;
+    // @Column({ type: "int" })
+    // adults!: number;
 
-    @Column({ type: "int" })
-    children!: number;
+    // @Column({ type: "int" })
+    // children!: number;
 
     @Column({ type: "text", nullable: true })
     message_to_hotel!: string;
@@ -37,4 +37,7 @@ export class Booking {
 
     @Column({ type: "decimal", precision: 10, scale: 2 })
     price!: number;
+
+    @Column({ type: "int" })
+    guests_total!: number;
 }

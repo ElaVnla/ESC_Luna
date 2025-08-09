@@ -19,4 +19,9 @@ export type roomProps = {
   roomData: Rooms;
 }
 
-export type Step1Props = StepProps & HotelRoomProps;
+export type hotelParams = {
+  guests: any;
+  hotelParams: hotelParams
+}
+
+export type Step1Props = StepProps & HotelRoomProps & hotelParams;

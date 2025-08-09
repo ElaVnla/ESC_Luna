@@ -1,19 +1,49 @@
 import { TextFormInput } from '@/components';
 import { Card, CardBody, CardHeader, Col, FormSelect } from 'react-bootstrap';
 import { BsPeopleFill } from 'react-icons/bs';
-import { useFormContext, Controller } from 'react-hook-form';
-import { useGuestCount } from '../../contexts/GuestCountContext';
+import { Controller, useFormContext } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
-const GuestDetails = () => {
+const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: string }, totalGuests: number }) => {
   const { control } = useFormContext();
-  const { guests } = useGuestCount();
+  const [guestList, setGuestList] = useState<any[]>([]);
 
-  const renderGuestForm = (type: 'adult' | 'child', index: number) => {
-    const label = type === 'adult' ? `Adult ${index + 1}` : `Child ${index + 1}`;
-    const prefix = `guests.${type === 'adult' ? 'adults' : 'children'}[${index}]`;
+  useEffect(() => {
+    const newGuestList = [];
+    
+    // Only create guest forms if totalGuests > 0
+    if (totalGuests > 0) {
+      for (let i = 0; i < totalGuests; i++) {
+        newGuestList.push({ isMain: false });
+      }
+    }
+
+    setGuestList(newGuestList);
+  }, [hotelParams.guests, totalGuests]);
+
+  // If no guests (totalGuests == 0), display "No guests indicated"
+  if (totalGuests === 0) {
+    return (
+      <Card className="shadow mb-4">
+        <CardHeader className="card-header border-bottom p-4">
+          <h4 className="card-title mb-0 d-flex align-items-center">
+            <BsPeopleFill className="me-2" />
+            Guest Details
+          </h4>
+        </CardHeader>
+        <CardBody className="p-4">
+          <p>No guests indicated</p>
+        </CardBody>
+      </Card>
+    );
+  }
+
+  const renderGuestForm = (index: number) => {
+    const label = `Guest ${index + 1}`;
+    const prefix = `guests[${index}]`;
 
     return (
-      <Card className="mb-4" key={`${type}-${index}`}>
+      <Card className="mb-4" key={index}>
         <CardHeader className="card-header border-bottom p-4">
           <h5 className="card-title mb-0 d-flex align-items-center">
             <BsPeopleFill className="me-2" />
@@ -28,7 +58,7 @@ const GuestDetails = () => {
                 <Controller
                   name={`${prefix}.salutation`}
                   control={control}
-                  rules={{ required: 'Title is required' }}
+                  rules={{ required: 'Salutation is required' }}
                   render={({ field, fieldState }) => (
                     <>
                       <FormSelect
@@ -36,12 +66,12 @@ const GuestDetails = () => {
                         className={`form-select js-choice ${fieldState.invalid ? 'is-invalid' : ''}`}
                       >
                         <option value="">Title</option>
-                      <option value="Mr">Mr</option>
-                      <option value="Mrs">Mrs</option>
-                      <option value="Ms">Ms</option>
-                      <option value="Miss">Miss</option>
+                        <option value="Mr">Mr</option>
+                        <option value="Mrs">Mrs</option>
+                        <option value="Ms">Ms</option>
+                        <option value="Miss">Miss</option>
                       </FormSelect>
-                      {fieldState.error?.message && (
+                      {fieldState.error && (
                         <div className="invalid-feedback">{fieldState.error.message}</div>
                       )}
                     </>
@@ -117,6 +147,17 @@ const GuestDetails = () => {
               className="form-control-lg"
               containerClass="col-md-6"
             />
+
+            <TextFormInput
+              name={`${prefix}.date_of_birth`}
+              label="Date of Birth"
+              type="date"
+              control={control}
+              rules={{ required: 'Date of birth is required' }}
+              placeholder="Enter your date of birth"
+              className="form-control-lg"
+              containerClass="col-md-4"
+            />
           </div>
         </CardBody>
       </Card>
@@ -132,8 +173,7 @@ const GuestDetails = () => {
         </h4>
       </CardHeader>
       <CardBody className="p-4">
-        {[...Array(guests.adults)].map((_, index) => renderGuestForm('adult', index))}
-        {[...Array(guests.children)].map((_, index) => renderGuestForm('child', index))}
+        {guestList.map((_, index) => renderGuestForm(index))}
       </CardBody>
     </Card>
   );

@@ -13,6 +13,8 @@ import CustomerRouter from './CustomerRouter';
 import PaymentRouter from './PaymentRouter';
 import GuestRouter from './GuestRouter'; 
 
+// stripe stuff
+
 
 const router = Router();
 

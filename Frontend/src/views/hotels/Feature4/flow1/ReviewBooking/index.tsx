@@ -11,7 +11,7 @@ import { RoomData } from '@/models/RoomDetailsApi'
 
 const ReviewBooking = () => {
   const location = useLocation();
-  const { hotelData, roomDataf4 } = location.state || {};
+  const { hotelData, roomDataf4, hotelParams } = location.state || {};
 
   console.log("ROOM DATA f4 WENT THRU: ", roomDataf4);
   return (
@@ -21,7 +21,7 @@ const ReviewBooking = () => {
         <TopNavBar />
         <GuestCountProvider>
           <Hero/>
-          <BookingDetails hotelData={hotelData} roomData={roomDataf4}/>
+          <BookingDetails hotelData={hotelData} roomData={roomDataf4} hotelParams={hotelParams} />
         </GuestCountProvider>
       </main>
     </>

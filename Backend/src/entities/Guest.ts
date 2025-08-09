@@ -27,5 +27,8 @@ export class Guest {
   email!: string;
 
   @Column({ type: "varchar", length: 100 })
-  country!: string;
+  country!: string;  // Added country for the remaining guest
+
+  @Column({ type: "date", nullable: true })
+  date_of_birth!: string;  // Added date_of_birth for the remaining guest
 }

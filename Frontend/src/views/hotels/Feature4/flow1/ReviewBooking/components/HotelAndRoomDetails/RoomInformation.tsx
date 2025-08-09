@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardHeader, Col, Collapse, Image, Row } from 'react-bootstrap'
+import { Button, Card, CardBody, CardHeader, Carousel, Col, Collapse, Image, Row } from 'react-bootstrap'
 import { FaHotel, FaStar } from 'react-icons/fa6'
 import hotel2 from '@/assets/images/category/hotel/4by3/02.jpg'
 import { Link } from 'react-router-dom'
@@ -14,20 +14,9 @@ import roomImg3 from '@/assets/images/category/hotel/4by3/03.jpg'
 import { RoomData, Rooms } from '@/models/RoomDetailsApi'
 import { useState } from 'react'
 
-
-const RoomInformation = ({roomData}: { roomData:Rooms }) => {
+const RoomInformation = ({ roomData }: { roomData: Rooms }) => {
   const roomImages = roomData.images?.map(img => img.high_resolution_url || img.url) || []
   const [showMore, setShowMore] = useState(false)
-
-  const roomSliderSettings: TinySliderSettings = {
-    nested: 'inner',
-    autoplay: false,
-    controls: true,
-    controlsText: [renderToString(<span>←</span>), renderToString(<span>→</span>)],
-    arrowKeys: true,
-    items: 1,
-    nav: false,
-  }
 
   return (
     <Card className="shadow">
@@ -39,20 +28,21 @@ const RoomInformation = ({roomData}: { roomData:Rooms }) => {
       </CardHeader>
 
       <CardBody className="p-4">
-
-        <div className="tiny-slider arrow-round arrow-dark overflow-hidden rounded-3 mb-2">
-          {roomImages.length > 0 && (
-          <div className="tiny-slider arrow-round arrow-dark overflow-hidden rounded-3 mb-2">
-            <TinySlider settings={roomSliderSettings}>
-              {roomImages.map((img, idx) => (
-                <div key={idx}>
-                  <Image src={img} className="w-100 rounded-3" alt={`Room ${idx}`} />
-                </div>
-              ))}
-            </TinySlider>
-          </div>
+        {/* Carousel for Room Images */}
+        {roomImages.length > 0 && (
+          <Carousel interval={null} controls={true} indicators={false} fade={false}>
+            {roomImages.map((img, idx) => (
+              <Carousel.Item key={idx}>
+                <img
+                  className="d-block w-100"
+                  src={img}
+                  alt={`Room ${idx}`}
+                  style={{ maxHeight: '300px', objectFit: 'cover', objectPosition: 'center', borderRadius: '12px' }}
+                />
+              </Carousel.Item>
+            ))}
+          </Carousel>
         )}
-        </div>
 
         <Card className="mb-1">
           <Row className="align-items-center">
@@ -62,7 +52,7 @@ const RoomInformation = ({roomData}: { roomData:Rooms }) => {
               </CardHeader>
               <CardBody>
                 <div dangerouslySetInnerHTML={{ __html: roomData.long_description || '' }} />
-                </CardBody>
+              </CardBody>
             </Col>
           </Row>
         </Card>
@@ -91,7 +81,6 @@ const RoomInformation = ({roomData}: { roomData:Rooms }) => {
             )}
           </CardBody>
         </Card>
-
       </CardBody>
     </Card>
   )

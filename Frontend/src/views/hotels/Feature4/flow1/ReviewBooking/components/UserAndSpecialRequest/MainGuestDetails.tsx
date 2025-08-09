@@ -1,10 +1,10 @@
-import { TextFormInput } from '@/components'
-import { Card, CardBody, CardHeader, Col, FormSelect } from 'react-bootstrap'
-import { useFormContext, Controller } from 'react-hook-form'
-import { BsPeopleFill } from 'react-icons/bs'
+import { TextFormInput } from '@/components';
+import { Card, CardBody, CardHeader, Col, FormSelect } from 'react-bootstrap';
+import { useFormContext, Controller } from 'react-hook-form';
+import { BsPeopleFill } from 'react-icons/bs';
 
-const GuestDetails = () => {
-  const { control } = useFormContext()
+const MainGuestDetails = () => {
+  const { control } = useFormContext();
 
   return (
     <Card className="shadow mb-4">
@@ -67,12 +67,12 @@ const GuestDetails = () => {
           />
 
           <TextFormInput
-            name="customer.billing_address"
-            label="Billing Address"
+            name="customer.country"
+            label="Country"
             type="text"
             control={control}
-            rules={{ required: 'Billing address is required' }}
-            placeholder="Enter your billing address"
+            rules={{ required: 'Country is required' }}
+            placeholder="Enter your country"
             className="form-control-lg"
             containerClass="col-md-4"
           />
@@ -99,6 +99,17 @@ const GuestDetails = () => {
           </Col>
 
           <TextFormInput
+            name="customer.billing_address"
+            label="Billing Address"
+            type="text"
+            control={control}
+            rules={{ required: 'Billing address is required' }}
+            placeholder="Enter your billing address"
+            className="form-control-lg"
+            containerClass="col-md-4"
+          />
+
+          <TextFormInput
             name="customer.phone_number"
             label="Phone Number"
             type="text"
@@ -114,10 +125,21 @@ const GuestDetails = () => {
             className="form-control-lg"
             containerClass="col-md-6"
           />
+
+          <TextFormInput
+            name="customer.date_of_birth"
+            label="Date of Birth"
+            type="date"
+            control={control}
+            rules={{ required: 'Date of birth is required' }}
+            placeholder="Enter your date of birth"
+            className="form-control-lg"
+            containerClass="col-md-4"
+          />
         </form>
       </CardBody>
     </Card>
-  )
-}
+  );
+};
 
-export default GuestDetails
+export default MainGuestDetails;

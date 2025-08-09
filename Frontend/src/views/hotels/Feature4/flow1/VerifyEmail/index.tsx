@@ -4,6 +4,8 @@ import Footer from '@/layouts/UserLayout/Footer'
 import Hero from './components/Hero'
 import FooterWithLinks from '@/components/FooterWithLinks'
 import TwoFactorAuth from './components/TwoFactorAuth'
+import { useWizard } from 'react-use-wizard'
+import { Button } from 'react-bootstrap'
 
 const VerifyEmail = () => {
   return (
@@ -11,8 +13,6 @@ const VerifyEmail = () => {
       <PageMetaData title="Hotel - Review Booking" />
 
       <main>
-        <TopNavBar />
-        <Hero />
         <TwoFactorAuth />
       </main>
     </>

@@ -1,91 +1,75 @@
 import { Database } from '../Database';
 
-// booking = BookingModel
-// customer = CustomerModel
-// payment = PaymentModel
-// guests = GuestModel[] ← new param!
+// booking = { id, destination_id, hotel_id, room_id, start_date, end_date, message_to_hotel, num_nights, price, currency, guests_total }
 export async function createBooking(
   booking: any,
   customer: any,
-  payment: any,
-  guests: any[] = [] // ✅ fallback to empty array
+  guests: any[] = []
 ) {
   const db = Database;
 
-  // 1. Insert booking
+  // 1) Insert booking — ❗️use guests_total (no adults/children)
   await db.query(
-  `INSERT INTO bookings (
-    id, destination_id, hotel_id, room_id,
-    start_date, end_date, adults, children,
-    message_to_hotel, num_nights, price, currency
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  [
-    booking.id,
-    booking.destination_id,
-    booking.hotel_id,
-    booking.room_id,
-    booking.start_date,
-    booking.end_date,
-    booking.adults,
-    booking.children,
-    booking.message_to_hotel,
-    booking.num_nights,
-    booking.price,
-    booking.currency // ✅ Add this
-  ]
-);
+    `INSERT INTO bookings (
+      id, destination_id, hotel_id, room_id,
+      start_date, end_date,
+      message_to_hotel, num_nights, price, currency,
+      guests_total
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      booking.id,
+      booking.destination_id,
+      booking.hotel_id,
+      booking.room_id,
+      booking.start_date,
+      booking.end_date,
+      booking.message_to_hotel ?? null,
+      booking.num_nights ?? null,
+      booking.price,
+      booking.currency,
+      booking.guests_total ?? 1,
+    ]
+  );
 
-  // 2. Insert main customer
+  // 2) Insert main customer — ✅ add country, date_of_birth
   await db.query(
     `INSERT INTO customers (
       salutation, first_name, last_name,
-      phone_number, email, booking_id, billing_address
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      phone_number, email, booking_id, billing_address,
+      country, date_of_birth
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      customer.salutation,
+      customer.salutation ?? null,
       customer.first_name,
       customer.last_name,
-      customer.phone_number,
+      customer.phone_number ?? null,
       customer.email,
       booking.id,
-      customer.billing_address
+      customer.billing_address ?? null,
+      customer.country ?? null,         // ✅ NEW
+      customer.date_of_birth ?? null,   // ✅ NEW (YYYY-MM-DD)
     ]
   );
 
-  // 3. Insert payment
-  await db.query(
-    `INSERT INTO payments (
-      booking_id,
-      payment_reference,
-      encrypted_card_number,
-      encrypted_expiry,
-      encrypted_cardholder_name
-    ) VALUES (?, ?, ?, ?, ?)`,
-    [
-      booking.id,
-      payment.payment_reference,
-      payment.encrypted_card_number,
-      payment.encrypted_expiry,
-      payment.encrypted_cardholder_name
-    ]
-  );
+  // 3) DO NOT insert payments here; payments are written by /payments/create after Stripe success
 
-  // 4. Insert guests
+  // 4) Insert remaining guests — ✅ include date_of_birth & country
   for (const guest of guests) {
     await db.query(
       `INSERT INTO guests (
         booking_id, guest_type, salutation, first_name,
-        last_name, phone_number, email, country
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        last_name, phone_number, email, date_of_birth, country
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         booking.id,
-        guest.guest_type,
-        guest.salutation,
-        guest.first_name,
-        guest.last_name,
-        guest.phone_number,
-        guest.email,
-        guest.country
+        guest.guest_type ?? 'guest',
+        guest.salutation ?? null,
+        guest.first_name ?? null,
+        guest.last_name ?? null,
+        guest.phone_number ?? null,
+        guest.email ?? null,
+        guest.date_of_birth ?? null, // ✅ NEW
+        guest.country ?? null,       // ✅ ensure set
       ]
     );
   }
@@ -93,38 +77,25 @@ export async function createBooking(
   return booking.id;
 }
 
-
 export async function cancelBooking(bookingId: string) {
-    const db = Database;
-  
-    // delete related records first (order matters due to FK constraints)
-    await db.query(`DELETE FROM guests WHERE booking_id = ?`, [bookingId]);
-    await db.query(`DELETE FROM payments WHERE booking_id = ?`, [bookingId]);
-    await db.query(`DELETE FROM customers WHERE booking_id = ?`, [bookingId]);
-  
-    // finally, delete the booking itself
-    await db.query(`DELETE FROM bookings WHERE id = ?`, [bookingId]);
-  }
-  
+  const db = Database;
+  await db.query(`DELETE FROM guests WHERE booking_id = ?`, [bookingId]);
+  await db.query(`DELETE FROM payments WHERE booking_id = ?`, [bookingId]);
+  await db.query(`DELETE FROM customers WHERE booking_id = ?`, [bookingId]);
+  await db.query(`DELETE FROM bookings WHERE id = ?`, [bookingId]);
+}
+
 export async function getHotelIdFromBooking(bookingId: string): Promise<string | null> {
   const db = Database;
-
-  const result = await db.query(
-    `SELECT hotel_id FROM bookings WHERE id = ?`,
-    [bookingId]
-  );
-
+  const result = await db.query(`SELECT hotel_id FROM bookings WHERE id = ?`, [bookingId]);
   return result.length > 0 ? result[0].hotel_id : null;
 }
 
-export async function getBookedRoomId(hotelId: string, checkIn: string, checkOut: string): Promise<string | null> {
+export async function getBookedRoomId(hotelId: string, checkIn: string, checkOut: string): Promise<string[] | null> {
   const db = Database;
-
   const roomIds = await db.query(
     `SELECT room_id FROM bookings WHERE hotel_id = ? AND NOT (end_date <= ? OR start_date >= ?)`,
     [hotelId, checkIn, checkOut]
   );
-
-  return roomIds
+  return roomIds;
 }
-

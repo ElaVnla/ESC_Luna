@@ -9,7 +9,7 @@ const SpecialRequest = () => {
   const { control } = useFormContext()
 
   return (
-    <Card className="shadow mb-4">
+    <Card className="shadow mb-1">
       <CardHeader className="card-header border-bottom p-4">
         <h4 className="card-title mb-0 items-center">
           <BsPeopleFill className="me-2" />
