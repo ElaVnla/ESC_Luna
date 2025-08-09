@@ -4,7 +4,7 @@ export class Guest1753627933321 implements MigrationInterface {
     name = 'Guest1753627933321'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE \`guests\` (\`id\` int NOT NULL AUTO_INCREMENT, \`booking_id\` varchar(100) NOT NULL, \`guest_type\` enum ('adult', 'child') NOT NULL, \`salutation\` varchar(10) NOT NULL, \`first_name\` varchar(50) NOT NULL, \`last_name\` varchar(50) NOT NULL, \`phone_number\` varchar(20) NOT NULL, \`email\` varchar(100) NOT NULL, \`country\` varchar(50) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`guests\` (\`id\` int NOT NULL AUTO_INCREMENT, \`booking_id\` varchar(100) NOT NULL, \`guest_type\` enum ('adult', 'child', 'guest') NOT NULL, \`salutation\` varchar(10) NOT NULL, \`first_name\` varchar(50) NOT NULL, \`last_name\` varchar(50) NOT NULL, \`phone_number\` varchar(20) NOT NULL, \`email\` varchar(100) NOT NULL, \`country\` varchar(50) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`ALTER TABLE \`rooms\` DROP PRIMARY KEY`);
         await queryRunner.query(`ALTER TABLE \`rooms\` DROP COLUMN \`id\``);
         await queryRunner.query(`ALTER TABLE \`rooms\` ADD \`id\` varchar(255) NOT NULL PRIMARY KEY`);

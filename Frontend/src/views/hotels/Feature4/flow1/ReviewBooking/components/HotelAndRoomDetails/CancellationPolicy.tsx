@@ -6,11 +6,13 @@ import { BsAlarm, BsBrightnessHigh, BsGeoAlt, BsPatchCheckFill } from 'react-ico
 import { FaStarHalfAlt } from 'react-icons/fa'
 import { Rooms } from '@/models/RoomDetailsApi'
 
-const CancellationPolicy = ({roomData}: { roomData:Rooms }) => {
-
+const CancellationPolicy = ({ roomData }: { roomData: Rooms }) => {
   const isFreeCancellation = roomData.free_cancellation;
 
-    return (
+  // Check if cancellation policy or additional info is missing
+  const cancellationInfo = roomData.roomAdditionalInfo?.displayFields?.know_before_you_go;
+
+  return (
     <Card className="shadow">
       <CardHeader className="border-bottom d-md-flex justify-content-md-between">
         <h5 className="card-title mb-0">Important Info & Cancellation Policy</h5>
@@ -30,17 +32,23 @@ const CancellationPolicy = ({roomData}: { roomData:Rooms }) => {
             </li>
           )}
         </ul>
+
         <h6 className="mt-2">Before you go</h6>
         <ul className="list-group list-group-borderless mb-0">
-          <div
-                dangerouslySetInnerHTML={{
-                  __html: roomData.roomAdditionalInfo.displayFields.know_before_you_go,
-                }}
-              />
+          {/* Check if the "know_before_you_go" information exists */}
+          {cancellationInfo ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: cancellationInfo,
+              }}
+            />
+          ) : (
+            <p>No important information and/or policy is available.</p> // Fallback message
+          )}
         </ul>
       </CardBody>
     </Card>
   );
-}
+};
 
-export default CancellationPolicy
+export default CancellationPolicy;

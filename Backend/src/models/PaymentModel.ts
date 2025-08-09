@@ -1,10 +1,13 @@
+// src/models/PaymentModel.ts
 export class PaymentModel {
   constructor(
     public id: number,
     public booking_id: string,
     public payment_reference: string,
-    public encrypted_card_number: string,
-    public encrypted_expiry: string,
-    public encrypted_cardholder_name: string
+    public stripe_payment_intent_id: string,
+    public amount?: string | number | null, // string if no transformer; number if you added one
+    public currency?: string | null,
+    public status?: string | null,
+    public encrypted_cardholder_name?: string | null
   ) {}
 }
