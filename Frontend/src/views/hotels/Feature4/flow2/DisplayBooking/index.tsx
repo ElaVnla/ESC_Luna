@@ -28,22 +28,28 @@ type BookingRow = {
 }
 
 const DisplayBooking = () => {
+  // State for booking row
   const [ booking, setBooking] = useState<BookingRow | null>(null)
+  // State for hotel details
   const [hotelData, setHotelData] = useState<HotelData | null>(null)
+  // State for selected room details
   const [selectedRoom, setSelectedRoom] = useState<any | null>(null)
 
+  // State for main guest details
   const [mainGuest, setMainGuest] = useState<any>(null)
+  // State for additional guests list
   const [guests, setGuests] = useState<any[]>([])
 
-  // 1) Load booking + basic guest info using bookingId from session
+  // Load booking and guest info using bookingId from sessionStorage
   useEffect(() => {
+    // Get bookingId from sessionStorage
     const stored = sessionStorage.getItem('pendingBooking')
     if (!stored) return
     const { bookingId } = JSON.parse(stored)
 
-    console.log('🔍 Fetching booking with ID:', bookingId)
+    console.log('Fetching booking with ID:', bookingId)
 
-    // booking row (get everything in ONE call if you have it)
+    // Fetch booking row
     fetch(`http://localhost:3000/api/bookings/${bookingId}`)
       .then(r => {
         if (!r.ok) throw new Error(`Booking fetch failed ${r.status}`)
@@ -52,49 +58,50 @@ const DisplayBooking = () => {
       .then((row: BookingRow) => {
         setBooking(row)
 
-        // 🔹 fetch hotel details exactly like before
+        // Fetch hotel details
         const hotelDetailApi = `http://localhost:3000/api/hotels/${row.hotel_id}`
         fetch(hotelDetailApi)
           .then(resp => resp.json())
           .then((h: any) => setHotelData(h))
-          .catch(err => console.error('❌ Failed to fetch hotel data:', err))
+          .catch(err => console.error('Failed to fetch hotel data:', err))
       })
-      .catch(err => console.error('❌ Failed to fetch booking row:', err))
+      .catch(err => console.error('Failed to fetch booking row:', err))
 
-    // main guest
+    // Fetch main guest details
     fetch(`http://localhost:3000/customers/${bookingId}`)
       .then(r => r.json())
       .then(setMainGuest)
-      .catch(err => console.error('❌ Failed to fetch main guest:', err))
+      .catch(err => console.error('Failed to fetch main guest:', err))
 
-    // guest list
+    // Fetch guest list
     fetch(`http://localhost:3000/guests/${bookingId}`)
       .then(async r => {
         if (!r.ok) throw new Error(`Guests fetch failed ${r.status}`)
         const data = await r.json()
         setGuests(data)
       })
-      .catch(err => console.error('❌ Failed to fetch guests:', err))
+      .catch(err => console.error('Failed to fetch guests:', err))
 
-    // 🔹 room details now come directly from your DB by bookingId
+    // Fetch room details from DB by bookingId
     fetch(`http://localhost:3000/rooms/${encodeURIComponent(bookingId)}`)
       .then(r => (r.ok ? r.json() : null))
       .then(room => {
         if (room) {
-          console.log('🗄️ Found room in DB by booking id:', bookingId)
+          console.log('Found room in DB by booking id:', bookingId)
           setSelectedRoom(room)
         } else {
-          console.warn('ℹ️ No room cached for this booking; selectedRoom will be undefined.')
+          console.warn('No room cached for this booking; selectedRoom will be undefined.')
         }
       })
-      .catch(err => console.error('❌ Failed to fetch room from DB:', err))
+      .catch(err => console.error('Failed to fetch room from DB:', err))
   }, [])
 
-  useEffect(() => { if (booking) console.log('✅ booking:', booking) }, [booking])
-  useEffect(() => { if (mainGuest) console.log('✅ main guest:', mainGuest) }, [mainGuest])
-  useEffect(() => { if (guests.length) console.log('✅ guests:', guests) }, [guests])
-  useEffect(() => { if (hotelData) console.log('✅ hotel:', hotelData) }, [hotelData])
-  useEffect(() => { if (selectedRoom) console.log('✅ room:', selectedRoom) }, [selectedRoom])
+  // Debug logging for state changes
+  useEffect(() => { if (booking) console.log('booking:', booking) }, [booking])
+  useEffect(() => { if (mainGuest) console.log('main guest:', mainGuest) }, [mainGuest])
+  useEffect(() => { if (guests.length) console.log('guests:', guests) }, [guests])
+  useEffect(() => { if (hotelData) console.log('hotel:', hotelData) }, [hotelData])
+  useEffect(() => { if (selectedRoom) console.log('room:', selectedRoom) }, [selectedRoom])
 
   return (
     <>
@@ -107,7 +114,7 @@ const DisplayBooking = () => {
             <Row className="g-4">
               <Col xl={7}>
                 <div className="vstack gap-3 mb-6">
-                  {/* exactly the same as before */}
+                  {/* Hotel information and room details */}
                   <HotelInformation hotel={hotelData ?? undefined} booking={booking as any} />
                   <RoomInformation room={selectedRoom ?? undefined} />
                 </div>
@@ -116,21 +123,25 @@ const DisplayBooking = () => {
               <Col as="aside" xl={5}>
                 <Row className="g-4">
                   <Col md={12} xl={12}>
+                    {/* Price summary */}
                     <PriceSummary booking={booking ?? undefined} />
                   </Col>
 
+                  {/* Main guest details */}
                   {mainGuest && (
                     <Col md={12} xl={12}>
                       <MainGuestDetails guest={mainGuest} />
                     </Col>
                   )}
 
+                  {/* Additional guest details */}
                   {guests.length > 0 && (
                     <Col md={12} xl={12}>
                       <GuestDetails guests={guests} />
                     </Col>
                   )}
 
+                  {/* Special request message */}
                   <Col md={12} xl={12}>
                     <SpecialRequest message={booking?.message_to_hotel ?? ''} />
 

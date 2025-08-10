@@ -15,15 +15,19 @@ const ScrollToTop = () => {
   return null;
 };
 
+// Step2 component for entering main guest and additional guest details
 const Step2 = ({ control, hotelParams, hotelData, roomData }: Step1Props) => {
   const { previousStep, nextStep } = useWizard();
   const { getValues, trigger } = useFormContext();
 
+  // Handle clicking "Verify Email" button
   const handleNext = async () => {
+    // Calculate total guests from hotelParams
     const totalGuests = hotelParams.guests
       .split('|')
       .reduce((acc: number, current: string) => acc + parseInt(current, 10), 0);
 
+    // Build validation fields for additional guests
     const guestValidationFields = Array.from({ length: totalGuests - 1 }, (_, index) => [
       `guests[${index}].salutation`,
       `guests[${index}].first_name`,
@@ -34,6 +38,7 @@ const Step2 = ({ control, hotelParams, hotelData, roomData }: Step1Props) => {
       `guests[${index}].date_of_birth`,
     ]).flat();
 
+    // Validate main guest and all additional guest fields
     const isValid = await trigger([
       'customer.salutation',
       'customer.first_name',
@@ -51,7 +56,7 @@ const Step2 = ({ control, hotelParams, hotelData, roomData }: Step1Props) => {
       return;
     }
 
-    // ✅ Save main guest + guest list + booking context to sessionStorage
+    // Save main guest + guest list + booking context to sessionStorage
     const formData = getValues();
     const guestInfo = {
       customer: formData?.customer ?? null,
@@ -69,7 +74,7 @@ const Step2 = ({ control, hotelParams, hotelData, roomData }: Step1Props) => {
       console.error('Failed to write sessionStorage:', e);
     }
 
-    // 👉 proceed to the Verify Email wizard step
+    // Proceed to the Verify Email wizard step
     nextStep();
   };
 
@@ -78,7 +83,9 @@ const Step2 = ({ control, hotelParams, hotelData, roomData }: Step1Props) => {
       <ScrollToTop />
       <Row className="g-4">
         <Col xs={12}>
+          {/* Main guest details section */}
           <MainGuestDetails />
+          {/* Additional guest details section */}
           <GuestDetails
             hotelParams={hotelParams}
             totalGuests={
@@ -89,9 +96,11 @@ const Step2 = ({ control, hotelParams, hotelData, roomData }: Step1Props) => {
       </Row>
 
       <div className="hstack gap-2 flex-wrap justify-content-between">
+        {/* Button to go back to previous step */}
         <Button onClick={() => previousStep()} variant="secondary" className="mb-0">
           Previous
         </Button>
+        {/* Button to proceed to verify email step */}
         <Button onClick={handleNext} variant="primary" className="mb-0">
           Verify Email
         </Button>

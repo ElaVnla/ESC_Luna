@@ -8,13 +8,15 @@ type PriceSummaryProps = {
   }
 }
 
+// Displays a summary of the price paid for the booking
 const PriceSummary = ({ booking }: PriceSummaryProps) => {
+  // Parse amount as number
   const amount =
     typeof booking?.price === 'string'
       ? parseFloat(booking.price)
       : (booking?.price ?? 0)
 
-  // Prefer ISO currency code from booking; fall back to your existing symbol
+  // Format amount as currency string, prefer ISO code if available
   const formatted = (() => {
     if (booking?.currency) {
       try {
@@ -24,15 +26,16 @@ const PriceSummary = ({ booking }: PriceSummaryProps) => {
           maximumFractionDigits: 2,
         }).format(amount)
       } catch {
-        // if the code is invalid, fall through to symbol formatting
+        // If currency code is invalid, fall back to symbol formatting
       }
     }
-    // Fallback to your previous symbol formatting
+    // Fallback to previous symbol formatting
     return `${fallbackCurrencySymbol}${amount.toLocaleString()}`
   })()
 
   return (
     <Card className="shadow rounded-2">
+      {/* Card header with title */}
       <CardHeader className="border-bottom">
         <CardTitle as="h5" className="mb-0">
           Price Summary
@@ -40,12 +43,14 @@ const PriceSummary = ({ booking }: PriceSummaryProps) => {
       </CardHeader>
       <CardBody>
         <ul className="list-group list-group-borderless">
+          {/* Room charges row */}
           <li className="list-group-item d-flex justify-content-between align-items-center">
             <span className="h6 fw-light mb-0">Room Charges</span>
             <span className="fs-5">{formatted}</span>
           </li>
         </ul>
       </CardBody>
+      {/* Card footer showing paid amount */}
       <CardFooter className="border-top">
         <div className="d-flex justify-content-between align-items-center">
           <span className="h5 mb-0">Paid</span>

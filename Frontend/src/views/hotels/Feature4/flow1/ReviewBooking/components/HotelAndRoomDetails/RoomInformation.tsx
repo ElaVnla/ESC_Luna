@@ -1,25 +1,18 @@
 import { Button, Card, CardBody, CardHeader, Carousel, Col, Collapse, Image, Row } from 'react-bootstrap'
-import { FaHotel, FaStar } from 'react-icons/fa6'
-import hotel2 from '@/assets/images/category/hotel/4by3/02.jpg'
-import { Link } from 'react-router-dom'
-import { BsAlarm, BsBrightnessHigh, BsGeoAlt, BsPatchCheckFill } from 'react-icons/bs'
-import { FaStarHalfAlt } from 'react-icons/fa'
-import { TinySlider } from '@/components'
-import { renderToString } from 'react-dom/server'
-import { type TinySliderSettings } from 'tiny-slider'
-import 'tiny-slider/dist/tiny-slider.css'
-import roomImg1 from '@/assets/images/category/hotel/4by3/01.jpg'
-import roomImg2 from '@/assets/images/category/hotel/4by3/02.jpg'
-import roomImg3 from '@/assets/images/category/hotel/4by3/03.jpg'
+import { FaHotel } from 'react-icons/fa6'
 import { RoomData, Rooms } from '@/models/RoomDetailsApi'
 import { useState } from 'react'
 
+// Displays detailed information about a room, including images, description, and amenities
 const RoomInformation = ({ roomData }: { roomData: Rooms }) => {
+  // Get all available room images
   const roomImages = roomData.images?.map(img => img.high_resolution_url || img.url) || []
+  // State to toggle showing more amenities
   const [showMore, setShowMore] = useState(false)
 
   return (
     <Card className="shadow">
+      {/* Card header with hotel icon and title */}
       <CardHeader className="p-4 border-bottom">
         <h3 className="mb-0 items-center">
           <FaHotel className="me-2" />
@@ -44,6 +37,7 @@ const RoomInformation = ({ roomData }: { roomData: Rooms }) => {
           </Carousel>
         )}
 
+        {/* Room Description Section */}
         <Card className="mb-1">
           <Row className="align-items-center">
             <Col sm={6} md={12}>
@@ -57,6 +51,7 @@ const RoomInformation = ({ roomData }: { roomData: Rooms }) => {
           </Row>
         </Card>
 
+        {/* Room Amenities Section */}
         <Card className="mb-1">
           <CardHeader>
             <h5 className="mb-0">Amenities</h5>
@@ -65,11 +60,13 @@ const RoomInformation = ({ roomData }: { roomData: Rooms }) => {
             <Row>
               {(showMore ? roomData.amenities : roomData.amenities?.slice(0, 6))?.map((item, i) => (
                 <Col key={i} xs={12} md={6} className="mb-2">
+                  {/* Display each amenity */}
                   • {item}
                 </Col>
               ))}
             </Row>
 
+            {/* Button to toggle showing more amenities */}
             {roomData.amenities?.length > 6 && (
               <Button
                 variant="link"

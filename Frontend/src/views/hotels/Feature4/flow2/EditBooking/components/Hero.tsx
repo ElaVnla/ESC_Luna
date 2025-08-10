@@ -32,7 +32,7 @@ const Hero = () => {
   const methods = useFormContext<FormShape>();
   const { getValues } = methods;
 
-  // sanity-check session once
+  // Check session for booking context on mount
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem('pendingBooking');
@@ -49,8 +49,9 @@ const Hero = () => {
     }
   }, []);
 
+  // Handle update button click
   const handleUpdate = async () => {
-    // ---- Build the typed list of fields to validate ----
+    // Build the list of guest fields to validate
     const guestValues = getValues('guests') || [];
     const guestFields: FieldPath<FormShape>[] = [];
     guestValues.forEach((_, i) => {
@@ -65,6 +66,7 @@ const Hero = () => {
       );
     });
 
+    // Validate all required fields
     const ok = await methods.trigger([
       'customer.salutation',
       'customer.first_name',
@@ -82,7 +84,7 @@ const Hero = () => {
       return;
     }
 
-    // ---- bookingId from session ----
+    // Get bookingId from session
     let bookingId: string | null = null;
     try {
       const raw = sessionStorage.getItem('pendingBooking');
@@ -95,13 +97,13 @@ const Hero = () => {
       return;
     }
 
-    // ---- payloads ----
+    // Get customer and guests data from form
     const { customer, guests } = getValues();
 
     try {
       toast.info('Saving changes…', { toastId: 'saving' });
 
-      // customer update (include booking_id)
+      // Update customer info
       const custRes = await fetch(`http://localhost:3000/customers/${bookingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -113,7 +115,7 @@ const Hero = () => {
         throw new Error(`Customer update failed (${custRes.status}) ${t || ''}`);
       }
 
-      // guests update (bulk) with booking_id
+      // Update guests info (bulk)
       const guestsRes = await fetch(`http://localhost:3000/guests/${bookingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

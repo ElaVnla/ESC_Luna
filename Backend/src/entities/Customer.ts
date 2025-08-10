@@ -27,8 +27,8 @@ export class Customer {
   billing_address!: string;
 
   @Column({ length: 100, nullable: true })
-  country!: string;  // Added country for the main guest
+  country!: string;  
 
   @Column({ type: "date", nullable: true })
-  date_of_birth!: string;  // Added date_of_birth for the main guest
+  date_of_birth!: string;  
 }

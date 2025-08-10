@@ -16,6 +16,7 @@ type ApiGuest = {
   date_of_birth?: string | null;
 };
 
+// Convert date value to YYYY-MM-DD format
 const toYMD = (v: any): string => {
   if (!v) return '';
   const s = String(v);
@@ -31,6 +32,7 @@ const EditGuestDetails = () => {
   const methods = useFormContext();
   const { reset, getValues } = methods;
 
+  // Load customer and guest data for editing on mount
   useEffect(() => {
     const stored = sessionStorage.getItem('pendingBooking');
     if (!stored) return;
@@ -42,11 +44,13 @@ const EditGuestDetails = () => {
     } catch {}
     if (!bookingId) return;
 
+    // Fetch customer and guests data in parallel
     Promise.all([
       fetch(`http://localhost:3000/customers/${bookingId}`).then(r => r.json()),
       fetch(`http://localhost:3000/guests/${bookingId}`).then(r => r.json()),
     ])
       .then(([customer, guests]: [any, ApiGuest[]]) => {
+        // Reset form with fetched data
         reset({
           customer: {
             salutation: customer?.salutation ?? '',
@@ -78,6 +82,7 @@ const EditGuestDetails = () => {
       });
   }, [reset]);
 
+  // Get guest data from form state
   const guestData = getValues('guests') || [];
 
   return (
@@ -85,7 +90,9 @@ const EditGuestDetails = () => {
       <div className="vstack gap-4">
         <Row className="g-4">
           <Col xs={12}>
+            {/* Main guest details */}
             <MainGuestDetails />
+            {/* Additional guest details if present */}
             {guestData.length > 0 && <GuestDetails guests={guestData} />}
           </Col>
         </Row>

@@ -3,14 +3,15 @@ import { cancelBooking, createBooking, getBookedRoomId, getHotelIdFromBooking, g
 
 const router = Router();
 
+// Health check for Booking API
 router.get('/', (req, res) => {
   res.json({ message: 'Booking API is working!' });
 });
 
+// Create a new booking
 router.post('/create', async (req, res) => {
   try {
-    const { customer, booking, payment, guests } = req.body;
-    // payment is ignored here (we don’t store card data in bookings anymore)
+    const { customer, booking, payment, guests } = req.body; 
     const bookingRef = await createBooking(booking, customer, guests || []);
     res.status(201).json({ message: 'Booking created successfully!', booking_reference: bookingRef });
   } catch (error) {
@@ -19,7 +20,7 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// NEW: get booking row
+// Get booking details by bookingId
 router.get('/:bookingId', async (req, res) => {
   const { bookingId } = req.params;
   try {
@@ -32,6 +33,7 @@ router.get('/:bookingId', async (req, res) => {
   }
 });
 
+// Cancel a booking by bookingId
 router.delete('/:bookingId', async (req, res) => {
   const { bookingId } = req.params;
   try {
@@ -43,6 +45,7 @@ router.delete('/:bookingId', async (req, res) => {
   }
 });
 
+// Get hotel_id for a booking
 router.get('/:bookingId/hotel-id', async (req, res) => {
   const { bookingId } = req.params;
   try {
@@ -55,6 +58,7 @@ router.get('/:bookingId/hotel-id', async (req, res) => {
   }
 });
 
+// Get unavailable room IDs for a hotel in a date range
 router.get('/unavailable-rooms', async (req, res) => {
   const { hotelId, startDate, endDate } = req.query;
   const roomIds = await getBookedRoomId(hotelId as string, startDate as string, endDate as string);

@@ -6,7 +6,7 @@ import {
   Image,
   Row
 } from 'react-bootstrap';
-import { FaHotel, FaStar, FaStarHalfAlt, FaCheckCircle } from 'react-icons/fa'; // ✅ correct fa package
+import { FaHotel, FaStar, FaStarHalfAlt, FaCheckCircle } from 'react-icons/fa';
 import { BsAlarm, BsBrightnessHigh, BsGeoAlt } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import hotelFallbackImage from '@/assets/images/category/hotel/4by3/02.jpg';
@@ -32,11 +32,14 @@ type HotelInformationProps = {
   };
 };
 
+// Displays hotel information including image, name, address, rating, dates, guests, description, and amenities
 const HotelInformation = ({ hotel }: HotelInformationProps) => {
+  // Split amenities into chunks for display in columns
   const amenitiesChunks = splitArray(hotel.amenities || [], 2);
 
   return (
     <Card className="shadow">
+      {/* Card header with hotel icon and title */}
       <CardHeader className="p-4 border-bottom">
         <h3 className="mb-0 items-center">
           <FaHotel className="me-2" />
@@ -45,6 +48,7 @@ const HotelInformation = ({ hotel }: HotelInformationProps) => {
       </CardHeader>
 
       <CardBody className="p-4">
+        {/* Hotel image and basic info */}
         <Card className="mb-4">
           <Row className="align-items-center">
             <Col sm={6} md={4}>
@@ -59,6 +63,7 @@ const HotelInformation = ({ hotel }: HotelInformationProps) => {
                   <BsGeoAlt className="me-2" />
                   {hotel.address}
                 </p>
+                {/* Hotel rating stars and value */}
                 <ul className="list-inline mb-0 items-center">
                   {Array.from(new Array(Math.floor(hotel.rating))).map((_, idx) => (
                     <li key={idx} className="list-inline-item me-1 mb-1 small">
@@ -79,6 +84,7 @@ const HotelInformation = ({ hotel }: HotelInformationProps) => {
           </Row>
         </Card>
 
+        {/* Check-in, check-out, and rooms/guests info */}
         <Row className="g-4">
           <Col lg={4}>
             <div className="bg-light py-3 px-4 rounded-3">
@@ -116,10 +122,12 @@ const HotelInformation = ({ hotel }: HotelInformationProps) => {
           </Col>
         </Row>
 
+        {/* Hotel description */}
         <Row className="g-4 mt-2">
           <div className="py-3 px-4">{hotel.description}</div>
         </Row>
 
+        {/* Hotel amenities list */}
         <Card className="border mt-4">
           <CardHeader className="border-bottom d-md-flex justify-content-md-between">
             <h6 className="card-title mb-0">Amenities</h6>

@@ -4,20 +4,19 @@ import { BsPeopleFill } from 'react-icons/bs';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 
+// Displays guest details form for each guest in the booking
 const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: string }, totalGuests: number }) => {
   const { control } = useFormContext();
   const [guestList, setGuestList] = useState<any[]>([]);
 
   useEffect(() => {
     const newGuestList = [];
-    
     // Only create guest forms if totalGuests > 0
     if (totalGuests > 0) {
       for (let i = 0; i < totalGuests; i++) {
         newGuestList.push({ isMain: false });
       }
     }
-
     setGuestList(newGuestList);
   }, [hotelParams.guests, totalGuests]);
 
@@ -38,6 +37,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
     );
   }
 
+  // Render form fields for each guest
   const renderGuestForm = (index: number) => {
     const label = `Guest ${index + 1}`;
     const prefix = `guests[${index}]`;
@@ -52,6 +52,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
         </CardHeader>
         <CardBody className="p-4">
           <div className="row g-4">
+            {/* Title dropdown */}
             <Col md={2}>
               <div className="form-size-lg">
                 <label className="form-label">Title</label>
@@ -80,6 +81,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
               </div>
             </Col>
 
+            {/* First Name input */}
             <TextFormInput
               name={`${prefix}.first_name`}
               label="First Name"
@@ -91,6 +93,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
               containerClass="col-md-3"
             />
 
+            {/* Last Name input */}
             <TextFormInput
               name={`${prefix}.last_name`}
               label="Last Name"
@@ -102,6 +105,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
               containerClass="col-md-3"
             />
 
+            {/* Country input */}
             <TextFormInput
               name={`${prefix}.country`}
               label="Country"
@@ -113,6 +117,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
               containerClass="col-md-4"
             />
 
+            {/* Email input */}
             <Col md={6}>
               <TextFormInput
                 name={`${prefix}.email`}
@@ -131,6 +136,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
               />
             </Col>
 
+            {/* Mobile Number input */}
             <TextFormInput
               name={`${prefix}.phone_number`}
               label="Mobile Number"
@@ -148,6 +154,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
               containerClass="col-md-6"
             />
 
+            {/* Date of Birth input */}
             <TextFormInput
               name={`${prefix}.date_of_birth`}
               label="Date of Birth"
@@ -173,6 +180,7 @@ const GuestDetails = ({ hotelParams, totalGuests }: { hotelParams: { guests: str
         </h4>
       </CardHeader>
       <CardBody className="p-4">
+        {/* Render a form for each guest */}
         {guestList.map((_, index) => renderGuestForm(index))}
       </CardBody>
     </Card>

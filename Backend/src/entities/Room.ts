@@ -21,7 +21,6 @@ export class Room {
   @Column({ type: 'longtext', nullable: true })
   long_description?: string;
 
-  // If MySQL >= 5.7, you can use 'json'; otherwise use 'simple-json'
   @Column({ type: 'simple-json', nullable: true })
   amenities?: string[];            // stored as JSON text
 

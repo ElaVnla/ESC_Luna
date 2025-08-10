@@ -18,17 +18,21 @@ type PriceSummaryProps = {
   };
 };
 
+// Displays a summary of the price paid for the booking
 const PriceSummary = ({ price }: PriceSummaryProps) => {
+  // Format number as currency string
   const formatCurrency = (value: number) => `${currency}${value.toLocaleString()}`;
 
   return (
     <Card className="shadow rounded-2">
+      {/* Card header with title */}
       <CardHeader className="border-bottom">
         <CardTitle as="h5" className="mb-0">
           Price Summary
         </CardTitle>
       </CardHeader>
 
+      {/* Card footer showing total paid */}
       <CardFooter className="border-top">
         <div className="d-flex justify-content-between align-items-center">
           <span className="h5 mb-0">Paid</span>

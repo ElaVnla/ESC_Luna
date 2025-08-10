@@ -8,10 +8,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-07-30.basil',
 });
 
+// Health check for Payment API
 router.get('/', (req, res) => {
   res.json({ message: 'Payment API is working!' });
 });
 
+// Create a Stripe payment intent
 router.post('/create-payment-intent', async (req, res) => {
   try {
     const { amount, currency = 'sgd' } = req.body;
@@ -25,7 +27,7 @@ router.post('/create-payment-intent', async (req, res) => {
 
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error: any) {
-    console.error('❌ Error creating PaymentIntent:', error.message);
+    console.error('Error creating PaymentIntent:', error.message);
     res.status(500).json({ error: 'Failed to create PaymentIntent' });
   }
 });
@@ -42,6 +44,7 @@ router.post('/create', async (req, res) => {
   }
 });
 
+// Get all payments for a specific booking
 router.get('/booking/:booking_id', async (req, res) => {
   try {
     const booking_id = req.params.booking_id;

@@ -21,13 +21,16 @@ type MainGuestDetailsProps = {
   guest: MainGuest;
 };
 
+// Displays main guest details for the booking
 const MainGuestDetails = ({ guest }: MainGuestDetailsProps) => {
+  // Combine title, first name, and last name for full name
   const fullName = [guest.title, guest.firstName, guest.lastName]
     .filter(Boolean)
     .join(' ') || 'N/A';
 
   return (
     <Card className="shadow rounded-2">
+      {/* Card header with icon and title */}
       <CardHeader className="border-bottom">
         <CardTitle as="h5" className="mb-0 d-flex align-items-center">
           <BsPeopleFill className="me-2" />
@@ -35,6 +38,7 @@ const MainGuestDetails = ({ guest }: MainGuestDetailsProps) => {
         </CardTitle>
       </CardHeader>
       <CardBody>
+        {/* List of guest details */}
         <ListGroup variant="flush" className="list-group-borderless">
           <ListGroupItem className="d-flex justify-content-between align-items-center">
             <span className="h6 fw-light mb-0">Full Name</span>
