@@ -15,8 +15,6 @@ export class Payment {
   @Column({ type: "varchar", length: 255 })
   stripe_payment_intent_id!: string;
 
-  // Amount in the smallest currency unit (e.g., cents).
-  // Use string for MySQL BIGINT to avoid precision issues.
   @Column({ type: "bigint", nullable: true })
   amount!: string | null;
 

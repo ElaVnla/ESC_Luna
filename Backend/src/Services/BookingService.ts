@@ -8,7 +8,7 @@ export async function createBooking(
 ) {
   const db = Database;
 
-  // 1) Insert booking — ❗️use guests_total (no adults/children)
+  // 1) Insert booking 
   await db.query(
     `INSERT INTO bookings (
       id, destination_id, hotel_id, room_id,
@@ -31,7 +31,7 @@ export async function createBooking(
     ]
   );
 
-  // 2) Insert main customer — ✅ add country, date_of_birth
+  // 2) Insert main customer 
   await db.query(
     `INSERT INTO customers (
       salutation, first_name, last_name,
@@ -46,14 +46,14 @@ export async function createBooking(
       customer.email,
       booking.id,
       customer.billing_address ?? null,
-      customer.country ?? null,         // ✅ NEW
-      customer.date_of_birth ?? null,   // ✅ NEW (YYYY-MM-DD)
+      customer.country ?? null,      
+      customer.date_of_birth ?? null,   
     ]
   );
 
   // 3) DO NOT insert payments here; payments are written by /payments/create after Stripe success
 
-  // 4) Insert remaining guests — ✅ include date_of_birth & country
+  // 4) Insert remaining guests —
   console.log('Inserting guests BACKEND:', guests);
   for (const guest of guests) {
     await db.query(
@@ -69,8 +69,8 @@ export async function createBooking(
         guest.last_name ?? null,
         guest.phone_number ?? null,
         guest.email ?? null,
-        guest.date_of_birth ?? null, // ✅ NEW
-        guest.country ?? null,       // ✅ ensure set
+        guest.date_of_birth ?? null, 
+        guest.country ?? null,      
       ]
     );
   }

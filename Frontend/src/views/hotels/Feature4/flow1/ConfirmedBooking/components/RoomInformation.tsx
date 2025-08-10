@@ -20,12 +20,16 @@ type RoomInformationProps = {
   roomData: Rooms;
 };
 
+// Displays detailed information about a room, including images, description, and amenities
 const RoomInformation = ({ roomData }: RoomInformationProps) => {
+  // Get all available room images
   const roomImages =
     roomData?.images?.map((img) => img?.high_resolution_url || img?.url).filter(Boolean) || [];
 
+  // State to toggle showing more amenities
   const [showMore, setShowMore] = useState(false);
 
+  // Slider settings for room images
   const roomSliderSettings: TinySliderSettings = {
     nested: 'inner',
     autoplay: false,
@@ -35,10 +39,13 @@ const RoomInformation = ({ roomData }: RoomInformationProps) => {
     items: 1,
     nav: false,
   };
-  console.log('🖼️ Room Images:', roomImages);
+
+  // Log room images for debugging
+  console.log('Room Images:', roomImages);
 
   return (
     <Card className="shadow">
+      {/* Card header with hotel icon and title */}
       <CardHeader className="p-4 border-bottom">
         <h3 className="mb-0 items-center">
           <FaHotel className="me-2" />
@@ -47,7 +54,7 @@ const RoomInformation = ({ roomData }: RoomInformationProps) => {
       </CardHeader>
 
       <CardBody className="p-4">
-        {/* ✅ Room Image Slider */}
+        {/* Room Image Slider */}
         {roomImages.length > 0 && (
           <div className="tiny-slider arrow-round arrow-dark overflow-hidden rounded-3 mb-2">
             <TinySlider settings={roomSliderSettings}>
@@ -64,16 +71,18 @@ const RoomInformation = ({ roomData }: RoomInformationProps) => {
           </div>
         )}
 
-        {/* ✅ Room Description */}
+        {/* Room Description Section */}
         {(roomData?.roomDescription || roomData?.long_description) && (
           <Card className="mb-3">
             <Row className="align-items-center">
               <Col sm={12}>
+                {/* Short room description */}
                 {roomData.roomDescription && (
                   <CardHeader className="bg-transparent pb-0">
                     <h5 className="card-title mb-0">{roomData.roomDescription}</h5>
                   </CardHeader>
                 )}
+                {/* Long room description (HTML) */}
                 {roomData.long_description && (
                   <CardBody>
                     <div
@@ -88,7 +97,7 @@ const RoomInformation = ({ roomData }: RoomInformationProps) => {
           </Card>
         )}
 
-        {/* ✅ Room Amenities */}
+        {/* Room Amenities Section */}
         {roomData?.amenities?.length > 0 && (
           <Card className="border">
             <CardHeader className="border-bottom d-md-flex justify-content-md-between">
@@ -96,6 +105,7 @@ const RoomInformation = ({ roomData }: RoomInformationProps) => {
             </CardHeader>
             <CardBody>
               <Row>
+                {/* Show amenities, with option to show more/less */}
                 {(showMore ? roomData.amenities : roomData.amenities.slice(0, 6))?.map((item, i) => (
                   <Col key={i} xs={12} md={6} className="mb-2">
                     <BsPatchCheckFill className="text-success me-2" />
@@ -104,6 +114,7 @@ const RoomInformation = ({ roomData }: RoomInformationProps) => {
                 ))}
               </Row>
 
+              {/* Button to toggle showing more amenities */}
               {roomData.amenities.length > 6 && (
                 <Button
                   variant="link"

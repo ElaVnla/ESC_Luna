@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
   res.json({ message: 'Guest API is working!' });
 });
 
-// 🧾 GET guests for a booking
+// GET guests for a booking
 router.get('/:booking_id', async (req, res) => {
   const { booking_id } = req.params;
 
@@ -50,7 +50,7 @@ router.put('/:booking_id', async (req, res) => {
     }
   });
 
-  // Count guests for a booking (useful for quick checks / debugging)
+  // Count guests for a booking 
 router.get('/:booking_id/count', async (req, res) => {
   try {
     const count = await getGuestsCountByBookingId(req.params.booking_id);

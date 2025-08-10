@@ -11,7 +11,9 @@ type RoomInformationProps = {
   fullRoomPayload?: any;
 };
 
+// Displays detailed information about a room, including images, description, and amenities
 const RoomInformation = ({ room }: RoomInformationProps) => {
+  // Safely parse amenities and images from room data
   const safeParse = (v: any) => {
     if (Array.isArray(v)) return v;
     if (typeof v === 'string') {
@@ -24,9 +26,11 @@ const RoomInformation = ({ room }: RoomInformationProps) => {
     return v ?? null;
   };
 
+  // Get amenities as array of strings
   const amenitiesRaw = safeParse(room?.amenities);
   const amenities: string[] = Array.isArray(amenitiesRaw) ? amenitiesRaw : [];
 
+  // Get room images as array of URLs
   const imagesRaw = safeParse(room?.images);
   let apiImages: string[] = [];
   if (Array.isArray(imagesRaw)) {
@@ -37,8 +41,10 @@ const RoomInformation = ({ room }: RoomInformationProps) => {
       .filter(Boolean);
   }
 
+  // Use API images if available, otherwise fallback to default images
   const roomImages = apiImages.length > 0 ? apiImages : [roomImg1, roomImg2, roomImg3];
 
+  // Get room title from available fields
   const roomTitle: string =
     room?.roomDescription ||
     room?.roomNormalizedDescription ||
@@ -46,12 +52,14 @@ const RoomInformation = ({ room }: RoomInformationProps) => {
     room?.room_type ||
     'Room Details';
 
+  // Get long description HTML or fallback message
   const longHtml: string =
     (room?.long_description as string) ||
     '<p>No detailed description available.</p>';
 
   return (
     <Card className="shadow">
+      {/* Card header with hotel icon and title */}
       <CardHeader className="p-4 border-bottom">
         <h3 className="mb-0 items-center">
           <FaHotel className="me-2" />

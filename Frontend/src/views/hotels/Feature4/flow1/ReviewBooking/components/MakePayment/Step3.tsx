@@ -15,6 +15,7 @@ interface Step3WithSecretProps extends Step1Props {
 // currencies without fractional units
 const ZERO_DECIMAL = ['jpy', 'krw', 'vnd'];
 
+// Step3 component for payment and booking confirmation
 const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSecretProps) => {
   const { goToStep } = useWizard();
   const { getValues, trigger } = useFormContext();
@@ -23,15 +24,19 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
   const stripe = useStripe();
   const elements = useElements();
 
+  // State for hotel, room, params, and cardholder name
   const [hotelData, setHotelData] = useState<any>(propHotel);
   const [roomData, setRoomData] = useState<any>(propRoom);
   const [hotelParams, setHotelParams] = useState<any>(null);
   const [cardholderName, setCardholderName] = useState<string>('');
+
+  // Get special request from form
   const getSpecialRequest = () => {
     const form = getValues();
     return form?.special_request?.shortDescription?.trim() || null;
   };
 
+  // Load booking details and cardholder name from sessionStorage on mount
   useEffect(() => {
     try {
       const bookingDetails = JSON.parse(sessionStorage.getItem('hotel_booking_details') || 'null');
@@ -47,6 +52,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
     }
   }, [getValues]);
 
+  // Parse guests from params
   const getGuestsFromParams = (params: any): number => {
     const raw = params?.guests;
     if (raw == null) return 1; // safe default
@@ -56,11 +62,11 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
     return Number.isNaN(n) ? 1 : Math.max(1, n);
   };
 
+  // Calculate nights between two dates
   const calcNights = (start: string, end: string) => {
     try {
       const s = new Date(start);
       const e = new Date(end);
-      // normalize to midnight local to avoid DST off-by-one
       s.setHours(0,0,0,0);
       e.setHours(0,0,0,0);
       const ms = e.getTime() - s.getTime();
@@ -70,6 +76,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
       return 1;
     }
   };
+
+  // Read guest info from sessionStorage
   const readStoredGuestInfo = () => {
     try {
       const raw = sessionStorage.getItem('hotel_guest_info');
@@ -80,6 +88,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
     }
   };
 
+  // Build fallback booking payload if not present in sessionStorage
   const buildFallbackPayload = (form: any, bookingId: string) => {
     const start = hotelParams?.checkIn || '2025-01-01';
     const end   = hotelParams?.checkOut || '2025-01-03';
@@ -123,17 +132,17 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         num_nights: calcNights(start, end),
         price: roomData?.converted_price ?? roomData?.price ?? 0,
         currency: currencyCode,
-        // If guests exist, prefer 1 + guests.length; otherwise fall back to hotelParams
         guests_total: hotelParams?.guests || "0",
         message_to_hotel: getSpecialRequest(),
       },
-      guests, // ✅ include the Step‑2 guests
+      guests, // include the Step‑2 guests
     };
 
     sessionStorage.setItem('booking_payload', JSON.stringify(payload));
     return payload;
   };
 
+  // Handle payment and booking confirmation
   const handleProceed = async () => {
     const ok = await trigger(['cardHolderName']).catch(() => false);
     if (!ok) {
@@ -146,15 +155,16 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
     }
 
     const form = getValues();
+    // Generate bookingId if not present
     const bookingId =
       form?.booking?.id ||
       (() => {
         const now = new Date();
         const day = String(now.getDate()).padStart(2, "0");
-        const month = now.toLocaleString("en-US", { month: "short" }).toLowerCase(); // e.g., 'aug'
+        const month = now.toLocaleString("en-US", { month: "short" }).toLowerCase();
         const year = now.getFullYear();
-        const timestamp = now.getTime(); // milliseconds since 1970
-        const randomNum = Math.floor(100 + Math.random() * 900); // random 3-digit number
+        const timestamp = now.getTime();
+        const randomNum = Math.floor(100 + Math.random() * 900);
         return `BK-${day}${month}${year}-${timestamp}-${randomNum}`;
       })();
 
@@ -170,8 +180,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
       return;
     }
 
-    const chargedAmount = result.paymentIntent.amount;     // smallest unit
-    const chargedCurrency = result.paymentIntent.currency; // e.g. 'sgd'
+    const chargedAmount = result.paymentIntent.amount;
+    const chargedCurrency = result.paymentIntent.currency;
     const stripePaymentIntentId = result.paymentIntent.id;
 
     try {
@@ -202,7 +212,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
           price: displayPrice,
           currency: currencyUpper,
           guests_total: hotelParams?.guests || "0",
-          num_nights: nights,                 // ✅ ensure not null
+          num_nights: nights,
         },
       };
 
@@ -218,7 +228,6 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
       console.log("before passing to payment api: ", {
         bookingId
       });
-
 
       // 4) store payment record
       const payment_reference = `PAY-${Date.now()}`;
@@ -236,7 +245,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         }),
       });
 
-      // 5) send confirmation email (UPDATED to include guests + phone_number)
+      // 5) send confirmation email (includes guests + phone_number)
       const humanAmount = ZERO_DECIMAL.includes(chargedCurrency)
         ? chargedAmount
         : (chargedAmount / 100).toFixed(2);
@@ -264,7 +273,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
             },
             guests: { 
               total: hotelParams.guests,
-              otherGuests, // 👈 for template loop
+              otherGuests,
             },
             price: { totalPaid: humanAmount, currency: chargedCurrency?.toUpperCase() || currencyUpper },
             mainGuest: {
@@ -272,7 +281,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
               salutation: raw.customer?.salutation,
               first_name: raw.customer?.first_name,
               last_name: raw.customer?.last_name,
-              phone_number: raw.customer?.phone_number || '', // 👈 added
+              phone_number: raw.customer?.phone_number || '',
               country: raw.customer?.country,
               date_of_birth: raw.customer?.date_of_birth,
             },
@@ -281,44 +290,41 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         }),
       });
 
-// put this near mapRoomForUpsert (top of handleProceed or above it)
-const pickHiResImages = (imgs: any): string[] | null => {
-  if (!Array.isArray(imgs)) return null;
-  return imgs
-    .map((img: any) =>
-      typeof img === 'string'
-        ? img // in case you ever pass plain URLs
-        : (img?.high_resolution_url || img?.url)
-    )
-    .filter(Boolean);
-};
+      // Helper to pick hi-res images from room images
+      const pickHiResImages = (imgs: any): string[] | null => {
+        if (!Array.isArray(imgs)) return null;
+        return imgs
+          .map((img: any) =>
+            typeof img === 'string'
+              ? img
+              : (img?.high_resolution_url || img?.url)
+          )
+          .filter(Boolean);
+      };
 
-// replace your current mapRoomForUpsert with this version
-const mapRoomForUpsert = (hotelId: string, room: any) => ({
-  id: String(room?.key), // store API key as PK
-  hotel_id: String(hotelId),
-  room_type: room?.roomDescription ?? null,
-  normalized_description: room?.roomNormalizedDescription ?? null,
-  description: room?.description ?? room?.roomDescription ?? null,
-  long_description: room?.long_description ?? null,
-  amenities: Array.isArray(room?.amenities) ? room.amenities : null,
-  price:
-    typeof room?.converted_price === 'number'
-      ? room.converted_price
-      : (typeof room?.price === 'number' ? room.price : null),
-  // ✅ store ONLY hi-res URLs (fallback to url if hi-res missing)
-  images: pickHiResImages(room?.images),
-  booking_key: bookingId, // tie to booking
-});
+      // Map room data for upsert
+      const mapRoomForUpsert = (hotelId: string, room: any) => ({
+        id: String(room?.key),
+        hotel_id: String(hotelId),
+        room_type: room?.roomDescription ?? null,
+        normalized_description: room?.roomNormalizedDescription ?? null,
+        description: room?.description ?? room?.roomDescription ?? null,
+        long_description: room?.long_description ?? null,
+        amenities: Array.isArray(room?.amenities) ? room.amenities : null,
+        price:
+          typeof room?.converted_price === 'number'
+            ? room.converted_price
+            : (typeof room?.price === 'number' ? room.price : null),
+        images: pickHiResImages(room?.images),
+        booking_key: bookingId,
+      });
 
-
-      // then, when you have hotelData.id and the room you booked (propRoom or selectedRoom):
+      // Upsert room info to backend
       await fetch('http://localhost:3000/rooms/upsert', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(mapRoomForUpsert(hotelData.id, propRoom /* or selectedRoom */)),
+        body: JSON.stringify(mapRoomForUpsert(hotelData.id, propRoom)),
       });
-
 
       toast.success('Payment successful! Booking confirmed.');
 
@@ -334,12 +340,11 @@ const mapRoomForUpsert = (hotelId: string, room: any) => ({
         num_nights: payload.booking.num_nights,
       };
 
-
       sessionStorage.setItem('booking_summary', JSON.stringify(summaryForUI));
       
       navigate('/hotels/confirmed-booking');
     } catch (e) {
-      console.error('❌ Post-payment flow failed:', e);
+      console.error('Post-payment flow failed:', e);
       toast.error('Payment went through, but finalizing booking failed. Please try again.');
     }
   };
@@ -348,6 +353,7 @@ const mapRoomForUpsert = (hotelId: string, room: any) => ({
     <div className="vstack gap-4">
       <Row className="g-4">
         <Col xs={8}>
+          {/* Card for Stripe payment element */}
           <div className="card shadow p-4">
             <h5 className="mb-4">Card Details</h5>
             <PaymentElement options={{ layout: 'tabs' }} />
@@ -357,6 +363,7 @@ const mapRoomForUpsert = (hotelId: string, room: any) => ({
         <Col as="aside" xl={4}>
           <Row className="g-4">
             <Col md={6} xl={12}>
+              {/* Price summary section */}
               <PriceSummary
                 control={control}
                 hotelData={hotelData}
@@ -370,9 +377,11 @@ const mapRoomForUpsert = (hotelId: string, room: any) => ({
       </Row>
 
       <div className="d-flex justify-content-between">
+        {/* Button to go back to previous step */}
         <button onClick={() => goToStep(1)} className="btn btn-secondary prev-btn mb-0">
           Previous
         </button>
+        {/* Button to proceed with payment */}
         <Button onClick={handleProceed} className="btn btn-success mb-0">
           Proceed with payment
         </Button>

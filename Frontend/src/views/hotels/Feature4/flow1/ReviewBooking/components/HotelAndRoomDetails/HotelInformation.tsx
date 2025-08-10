@@ -12,10 +12,12 @@ import { useGuestCount } from '../../contexts/GuestCountContext';
 import { HotelData, HotelParams } from '@/models/HotelDetailsApi';
 import { formatDate } from 'date-fns';
 
+// Example amenities list and chunking for display
 const amenities: string[] = ['Swimming Pool', 'Spa', 'Kids Play Area', 'Gym', 'Tv', 'Mirror', 'Ac', 'Slippers'];
 const chunk_size = 2;
 const amenitiesChunks = splitArray(amenities, chunk_size);
 
+// Format rooms and guests string for display
 const formatRoomAndGuests = (roomsAndGuests: string) => {
   const roomParts = roomsAndGuests.split("|");
   const numberOfRooms = roomParts.length;
@@ -24,6 +26,7 @@ const formatRoomAndGuests = (roomsAndGuests: string) => {
   return `${numberOfRooms}R, ${totalGuests}G`;
 };
 
+// Calculate nights and days between check-in and check-out
 const calculateNightsAndDays = (checkIn: string, checkOut: string) => {
   const checkInDate = new Date(checkIn);
   const checkOutDate = new Date(checkOut);
@@ -35,10 +38,12 @@ const calculateNightsAndDays = (checkIn: string, checkOut: string) => {
   };
 };
 
+// Displays hotel information including image, name, address, rating, dates, guests, description, and amenities
 const HotelInformation = ({ hotelData, hotelParams }: { hotelData: HotelData, hotelParams: HotelParams }) => {
   const roomsAndGuests = hotelParams.guests;
   const formattedRoomsAndGuests = formatRoomAndGuests(roomsAndGuests);
 
+  // Map for amenity names
   const amenityNames = new Map<string, string>([
     ["airConditioning", "Air Conditioning"],
     ["businessCenter", "Business Center"], 
@@ -58,6 +63,7 @@ const HotelInformation = ({ hotelData, hotelParams }: { hotelData: HotelData, ho
     ["nonSmokingRooms", "Non Smoking Rooms"]
   ]);
 
+  // Split hotel description into main, distance, and extra text
   const splitString = (inputString: string) => {
     if (!inputString || inputString.trim() === "") {
       return { mainText: "No description", distText: "", extraText: "" };
@@ -80,15 +86,18 @@ const HotelInformation = ({ hotelData, hotelParams }: { hotelData: HotelData, ho
 
   const { mainText, distText, extraText } = splitString(hotelData.description);
 
+  // Convert camelCase amenity keys to readable strings
   const camelCaseToString = (camel: string) => {
     let result = camel.replace(/([A-Z])/g, ' $1');
     result = result.charAt(0).toUpperCase() + result.slice(1);
     return result;
   };
 
+  // Remove miles info from distance text
   const cleanedDistText = distText.replace(/\/\s*[\d.]+\s*mi/g, '');
   const { isOpen, toggle } = useToggle();
 
+  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB', {
@@ -98,13 +107,16 @@ const HotelInformation = ({ hotelData, hotelParams }: { hotelData: HotelData, ho
     });
   };
 
+  // Check if amenities should be rendered
   const renderAmenities = Array.isArray(hotelData.amenities) && hotelData.amenities.length > 0;
 
+  // Get hotel image URL
   const index = hotelData.default_image_index ?? hotelData.hires_image_index.split(',')[0];
-const imageUrl = `${hotelData.image_details.prefix}${index}${hotelData.image_details.suffix}`;
+  const imageUrl = `${hotelData.image_details.prefix}${index}${hotelData.image_details.suffix}`;
 
   return (
     <Card className="shadow">
+      {/* Card header with hotel icon and title */}
       <CardHeader className="p-4 border-bottom">
         <h3 className="mb-0 items-center">
           <FaHotel className="me-2" />
@@ -112,6 +124,7 @@ const imageUrl = `${hotelData.image_details.prefix}${index}${hotelData.image_det
         </h3>
       </CardHeader>
       <CardBody className="p-4">
+        {/* Hotel image and basic info */}
         <Card className="mb-4">
           <Row className="align-items-center">
             <Col sm={6} md={4}>
@@ -126,6 +139,7 @@ const imageUrl = `${hotelData.image_details.prefix}${index}${hotelData.image_det
                   <BsGeoAlt className=" me-2" />
                   {hotelData.address || 'N/A'}
                 </p>
+                {/* Hotel rating stars and value */}
                 <ul className="list-inline mb-0 items-center">
                   {hotelData.rating ? (
                     Array.from(new Array(Math.floor(hotelData.rating))).map((_val, idx) => (
@@ -150,6 +164,7 @@ const imageUrl = `${hotelData.image_details.prefix}${index}${hotelData.image_det
           </Row>
         </Card>
 
+        {/* Check-in, check-out, and rooms/guests info */}
         <Row className="g-4">
           <Col lg={4}>
             <div className="bg-light py-3 px-4 rounded-3">
@@ -182,12 +197,14 @@ const imageUrl = `${hotelData.image_details.prefix}${index}${hotelData.image_det
           <div className="py-3 px-4">
             <p>{mainText}</p>
 
+            {/* Collapsible section for extra description */}
             <Collapse in={isOpen}>
               <div>
                 <div dangerouslySetInnerHTML={{ __html: distText + extraText }} />
               </div>
             </Collapse>
 
+            {/* Toggle button for see more/see less */}
             <a onClick={toggle} className="p-0 mt-2 btn-more d-flex align-items-center collapsed">
               {!isOpen ? (
                 <Fragment>

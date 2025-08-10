@@ -19,8 +19,8 @@ export async function createCustomer(customer: CustomerModel) {
       customer.email,
       customer.booking_id,
       customer.billing_address ?? null,
-      (customer as any).country ?? null,         // ✅ NEW
-      (customer as any).date_of_birth ?? null,   // ✅ NEW
+      (customer as any).country ?? null,      
+      (customer as any).date_of_birth ?? null,   
     ]
   );
 
@@ -53,8 +53,8 @@ export async function updateCustomerByBookingId(booking_id: string, data: any) {
     'phone_number',
     'email',
     'billing_address',
-    'country',        // ✅ NEW
-    'date_of_birth',  // ✅ NEW
+    'country',        
+    'date_of_birth', 
   ];
 
   const updates: string[] = [];

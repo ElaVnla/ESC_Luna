@@ -35,6 +35,7 @@ type FormShape = {
 };
 
 const EditBooking = () => {
+  // Set up react-hook-form methods with default values
   const methods = useForm<FormShape>({
     defaultValues: {
       customer: {
@@ -69,41 +70,42 @@ const EditBooking = () => {
     }
   }, []);
 
+  // Handler for saving guest details
   const handleSave = async () => {
-  // Build guest field paths with the correct type
-  const g = methods.getValues('guests') || [];
-  const guestFields: FieldPath<FormShape>[] = [];
-  g.forEach((_, i) => {
-    guestFields.push(
-      `guests.${i}.salutation` as FieldPath<FormShape>,
-      `guests.${i}.first_name` as FieldPath<FormShape>,
-      `guests.${i}.last_name` as FieldPath<FormShape>,
-      `guests.${i}.email` as FieldPath<FormShape>,
-      `guests.${i}.phone_number` as FieldPath<FormShape>,
-      `guests.${i}.country` as FieldPath<FormShape>,
-      `guests.${i}.date_of_birth` as FieldPath<FormShape>,
-    );
-  });
+    // Build guest field paths with the correct type
+    const g = methods.getValues('guests') || [];
+    const guestFields: FieldPath<FormShape>[] = [];
+    g.forEach((_, i) => {
+      guestFields.push(
+        `guests.${i}.salutation` as FieldPath<FormShape>,
+        `guests.${i}.first_name` as FieldPath<FormShape>,
+        `guests.${i}.last_name` as FieldPath<FormShape>,
+        `guests.${i}.email` as FieldPath<FormShape>,
+        `guests.${i}.phone_number` as FieldPath<FormShape>,
+        `guests.${i}.country` as FieldPath<FormShape>,
+        `guests.${i}.date_of_birth` as FieldPath<FormShape>,
+      );
+    });
 
-  const ok = await methods.trigger([
-    'customer.salutation',
-    'customer.first_name',
-    'customer.last_name',
-    'customer.billing_address',
-    'customer.email',
-    'customer.phone_number',
-    'customer.country',
-    'customer.date_of_birth',
-    ...guestFields,
-  ] as FieldPath<FormShape>[]);
-  // ...
+    // Validate all required fields
+    const ok = await methods.trigger([
+      'customer.salutation',
+      'customer.first_name',
+      'customer.last_name',
+      'customer.billing_address',
+      'customer.email',
+      'customer.phone_number',
+      'customer.country',
+      'customer.date_of_birth',
+      ...guestFields,
+    ] as FieldPath<FormShape>[]);
 
     if (!ok) {
       toast.error('Please resolve the highlighted fields before saving.');
       return;
     }
 
-    // Grab bookingId
+    // Grab bookingId from session
     let bookingId: string | null = null;
     try {
       const raw = sessionStorage.getItem('pendingBooking');
@@ -116,13 +118,10 @@ const EditBooking = () => {
       return;
     }
 
-    // Build payloads
+    // Build payloads and save with PUT requests (commented out for reference)
     // const { customer, guests } = methods.getValues();
-
-    // // Save with simple PUTs; adjust endpoints if your API differs
     // try {
     //   toast.info('Saving changes…', { toastId: 'saving' });
-
     //   const [custRes, guestsRes] = await Promise.all([
     //     fetch(`http://localhost:3000/customers/${bookingId}`, {
     //       method: 'PUT',
@@ -135,7 +134,6 @@ const EditBooking = () => {
     //       body: JSON.stringify({ booking_id: bookingId, guests }),
     //     }),
     //   ]);
-
     //   if (!custRes.ok) {
     //     const t = await custRes.text();
     //     throw new Error(`Customer update failed (${custRes.status}) ${t || ''}`);
@@ -144,7 +142,6 @@ const EditBooking = () => {
     //     const t = await guestsRes.text();
     //     throw new Error(`Guests update failed (${guestsRes.status}) ${t || ''}`);
     //   }
-
     //   toast.dismiss('saving');
     //   toast.success('Guest details saved successfully.');
     // } catch (err: any) {

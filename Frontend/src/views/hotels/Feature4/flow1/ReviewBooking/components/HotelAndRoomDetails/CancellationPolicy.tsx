@@ -6,6 +6,7 @@ import { BsAlarm, BsBrightnessHigh, BsGeoAlt, BsPatchCheckFill } from 'react-ico
 import { FaStarHalfAlt } from 'react-icons/fa'
 import { Rooms } from '@/models/RoomDetailsApi'
 
+// Displays cancellation policy and important info for the room
 const CancellationPolicy = ({ roomData }: { roomData: Rooms }) => {
   const isFreeCancellation = roomData.free_cancellation;
 
@@ -14,12 +15,14 @@ const CancellationPolicy = ({ roomData }: { roomData: Rooms }) => {
 
   return (
     <Card className="shadow">
+      {/* Card header with title */}
       <CardHeader className="border-bottom d-md-flex justify-content-md-between">
         <h5 className="card-title mb-0">Important Info & Cancellation Policy</h5>
       </CardHeader>
       <CardBody className="card-body">
         <h6>Policy Details</h6>
         <ul className="list-group list-group-borderless mb-0">
+          {/* Show free cancellation or no refund message */}
           {isFreeCancellation ? (
             <li className="list-group-item h6 fw-light d-flex mb-0 items-center">
               <BsPatchCheckFill className="text-success me-2" />
@@ -35,7 +38,7 @@ const CancellationPolicy = ({ roomData }: { roomData: Rooms }) => {
 
         <h6 className="mt-2">Before you go</h6>
         <ul className="list-group list-group-borderless mb-0">
-          {/* Check if the "know_before_you_go" information exists */}
+          {/* Show additional info if available, otherwise fallback message */}
           {cancellationInfo ? (
             <div
               dangerouslySetInnerHTML={{
@@ -43,7 +46,7 @@ const CancellationPolicy = ({ roomData }: { roomData: Rooms }) => {
               }}
             />
           ) : (
-            <p>No important information and/or policy is available.</p> // Fallback message
+            <p>No important information and/or policy is available.</p>
           )}
         </ul>
       </CardBody>

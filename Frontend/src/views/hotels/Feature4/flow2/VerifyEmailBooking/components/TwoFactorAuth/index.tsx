@@ -92,7 +92,7 @@ const TwoFactorAuth = () => {
   //       return;
   //     }
 
-  //     // ✅ OTP verified → go to display page
+  //     // OTP verified → go to display page
   //     navigate('/hotels/display-booking');
   //   } catch (err) {
   //     console.error('OTP verify error:', err);

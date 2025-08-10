@@ -28,6 +28,7 @@ type BookingRow = {
   guests_breakdown?: number[] | string[]
 }
 
+// Format date for display
 const formatDate = (dateYMD?: string) => {
   if (!dateYMD) return 'N/A'
   try {
@@ -39,12 +40,14 @@ const formatDate = (dateYMD?: string) => {
   }
 }
 
+// Format rooms & guests label for display
 const roomsAndGuestsLabel = (booking?: BookingRow) => {
   if (!booking) return 'N/A'
   const g = booking.guests_total ?? 0
   return g;
 }
 
+// Get hotel image URL
 const getImageUrl = (hotel?: HotelData) => {
   if (!hotel) return hotel2
   try {
@@ -56,11 +59,13 @@ const getImageUrl = (hotel?: HotelData) => {
   return hotel2
 }
 
+// Displays hotel information including image, name, address, rating, dates, guests, description, and amenities
 const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: BookingRow }) => {
+  // State for toggling description expand/collapse
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
 
-  // (kept) splitDescription — no longer used for rendering, left intact as requested
+  // Split description into main and extra text (not used for rendering, kept for reference)
   const splitDescription = (text?: string) => {
     if (!text || text.trim() === "") {
       return { mainText: "No description available.", extraText: "" };
@@ -75,7 +80,7 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
     };
   };
 
-  // New: render full HTML and clamp with CSS when collapsed (prevents mid-word cuts)
+  // Render full HTML and clamp with CSS when collapsed (prevents mid-word cuts)
   const formattedDesc =
     (hotel?.description && hotel.description.trim() !== "")
       ? hotel.description
@@ -93,7 +98,7 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
       } as const
     : undefined;
 
-  // derive display values
+  // Derive display values
   const imageUrl = getImageUrl(hotel)
   const name = hotel?.name || 'N/A'
   const address = hotel?.address || 'N/A'
@@ -103,7 +108,7 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
   const checkOutLabel = formatDate(booking?.end_date)
   const rgLabel = roomsAndGuestsLabel(booking)
 
-  // optional days/nights calc (only if you want the small line)
+  // Optional days/nights calculation
   let nights = 0
   let days = 0
   if (booking?.start_date && booking?.end_date) {
@@ -115,7 +120,7 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
     days = nights > 0 ? nights + 1 : 0
   }
 
-  // amenity name mapping (when hotel.amenities is an object of boolean flags)
+  // Amenity name mapping (when hotel.amenities is an object of boolean flags)
   const amenityNames = new Map<string, string>([
     ['airConditioning','Air Conditioning'],
     ['businessCenter','Business Center'],
@@ -135,16 +140,19 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
     ['nonSmokingRooms','Non Smoking Rooms'],
   ])
 
+  // Convert camelCase amenity keys to readable strings
   const camelCaseToString = (camel: string) => {
     let result = camel.replace(/([A-Z])/g, ' $1')
     result = result.charAt(0).toUpperCase() + result.slice(1)
     return result
   }
 
+  // Check if amenities should be rendered
   const hasRealAmenities = !!hotel?.amenities && Object.keys(hotel.amenities).length > 0
 
   return (
     <Card className="shadow">
+      {/* Card header with hotel icon and title */}
       <CardHeader className="p-4 border-bottom">
         <h3 className="mb-0 items-center">
           <FaHotel className="me-2" />
@@ -153,6 +161,7 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
       </CardHeader>
 
       <CardBody className="p-4">
+        {/* Hotel image and basic info */}
         <Card className="mb-4">
           <Row className="align-items-center">
             <Col sm={6} md={4}>
@@ -167,6 +176,7 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
                   <BsGeoAlt className=" me-2" />
                   {address}
                 </p>
+                {/* Hotel rating stars and value */}
                 <ul className="list-inline mb-0 items-center">
                   {ratingNum > 0 ? (
                     <>
@@ -193,6 +203,7 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
           </Row>
         </Card>
 
+        {/* Check-in, check-out, and rooms/guests info */}
         <Row className="g-4">
           <Col lg={4}>
             <div className="bg-light py-3 px-4 rounded-3">
@@ -223,7 +234,9 @@ const HotelInformation = ({ hotel, booking }: { hotel?: HotelData, booking?: Boo
         {/* Description – continuous with see more/less via line clamp */}
         <Row className="g-4 mt-2">
           <div className="py-3 px-4">
+            {/* Render hotel description with line clamp when collapsed */}
             <div style={clampStyle} dangerouslySetInnerHTML={{ __html: formattedDesc }} />
+            {/* Toggle see more/see less if description exists */}
             {(hotel?.description && hotel.description.trim() !== "") && (
               <a onClick={toggle} className="p-0 mt-2 btn-more d-flex align-items-center" role="button">
                 {!isOpen ? (

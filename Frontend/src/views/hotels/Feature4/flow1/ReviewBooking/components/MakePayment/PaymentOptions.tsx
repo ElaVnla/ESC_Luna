@@ -15,7 +15,7 @@ import { BsCreditCard, BsWalletFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { useFormContext } from 'react-hook-form';
 import { TextFormInput } from '@/components';
-import { CardElement } from '@stripe/react-stripe-js'; // ✅ added
+import { CardElement } from '@stripe/react-stripe-js'; 
 
 import visaCard from '@/assets/images/element/visa.svg';
 import masterCard from '@/assets/images/element/mastercard.svg';

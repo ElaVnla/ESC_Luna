@@ -1,16 +1,18 @@
 import { Router } from 'express';
 import { Database } from '../Database';
 import { upsertRoomFromApi, getRoomByKey } from '../Services/RoomService';
+
 const router = Router();
 
+// Simple health check for the Room API
 router.get('/', (req, res) => {
   res.json({ message: 'Room API is working!' });
 });
 
-
+// Add or update a room using data from the request body
 router.post("/upsert", async (req, res) => {
   try {
-    const room = await upsertRoomFromApi(req.body); // expects mapped shape below
+    const room = await upsertRoomFromApi(req.body); // expects room data in request body
     res.status(200).json({ ok: true, room });
   } catch (e: any) {
     console.error("Rooms upsert error:", e);
@@ -18,7 +20,7 @@ router.post("/upsert", async (req, res) => {
   }
 });
 
-// for Flow 2 retrieval by the key you stored in bookings.room_id
+// Get a room by its key (used in bookings.room_id)
 router.get("/:key", async (req, res) => {
   try {
     const room = await getRoomByKey(req.params.key);

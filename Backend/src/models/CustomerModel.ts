@@ -9,7 +9,7 @@ export class CustomerModel {
         public email: string,
         public booking_id: string,
         public billing_address: string,
-        public country: string,            // Added country for main guest
-        public date_of_birth: string      // Added date_of_birth for main guest
+        public country: string,       
+        public date_of_birth: string      
     ) {}
 }

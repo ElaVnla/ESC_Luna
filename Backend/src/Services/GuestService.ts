@@ -25,7 +25,7 @@ export async function insertGuests(guests: GuestModel[]) {
         guest.last_name ?? null,
         guest.phone_number ?? null,
         guest.email ?? null,
-        (guest as any).date_of_birth ?? null, // ✅ NEW
+        (guest as any).date_of_birth ?? null, 
         guest.country ?? null
       ]
     );
@@ -84,7 +84,7 @@ export async function updateGuestsByBookingId(booking_id: string, guests: GuestM
         guest.last_name ?? null,
         guest.phone_number ?? null,
         guest.email ?? null,
-        (guest as any).date_of_birth ?? null, // ✅ NEW
+        (guest as any).date_of_birth ?? null, 
         guest.country ?? null
       ]
     );
