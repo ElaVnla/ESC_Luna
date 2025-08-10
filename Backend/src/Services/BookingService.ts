@@ -27,7 +27,7 @@ export async function createBooking(
       booking.num_nights ?? null,
       booking.price,
       booking.currency,
-      booking.guests_total ?? 1,
+      booking.guests_total ?? "0",
     ]
   );
 
@@ -84,6 +84,7 @@ export async function cancelBooking(bookingId: string) {
   await db.query(`DELETE FROM payments WHERE booking_id = ?`, [bookingId]);
   await db.query(`DELETE FROM customers WHERE booking_id = ?`, [bookingId]);
   await db.query(`DELETE FROM bookings WHERE id = ?`, [bookingId]);
+  await db.query(`DELETE FROM rooms WHERE booking_key = ?`, [bookingId]); 
 }
 
 export async function getHotelIdFromBooking(bookingId: string): Promise<string | null> {
@@ -115,6 +116,7 @@ export async function getBookingById(bookingId: string) {
         num_nights,
         price,
         currency,
+        message_to_hotel,
         guests_total
      FROM bookings
      WHERE id = ?`,

@@ -15,9 +15,6 @@ const VerifyEmailBooking = () => {
         <Hero />
         <TwoFactorAuth />
       </main>
-
-      <FooterWithLinks />
-      <Footer />
     </>
   )
 }

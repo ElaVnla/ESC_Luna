@@ -1,10 +1,10 @@
+// GuestDetails.tsx (edit version)
 import { Card, CardBody, CardHeader, Col, FormSelect } from 'react-bootstrap';
 import { useFormContext, Controller } from 'react-hook-form';
 import { BsPeopleFill } from 'react-icons/bs';
 import { TextFormInput } from '@/components';
 
 type Guest = {
-  id: number;
   guest_type: string;
   salutation: string;
   first_name: string;
@@ -12,6 +12,7 @@ type Guest = {
   email: string;
   phone_number: string;
   country: string;
+  date_of_birth?: string;
 };
 
 const GuestDetails = ({ guests }: { guests: Guest[] }) => {
@@ -21,11 +22,11 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
     const prefix = `guests.${index}`;
 
     return (
-      <Card className="mb-4" key={guest.id}>
+      <Card className="mb-4" key={`${guest.guest_type}-${index}`}>
         <CardHeader className="card-header border-bottom p-4">
           <h5 className="card-title mb-0 d-flex align-items-center">
             <BsPeopleFill className="me-2" />
-            {guest.guest_type} {index + 1}
+            {guest.guest_type?.toUpperCase?.() || 'Guest'} {index + 1}
           </h5>
         </CardHeader>
         <CardBody className="p-4">
@@ -35,7 +36,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               <Controller
                 name={`${prefix}.salutation`}
                 control={control}
-                rules={{ required: 'Title is required' }}
+                rules={{ required: 'Salutation is required' }}
                 render={({ field, fieldState }) => (
                   <>
                     <FormSelect
@@ -45,6 +46,8 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
                       <option value="">Title</option>
                       <option value="Mr">Mr</option>
                       <option value="Mrs">Mrs</option>
+                      <option value="Ms">Ms</option>
+                      <option value="Miss">Miss</option>
                     </FormSelect>
                     {fieldState.error?.message && (
                       <div className="invalid-feedback">{fieldState.error.message}</div>
@@ -53,6 +56,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
                 )}
               />
             </Col>
+
             <TextFormInput
               name={`${prefix}.first_name`}
               label="First Name"
@@ -62,6 +66,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               className="form-control-lg"
               containerClass="col-md-3"
             />
+
             <TextFormInput
               name={`${prefix}.last_name`}
               label="Last Name"
@@ -71,6 +76,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               className="form-control-lg"
               containerClass="col-md-3"
             />
+
             <TextFormInput
               name={`${prefix}.country`}
               label="Country"
@@ -80,6 +86,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               className="form-control-lg"
               containerClass="col-md-4"
             />
+
             <Col md={6}>
               <TextFormInput
                 name={`${prefix}.email`}
@@ -96,6 +103,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
                 className="form-control-lg"
               />
             </Col>
+
             <TextFormInput
               name={`${prefix}.phone_number`}
               label="Mobile number"
@@ -110,6 +118,16 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
               }}
               className="form-control-lg"
               containerClass="col-md-6"
+            />
+
+            <TextFormInput
+              name={`${prefix}.date_of_birth`}
+              label="Date of Birth"
+              type="date"
+              control={control}
+              rules={{ required: 'Date of birth is required' }}
+              className="form-control-lg"
+              containerClass="col-md-4"
             />
           </form>
         </CardBody>
@@ -126,7 +144,7 @@ const GuestDetails = ({ guests }: { guests: Guest[] }) => {
         </h4>
       </CardHeader>
       <CardBody className="p-4">
-        {guests.map((guest, index) => renderGuestForm(guest, index))}
+        {guests.map((g, i) => renderGuestForm(g, i))}
       </CardBody>
     </Card>
   );

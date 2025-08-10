@@ -1,96 +1,137 @@
+import { useEffect } from 'react';
 import { Button, Card, CardBody, Col, Container, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, type FieldPath } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
-const Hero = () => {
-  const navigate = useNavigate();
-  const { getValues, trigger } = useFormContext();
-
-  type GuestInput = {
+type FormShape = {
+  customer: {
     salutation: string;
     first_name: string;
     last_name: string;
-    country: string;
+    billing_address: string;
     email: string;
     phone_number: string;
-    guest_type: string;
+    country?: string;
+    date_of_birth?: string;
   };
+  guests: Array<{
+    salutation: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone_number: string;
+    country: string;
+    date_of_birth?: string;
+    guest_type?: string;
+  }>;
+};
+
+const Hero = () => {
+  const navigate = useNavigate();
+  const methods = useFormContext<FormShape>();
+  const { getValues } = methods;
+
+  // sanity-check session once
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('pendingBooking');
+      if (!raw) {
+        toast.error('No booking in progress. Please start from your booking list.');
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      if (!parsed?.bookingId) {
+        toast.error('Invalid booking context. Please reopen this booking.');
+      }
+    } catch {
+      toast.error('Failed to read booking context from session.');
+    }
+  }, []);
 
   const handleUpdate = async () => {
-    const stored = sessionStorage.getItem('pendingBooking');
-    if (!stored) return alert('Booking ID not found.');
+    // ---- Build the typed list of fields to validate ----
+    const guestValues = getValues('guests') || [];
+    const guestFields: FieldPath<FormShape>[] = [];
+    guestValues.forEach((_, i) => {
+      guestFields.push(
+        `guests.${i}.salutation` as FieldPath<FormShape>,
+        `guests.${i}.first_name` as FieldPath<FormShape>,
+        `guests.${i}.last_name` as FieldPath<FormShape>,
+        `guests.${i}.email` as FieldPath<FormShape>,
+        `guests.${i}.phone_number` as FieldPath<FormShape>,
+        `guests.${i}.country` as FieldPath<FormShape>,
+        `guests.${i}.date_of_birth` as FieldPath<FormShape>,
+      );
+    });
 
-    let parsed: any;
-    try {
-      parsed = JSON.parse(stored);
-      if (typeof parsed === 'string') parsed = JSON.parse(parsed);
-    } catch (err) {
-      console.error('Failed to parse pendingBooking in EditBooking:', err);
-      alert('Invalid session data.');
-      return;
-    }
-
-    const bookingId = parsed?.bookingId;
-    if (!bookingId) {
-      alert('Missing booking ID.');
-      return;
-    }
-
-    const formData = getValues();
-
-    // 1. Validate all fields before submitting
-    const customerFields = [
+    const ok = await methods.trigger([
       'customer.salutation',
       'customer.first_name',
       'customer.last_name',
       'customer.billing_address',
       'customer.email',
       'customer.phone_number',
-    ];
+      'customer.country',
+      'customer.date_of_birth',
+      ...guestFields,
+    ] as FieldPath<FormShape>[]);
 
-    const guestFields = formData.guests.flatMap((_: any, i: number) => [
-      `guests.${i}.salutation`,
-      `guests.${i}.first_name`,
-      `guests.${i}.last_name`,
-      `guests.${i}.country`,
-      `guests.${i}.email`,
-      `guests.${i}.phone_number`,
-    ]);
-
-    const isValid = await trigger([...customerFields, ...guestFields]);
-
-    if (!isValid) {
-      toast.error('Please complete all required fields.');
+    if (!ok) {
+      toast.error('Please resolve the highlighted fields before saving.');
       return;
     }
 
+    // ---- bookingId from session ----
+    let bookingId: string | null = null;
     try {
-      // 🔄 Update Customer
-      const customerRes = await fetch(`http://localhost:3000/customers/${bookingId}`, {
+      const raw = sessionStorage.getItem('pendingBooking');
+      bookingId = raw ? JSON.parse(raw)?.bookingId : null;
+    } catch {
+      /* ignore */
+    }
+    if (!bookingId) {
+      toast.error('Missing booking ID. Please reopen this booking.');
+      return;
+    }
+
+    // ---- payloads ----
+    const { customer, guests } = getValues();
+
+    try {
+      toast.info('Saving changes…', { toastId: 'saving' });
+
+      // customer update (include booking_id)
+      const custRes = await fetch(`http://localhost:3000/customers/${bookingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData.customer),
+        body: JSON.stringify({ ...customer, booking_id: bookingId }),
       });
 
-      if (!customerRes.ok) throw new Error(`Customer update failed: ${customerRes.status}`);
+      if (!custRes.ok) {
+        const t = await custRes.text();
+        throw new Error(`Customer update failed (${custRes.status}) ${t || ''}`);
+      }
 
-      // 🔄 Update Guests
+      // guests update (bulk) with booking_id
       const guestsRes = await fetch(`http://localhost:3000/guests/${bookingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          guests: formData.guests.map((g: GuestInput) => ({ ...g, booking_id: bookingId }))
-        }),
+        body: JSON.stringify({ booking_id: bookingId, guests }),
       });
 
-      if (!guestsRes.ok) throw new Error(`Guests update failed: ${guestsRes.status}`);
+      if (!guestsRes.ok) {
+        const t = await guestsRes.text();
+        throw new Error(`Guests update failed (${guestsRes.status}) ${t || ''}`);
+      }
 
+      toast.dismiss('saving');
       toast.success('Booking updated successfully!');
       navigate('/hotels/display-booking');
-    } catch (err) {
+    } catch (err: any) {
+      toast.dismiss('saving');
       console.error('Update failed:', err);
-      toast.error('Failed to update booking. Please try again.');
+      toast.error(err?.message || 'Failed to update booking. Please try again.');
     }
   };
 

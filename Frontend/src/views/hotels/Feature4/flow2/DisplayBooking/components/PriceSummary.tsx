@@ -1,7 +1,36 @@
-import { currency } from '@/states'
+import { currency as fallbackCurrencySymbol } from '@/states'
 import { Card, CardBody, CardFooter, CardHeader, CardTitle } from 'react-bootstrap'
 
-const PriceSummary = () => {
+type PriceSummaryProps = {
+  booking?: {
+    price?: number | string
+    currency?: string
+  }
+}
+
+const PriceSummary = ({ booking }: PriceSummaryProps) => {
+  const amount =
+    typeof booking?.price === 'string'
+      ? parseFloat(booking.price)
+      : (booking?.price ?? 0)
+
+  // Prefer ISO currency code from booking; fall back to your existing symbol
+  const formatted = (() => {
+    if (booking?.currency) {
+      try {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: booking.currency.toUpperCase(),
+          maximumFractionDigits: 2,
+        }).format(amount)
+      } catch {
+        // if the code is invalid, fall through to symbol formatting
+      }
+    }
+    // Fallback to your previous symbol formatting
+    return `${fallbackCurrencySymbol}${amount.toLocaleString()}`
+  })()
+
   return (
     <Card className="shadow rounded-2">
       <CardHeader className="border-bottom">
@@ -13,28 +42,14 @@ const PriceSummary = () => {
         <ul className="list-group list-group-borderless">
           <li className="list-group-item d-flex justify-content-between align-items-center">
             <span className="h6 fw-light mb-0">Room Charges</span>
-            <span className="fs-5">{currency}28,660</span>
-          </li>
-          <li className="list-group-item d-flex justify-content-between align-items-center">
-            <span className="h6 fw-light mb-0">
-              Total Discount<span className="badge text-bg-danger smaller mb-0 ms-2">10% off</span>
-            </span>
-            <span className="fs-5 text-success">-{currency}2,560</span>
-          </li>
-          <li className="list-group-item d-flex justify-content-between align-items-center">
-            <span className="h6 fw-light mb-0">Price after discount</span>
-            <span className="fs-5">{currency}1852</span>
-          </li>
-          <li className="list-group-item d-flex justify-content-between align-items-center">
-            <span className="h6 fw-light mb-0">Taxes % Fees</span>
-            <span className="fs-5">{currency}350</span>
+            <span className="fs-5">{formatted}</span>
           </li>
         </ul>
       </CardBody>
       <CardFooter className="border-top">
         <div className="d-flex justify-content-between align-items-center">
           <span className="h5 mb-0">Paid</span>
-          <span className="h5 mb-0">{currency}22,500</span>
+          <span className="h5 mb-0">{formatted}</span>
         </div>
       </CardFooter>
     </Card>

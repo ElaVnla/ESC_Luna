@@ -24,18 +24,16 @@ type BookingRow = {
   end_date: string    // 'YYYY-MM-DD'
   guests_total: number
   currency: string
+  message_to_hotel: string 
 }
 
 const DisplayBooking = () => {
-  const [booking, setBooking] = useState<BookingRow | null>(null)
+  const [ booking, setBooking] = useState<BookingRow | null>(null)
   const [hotelData, setHotelData] = useState<HotelData | null>(null)
-  const [roomData, setRoomData] = useState<RoomData | null>(null)           // full room API payload
-  const [selectedRoom, setSelectedRoom] = useState<any | null>(null)        // the specific room by room_id
+  const [selectedRoom, setSelectedRoom] = useState<any | null>(null)
 
   const [mainGuest, setMainGuest] = useState<any>(null)
   const [guests, setGuests] = useState<any[]>([])
-
-  const polling = useRef(true)
 
   // 1) Load booking + basic guest info using bookingId from session
   useEffect(() => {
@@ -53,6 +51,13 @@ const DisplayBooking = () => {
       })
       .then((row: BookingRow) => {
         setBooking(row)
+
+        // 🔹 fetch hotel details exactly like before
+        const hotelDetailApi = `http://localhost:3000/api/hotels/${row.hotel_id}`
+        fetch(hotelDetailApi)
+          .then(resp => resp.json())
+          .then((h: any) => setHotelData(h))
+          .catch(err => console.error('❌ Failed to fetch hotel data:', err))
       })
       .catch(err => console.error('❌ Failed to fetch booking row:', err))
 
@@ -70,94 +75,26 @@ const DisplayBooking = () => {
         setGuests(data)
       })
       .catch(err => console.error('❌ Failed to fetch guests:', err))
-  }, [])
 
-  // 2) Once we have the booking row, call hotel + room APIs
-  useEffect(() => {
-  if (!booking) return;
-
-  const {
-    hotel_id: hotelId,
-    room_id: roomId,
-    start_date: checkIn,
-    end_date: checkOut,
-    guests_total: guestsTotal,
-    currency
-  } = booking;
-
-  // 1) Get hotel (to obtain destination CODE)
-  const hotelDetailApi = `http://localhost:3000/api/hotels/${booking.hotel_id}`;
-  fetch(hotelDetailApi)
-    .then(r => r.json())
-    .then((h: any) => {
-      setHotelData(h);
-
-      // Prefer the code from hotel details
-      const destinationCode = h?.destination_id || booking.destination_id;
-
-      // If you have per-room breakdown, use it: e.g. [2,2] -> "2|2"
-      // Otherwise fall back to total guests as a single room.
-      const guestsParam =
-        Array.isArray((booking as any).guests_breakdown) && (booking as any).guests_breakdown.length
-          ? (booking as any).guests_breakdown.join('|')
-          : String(guestsTotal);
-
-      const checkInYMD  = checkIn.slice(0, 10);
-      const checkOutYMD = checkOut.slice(0, 10);
-
-      // 2) Build URL to match Feature 3 exactly (keep both partner_id params)
-      const roomDetailApi =
-        `http://localhost:3000/api/hotels/${booking.hotel_id}/price` +
-        `?destination_id=${destinationCode}` +                 // code like "RsBU"
-        `&checkin=${checkInYMD}` +
-        `&checkout=${checkOutYMD}` +
-        `&lang=en_US&currency=${currency || 'SGD'}` +
-        `&partner_id=16&country_code=SG` +
-        `&guests=${guestsParam}` +                             // e.g. "2" or "2|2"
-        `&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
-
-      console.log('🔗 roomDetailApi =', roomDetailApi);
-
-      // 3) Poll until completed, then pick the room by room_id
-      polling.current = true;
-      const fetchRoom = async () => {
-        try {
-          const resp = await fetch(`${roomDetailApi}&_=${Date.now()}`, { cache: 'no-store' });
-          const data = await resp.json();
-
-          if (data.completed) {
-            console.log('🛏️ Room data completed:', data);
-            polling.current = false;
-            setRoomData(data);
-
-            const candidates =
-              Array.isArray(data.rooms) ? data.rooms :
-              Array.isArray(data.data?.rooms) ? data.data.rooms :
-              Array.isArray(data.hotels?.[0]?.rooms) ? data.hotels[0].rooms : [];
-
-            const found = candidates.find((r: any) => String(r?.id) === String(roomId));
-            if (found) setSelectedRoom(found);
-            else console.warn('⚠️ No matching room_id in payload.');
-            return;
-          }
-          if (polling.current) setTimeout(fetchRoom, 500);
-        } catch (e) {
-          console.error('❌ Failed to fetch room data:', e);
+    // 🔹 room details now come directly from your DB by bookingId
+    fetch(`http://localhost:3000/rooms/${encodeURIComponent(bookingId)}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(room => {
+        if (room) {
+          console.log('🗄️ Found room in DB by booking id:', bookingId)
+          setSelectedRoom(room)
+        } else {
+          console.warn('ℹ️ No room cached for this booking; selectedRoom will be undefined.')
         }
-      };
-      fetchRoom();
-    })
-    .catch(err => console.error('❌ Failed to fetch hotel data:', err));
-
-    console.log("hotel api:", hotelDetailApi);
-  return () => { polling.current = false; };
-}, [booking]);
-
+      })
+      .catch(err => console.error('❌ Failed to fetch room from DB:', err))
+  }, [])
 
   useEffect(() => { if (booking) console.log('✅ booking:', booking) }, [booking])
   useEffect(() => { if (mainGuest) console.log('✅ main guest:', mainGuest) }, [mainGuest])
   useEffect(() => { if (guests.length) console.log('✅ guests:', guests) }, [guests])
   useEffect(() => { if (hotelData) console.log('✅ hotel:', hotelData) }, [hotelData])
+  useEffect(() => { if (selectedRoom) console.log('✅ room:', selectedRoom) }, [selectedRoom])
 
   return (
     <>
@@ -170,9 +107,9 @@ const DisplayBooking = () => {
             <Row className="g-4">
               <Col xl={7}>
                 <div className="vstack gap-3 mb-6">
-                  {/* Pass data down. If your components already read from context, keep them as-is */}
-                  <HotelInformation hotel={hotelData ?? undefined} />
-                  <RoomInformation room={selectedRoom ?? undefined} fullRoomPayload={roomData ?? undefined} />
+                  {/* exactly the same as before */}
+                  <HotelInformation hotel={hotelData ?? undefined} booking={booking as any} />
+                  <RoomInformation room={selectedRoom ?? undefined} />
                 </div>
               </Col>
 
@@ -195,7 +132,8 @@ const DisplayBooking = () => {
                   )}
 
                   <Col md={12} xl={12}>
-                    <SpecialRequest bookingId={booking?.id} />
+                    <SpecialRequest message={booking?.message_to_hotel ?? ''} />
+
                   </Col>
                 </Row>
               </Col>
@@ -203,9 +141,6 @@ const DisplayBooking = () => {
           </div>
         </Container>
       </main>
-
-      <FooterWithLinks />
-      <Footer />
     </>
   )
 }

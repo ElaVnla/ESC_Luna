@@ -38,6 +38,6 @@ export class Booking {
     @Column({ type: "decimal", precision: 10, scale: 2 })
     price!: number;
 
-    @Column({ type: "int" })
-    guests_total!: number;
+    @Column({ length: 255 })
+    guests_total!: string;
 }

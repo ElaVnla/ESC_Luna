@@ -15,6 +15,10 @@ export class Numguesttotalbooking1754730429734 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE customers MODIFY booking_id VARCHAR(100) NOT NULL`);
     await queryRunner.query(`ALTER TABLE payments MODIFY booking_id VARCHAR(100) NOT NULL`);
     await queryRunner.query(`ALTER TABLE payments MODIFY COLUMN id INT NOT NULL AUTO_INCREMENT`);
+    await queryRunner.query(`
+            ALTER TABLE bookings 
+            MODIFY COLUMN guests_total VARCHAR(255) NOT NULL
+        `);
     // await queryRunner.query(`ALTER TABLE payments ADD PRIMARY KEY (id)`); // safe if already PK
   }
 
@@ -29,6 +33,10 @@ export class Numguesttotalbooking1754730429734 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE payments MODIFY id VARCHAR(20) NOT NULL`);
     await queryRunner.query(`ALTER TABLE customers MODIFY booking_id VARCHAR(20) NOT NULL`);
     await queryRunner.query(`ALTER TABLE payments MODIFY booking_id VARCHAR(20) NOT NULL`);
+    await queryRunner.query(`
+            ALTER TABLE bookings 
+            MODIFY COLUMN guests_total INT NOT NULL
+        `);
   }
 
 }

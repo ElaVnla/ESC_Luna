@@ -13,8 +13,6 @@ const VerifyBooking = () => {
       <main>
         <AvailabilityFilter />
       </main>
-
-      <FooterWithLinks />
     </>
   )
 }
