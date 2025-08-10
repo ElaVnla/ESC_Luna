@@ -36,17 +36,18 @@ export async function getGuestsByBookingId(booking_id: string): Promise<GuestMod
   const db = Database;
   const rows = await db.query(`SELECT * FROM guests WHERE booking_id = ?`, [booking_id]);
   return rows.map((row: any) => new GuestModel(
-    row.id,
-    row.booking_id,
-    row.guest_type,
-    row.salutation,
-    row.first_name,
-    row.last_name,
-    row.phone_number,
-    row.email,
-    row.date_of_birth,
-    row.country
-  ));
+  row.id,
+  row.booking_id,
+  row.guest_type,
+  row.salutation,
+  row.first_name,
+  row.last_name,
+  row.phone_number,
+  row.email,
+  row.country,
+  row.date_of_birth
+));
+
 }
 
 export async function getGuestsCountByBookingId(booking_id: string): Promise<number> {

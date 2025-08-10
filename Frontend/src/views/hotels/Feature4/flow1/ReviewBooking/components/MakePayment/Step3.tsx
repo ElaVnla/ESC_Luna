@@ -124,7 +124,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         price: roomData?.converted_price ?? roomData?.price ?? 0,
         currency: currencyCode,
         // If guests exist, prefer 1 + guests.length; otherwise fall back to hotelParams
-        guests_total: guests.length ? (1 + guests.length) : getGuestsFromParams(hotelParams),
+        guests_total: hotelParams?.guests || "0",
         message_to_hotel: getSpecialRequest(),
       },
       guests, // ✅ include the Step‑2 guests
@@ -201,7 +201,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
           ...raw.booking,
           price: displayPrice,
           currency: currencyUpper,
-          guests_total: totalGuests,
+          guests_total: hotelParams?.guests || "0",
           num_nights: nights,                 // ✅ ensure not null
         },
       };
@@ -281,6 +281,45 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         }),
       });
 
+// put this near mapRoomForUpsert (top of handleProceed or above it)
+const pickHiResImages = (imgs: any): string[] | null => {
+  if (!Array.isArray(imgs)) return null;
+  return imgs
+    .map((img: any) =>
+      typeof img === 'string'
+        ? img // in case you ever pass plain URLs
+        : (img?.high_resolution_url || img?.url)
+    )
+    .filter(Boolean);
+};
+
+// replace your current mapRoomForUpsert with this version
+const mapRoomForUpsert = (hotelId: string, room: any) => ({
+  id: String(room?.key), // store API key as PK
+  hotel_id: String(hotelId),
+  room_type: room?.roomDescription ?? null,
+  normalized_description: room?.roomNormalizedDescription ?? null,
+  description: room?.description ?? room?.roomDescription ?? null,
+  long_description: room?.long_description ?? null,
+  amenities: Array.isArray(room?.amenities) ? room.amenities : null,
+  price:
+    typeof room?.converted_price === 'number'
+      ? room.converted_price
+      : (typeof room?.price === 'number' ? room.price : null),
+  // ✅ store ONLY hi-res URLs (fallback to url if hi-res missing)
+  images: pickHiResImages(room?.images),
+  booking_key: bookingId, // tie to booking
+});
+
+
+      // then, when you have hotelData.id and the room you booked (propRoom or selectedRoom):
+      await fetch('http://localhost:3000/rooms/upsert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(mapRoomForUpsert(hotelData.id, propRoom /* or selectedRoom */)),
+      });
+
+
       toast.success('Payment successful! Booking confirmed.');
 
       sessionStorage.clear();
@@ -294,6 +333,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         currency: chargedCurrency?.toUpperCase() || currencyUpper,
         num_nights: payload.booking.num_nights,
       };
+
+
       sessionStorage.setItem('booking_summary', JSON.stringify(summaryForUI));
       
       navigate('/hotels/confirmed-booking');

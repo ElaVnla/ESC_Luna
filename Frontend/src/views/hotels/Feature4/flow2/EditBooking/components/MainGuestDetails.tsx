@@ -1,6 +1,7 @@
+// MainGuestDetails.tsx (edit version)
 import { useFormContext, Controller } from 'react-hook-form';
-import { SelectFormInput, TextFormInput } from '@/components';
-import { Card, CardBody, CardHeader, Col } from 'react-bootstrap';
+import { TextFormInput } from '@/components';
+import { Card, CardBody, CardHeader, Col, FormSelect } from 'react-bootstrap';
 import { BsPeopleFill } from 'react-icons/bs';
 
 const MainGuestDetails = () => {
@@ -21,34 +22,38 @@ const MainGuestDetails = () => {
             <Controller
               name="customer.salutation"
               control={control}
-              rules={{ required: 'Title is required' }}
+              rules={{ required: 'Salutation is required' }}
               render={({ field, fieldState }) => (
                 <>
-                  <SelectFormInput
+                  <FormSelect
                     {...field}
                     className={`form-select js-choice ${fieldState.invalid ? 'is-invalid' : ''}`}
                   >
                     <option value="">Title</option>
                     <option value="Mr">Mr</option>
                     <option value="Mrs">Mrs</option>
-                  </SelectFormInput>
-                  {fieldState.error?.message && (
+                    <option value="Ms">Ms</option>
+                    <option value="Miss">Miss</option>
+                  </FormSelect>
+                  {fieldState.error && (
                     <div className="invalid-feedback">{fieldState.error.message}</div>
                   )}
                 </>
               )}
             />
           </Col>
+
           <TextFormInput
             name="customer.first_name"
-            type="text"
             label="First Name"
+            type="text"
             control={control}
             rules={{ required: 'First name is required' }}
             placeholder="Enter your first name"
             className="form-control-lg"
             containerClass="col-md-3"
           />
+
           <TextFormInput
             name="customer.last_name"
             label="Last Name"
@@ -59,16 +64,18 @@ const MainGuestDetails = () => {
             className="form-control-lg"
             containerClass="col-md-3"
           />
+
           <TextFormInput
-            name="customer.billing_address"
-            label="Billing Address"
+            name="customer.country"
+            label="Country"
             type="text"
             control={control}
-            rules={{ required: 'Billing address is required' }}
-            placeholder="Enter your Billing Address"
+            rules={{ required: 'Country is required' }}
+            placeholder="Enter your country"
             className="form-control-lg"
             containerClass="col-md-4"
           />
+
           <Col md={6}>
             <TextFormInput
               name="customer.email"
@@ -79,16 +86,28 @@ const MainGuestDetails = () => {
                 required: 'Email is required',
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Enter a valid email address',
+                  message: 'Please enter a valid email address',
                 },
               }}
-              placeholder="Enter your email"
+              placeholder="e.g. john@example.com"
               className="form-control-lg"
             />
           </Col>
+
+          <TextFormInput
+            name="customer.billing_address"
+            label="Billing Address"
+            type="text"
+            control={control}
+            rules={{ required: 'Billing address is required' }}
+            placeholder="Enter your billing address"
+            className="form-control-lg"
+            containerClass="col-md-4"
+          />
+
           <TextFormInput
             name="customer.phone_number"
-            label="Mobile number"
+            label="Phone Number"
             type="text"
             control={control}
             rules={{
@@ -98,9 +117,20 @@ const MainGuestDetails = () => {
                 message: 'Include country code (e.g. +65 81234567)',
               },
             }}
-            placeholder="Enter your mobile number"
+            placeholder="e.g. +65 81234567"
             className="form-control-lg"
             containerClass="col-md-6"
+          />
+
+          <TextFormInput
+            name="customer.date_of_birth"
+            label="Date of Birth"
+            type="date"
+            control={control}
+            rules={{ required: 'Date of birth is required' }}
+            placeholder="Enter your date of birth"
+            className="form-control-lg"
+            containerClass="col-md-4"
           />
         </form>
       </CardBody>
