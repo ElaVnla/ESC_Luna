@@ -1,11 +1,20 @@
 {
-  "extends": "./tsconfig.app.json",
+  "extends": "./Frontend/tsconfig.app.json",
   "compilerOptions": {
-    "noEmit": false,
-    "types": ["cypress", "node", "cypress-real-events"]
+    "types": ["cypress", "node", "cypress-real-events"],
+    "allowJs": true,
+
+    "baseUrl": "./Frontend",
+    "paths": {
+      "@/*": ["./Frontend/src/*"]
+    },
+
+    "noEmit": true
   },
   "include": [
     "cypress/**/*.ts",
+    "cypress/**/*.tsx",
+    "cypress/**/*.js",
     "cypress.config.ts"
   ]
 }
