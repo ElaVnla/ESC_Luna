@@ -32,6 +32,18 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
   const [hotelParams, setHotelParams] = useState<any>(null);
   const [cardholderName, setCardholderName] = useState<string>('');
 
+  // --- NEW: helpers to consistently use base_rate_in_currency ---
+  const getBaseRate = (rd: any): number =>
+    typeof rd?.base_rate_in_currency === 'number'
+      ? rd.base_rate_in_currency
+      : (typeof rd?.price === 'number' ? rd.price : 0);
+
+  const getBaseRateCurrency = (rd: any, fallback?: string): string =>
+    (rd?.base_rate_currency?.toUpperCase?.()
+      || rd?.currency?.toUpperCase?.()
+      || fallback
+      || 'SGD');
+
   // Get special request from form
   const getSpecialRequest = () => {
     const form = getValues();
@@ -95,7 +107,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
     const start = hotelParams?.checkIn || '2025-01-01';
     const end   = hotelParams?.checkOut || '2025-01-03';
 
-    const currencyCode =
+    // previous currency inference kept as final fallback
+    const currencyFallback =
       roomData?.included_taxes_and_fees_in_currency?.[0]?.currency?.toUpperCase?.() ||
       roomData?.excluded_taxes_and_fees_currency?.toUpperCase?.() ||
       'SGD';
@@ -132,8 +145,9 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         start_date: start,
         end_date: end,
         num_nights: calcNights(start, end),
-        price: roomData?.converted_price ?? roomData?.price ?? 0,
-        currency: currencyCode,
+        // --- CHANGED: always use base_rate_in_currency ---
+        price: getBaseRate(roomData),
+        currency: getBaseRateCurrency(roomData, currencyFallback),
         guests_total: hotelParams?.guests || "0",
         message_to_hotel: getSpecialRequest(),
       },
@@ -196,14 +210,16 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
       console.log('retrieve from session RAW: ', raw);
       const totalGuests = getGuestsFromParams(hotelParams);
 
-      const displayPrice =
-        raw?.booking?.price ??
-        roomData?.converted_price ??
-        roomData?.price ??
-        0;
+      // --- CHANGED: lock displayPrice to base_rate_in_currency (no tax/converted adds) ---
+      const displayPrice = getBaseRate(roomData);
 
-      const currencyUpper =
-        (raw?.booking?.currency || chargedCurrency || 'SGD').toUpperCase();
+      // derive currency primarily from base rate currency
+      const currencyFallback =
+        raw?.booking?.currency ||
+        chargedCurrency ||
+        'SGD';
+
+      const currencyUpper = getBaseRateCurrency(roomData, currencyFallback);
 
       const nights = calcNights(raw.booking.start_date, raw.booking.end_date);
 
@@ -211,6 +227,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         ...raw,
         booking: {
           ...raw.booking,
+          // --- CHANGED: enforce base rate price and currency ---
           price: displayPrice,
           currency: currencyUpper,
           guests_total: hotelParams?.guests || "0",
@@ -240,7 +257,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
           booking_id: bookingId,
           payment_reference,
           stripe_payment_intent_id: stripePaymentIntentId,
-          amount: chargedAmount,
+          amount: displayPrice,
           currency: chargedCurrency,
           status: 'succeeded',
           encrypted_cardholder_name: cardholderName || getValues()?.cardHolderName || null,
@@ -277,7 +294,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
               total: hotelParams.guests,
               otherGuests,
             },
-            price: { totalPaid: humanAmount, currency: chargedCurrency?.toUpperCase() || currencyUpper },
+            // email shows what was actually charged by Stripe
+            price: { totalPaid: displayPrice, currency: chargedCurrency?.toUpperCase() || currencyUpper },
             mainGuest: {
               email: raw.customer?.email,
               salutation: raw.customer?.salutation,
@@ -313,10 +331,8 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         description: room?.description ?? room?.roomDescription ?? null,
         long_description: room?.long_description ?? null,
         amenities: Array.isArray(room?.amenities) ? room.amenities : null,
-        price:
-          typeof room?.converted_price === 'number'
-            ? room.converted_price
-            : (typeof room?.price === 'number' ? room.price : null),
+        // already aligned to base_rate_in_currency
+        price: getBaseRate(room),
         images: pickHiResImages(room?.images),
         booking_key: bookingId,
       });
@@ -337,7 +353,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
         checkIn: payload.booking.start_date,
         checkOut: payload.booking.end_date,
         guestsTotal: hotelParams.guests,
-        totalPaid: humanAmount,
+        totalPaid: displayPrice,
         currency: chargedCurrency?.toUpperCase() || currencyUpper,
         num_nights: payload.booking.num_nights,
       };
