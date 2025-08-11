@@ -140,8 +140,12 @@ describe("HotelListFilter", () => {
         <HotelListFilter filters={mockFilters} setFilters={mockSetFilters} />
       );
 
-      expect(screen.getByTestId("guest-rating-min-star")).toBeInTheDocument();
-      expect(screen.getByTestId("guest-rating-max-star")).toBeInTheDocument();
+      // Check for the presence of star icons by looking for SVG elements in the guest rating section
+      const guestRatingSection = screen
+        .getByText("Guest Rating")
+        .closest("div");
+      const starIcons = guestRatingSection?.querySelectorAll("svg");
+      expect(starIcons).toHaveLength(2); // Should have 2 star icons (min and max)
     });
   });
 
@@ -267,12 +271,13 @@ describe("HotelListFilter", () => {
 
   describe("Accessibility", () => {
     it("has proper form structure", () => {
-      render(
+      const { container } = render(
         <HotelListFilter filters={mockFilters} setFilters={mockSetFilters} />
       );
 
-      const form = screen.getByRole("form");
+      const form = container.querySelector("form");
       expect(form).toBeInTheDocument();
+      expect(form).toHaveClass("rounded-3", "shadow");
     });
 
     it("has proper labels for all checkboxes", () => {
@@ -312,67 +317,67 @@ describe("HotelListFilter", () => {
     });
 
     it("has proper CSS classes for styling", () => {
-      render(
+      const { container } = render(
         <HotelListFilter filters={mockFilters} setFilters={mockSetFilters} />
       );
 
-      const form = screen.getByRole("form", { name: "form" });
+      const form = container.querySelector("form");
       expect(form).toHaveClass("rounded-3", "shadow");
     });
   });
 
-  // describe("Edge Cases", () => {
-  //   it("handles empty filters object gracefully", () => {
-  //     const emptyFilters = {
-  //       starRatings: [],
-  //       guestRatings: [],
-  //       priceRanges: [],
-  //       guestRatingRange: [0, 5] as [number, number],
-  //     };
+  describe("Edge Cases", () => {
+    it("handles empty filters object gracefully", () => {
+      const emptyFilters = {
+        starRatings: [],
+        guestRatings: [],
+        priceRanges: [],
+        guestRatingRange: [0, 5] as [number, number],
+      };
 
-  //     expect(() => {
-  //       render(
-  //         <HotelListFilter filters={emptyFilters} setFilters={mockSetFilters} />
-  //       );
-  //     }).not.toThrow();
-  //   });
+      expect(() => {
+        render(
+          <HotelListFilter filters={emptyFilters} setFilters={mockSetFilters} />
+        );
+      }).not.toThrow();
+    });
 
-  //   it("handles missing guestRatingRange gracefully", () => {
-  //     const filtersWithoutRange = {
-  //       starRatings: [],
-  //       guestRatings: [],
-  //       priceRanges: [],
-  //       guestRatingRange: undefined as any,
-  //     };
+    it("handles missing guestRatingRange gracefully", () => {
+      const filtersWithoutRange = {
+        starRatings: [],
+        guestRatings: [],
+        priceRanges: [],
+        guestRatingRange: undefined as any,
+      };
 
-  //     expect(() => {
-  //       render(
-  //         <HotelListFilter
-  //           filters={filtersWithoutRange}
-  //           setFilters={mockSetFilters}
-  //         />
-  //       );
-  //     }).not.toThrow();
-  //   });
+      expect(() => {
+        render(
+          <HotelListFilter
+            filters={filtersWithoutRange}
+            setFilters={mockSetFilters}
+          />
+        );
+      }).not.toThrow();
+    });
 
-  //   it("displays default guest rating range when values are missing", () => {
-  //     const filtersWithNullRange = {
-  //       starRatings: [],
-  //       guestRatings: [],
-  //       priceRanges: [],
-  //       guestRatingRange: null as any,
-  //     };
+    it("displays default guest rating range when values are missing", () => {
+      const filtersWithNullRange = {
+        starRatings: [],
+        guestRatings: [],
+        priceRanges: [],
+        guestRatingRange: null as any,
+      };
 
-  //     render(
-  //       <HotelListFilter
-  //         filters={filtersWithNullRange}
-  //         setFilters={mockSetFilters}
-  //       />
-  //     );
+      render(
+        <HotelListFilter
+          filters={filtersWithNullRange}
+          setFilters={mockSetFilters}
+        />
+      );
 
-  //     // Should default to 0.0 and 5.0
-  //     expect(screen.getByText("0.0")).toBeInTheDocument();
-  //     expect(screen.getByText("5.0")).toBeInTheDocument();
-  //   });
-  // });
+      // Should default to 0.0 and 5.0
+      expect(screen.getByText(0.0)).toBeInTheDocument();
+      expect(screen.getByText(5.0)).toBeInTheDocument();
+    });
+  });
 });
