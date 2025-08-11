@@ -15,7 +15,7 @@ type OTPInputProps = {
   value: string;
   onValueChange: HandleInputChangeType;
 };
-
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
 const OTPInput = ({ id, previousId, nextId, value, onValueChange }: OTPInputProps) => {
   const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     const isNumberInput = /^[0-9]$/.test(e.key);
@@ -63,7 +63,7 @@ const TwoFactorAuth = () => {
       setEmail(email);
       setBookingId(bookingId);
 
-      fetch('http://localhost:3000/email/send-otp', {
+      fetch(`${API_BASE}/email/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -79,7 +79,7 @@ const TwoFactorAuth = () => {
   //   }
 
   //   try {
-  //     const res = await fetch('http://localhost:3000/email/verify-otp', {
+  //     const res = await fetch('/api/email/verify-otp', {
   //       method: 'POST',
   //       headers: { 'Content-Type': 'application/json' },
   //       body: JSON.stringify({ email, otp }),
@@ -108,7 +108,7 @@ const TwoFactorAuth = () => {
     }
   
     try {
-      const res = await fetch('http://localhost:3000/email/verify-otp', {
+      const res = await fetch('/api/email/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp }),
@@ -134,7 +134,7 @@ const TwoFactorAuth = () => {
 
   const handleResendOTP = () => {
     if (email) {
-      fetch('http://localhost:3000/email/send-otp', {
+      fetch('/api/email/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

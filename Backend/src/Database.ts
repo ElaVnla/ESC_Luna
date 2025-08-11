@@ -4,7 +4,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
-
+import path from 'path';
 dotenv.config();
 
 console.log('');
@@ -15,6 +15,10 @@ console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
 console.log('DB_DATABASE:', process.env.DB_DATABASE);
 console.log('');
 
+const entitiesGlob = path.join(__dirname, 'entities', '*.{ts,js}');
+const migrationsGlob = path.join(__dirname, 'migrations', '*.{ts,js}');
+
+
 export const Database = new DataSource({
     type: "mysql",
     host: process.env.DB_HOST,
@@ -23,6 +27,8 @@ export const Database = new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     synchronize: false,
-    entities: [__dirname + "/entities/*.ts"],
-    migrations: [__dirname + "/migrations/*.ts"],
+    entities: [entitiesGlob],
+    migrations: [migrationsGlob],
 });
+
+

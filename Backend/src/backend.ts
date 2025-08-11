@@ -18,12 +18,11 @@ import BookingRouter from './routes/BookingRouter';
 import PaymentRouter from './routes/PaymentRouter'; 
 import APIRouter from './routes/APIRouter';
 import ForTestingRouter from './routes/ForTestingRouter';
-
 import OTPRouter from './routes/OTPRouter';
 import TestEmailRouter from './routes/TestEmailRouter';
 import GuestRouter from './routes/GuestRouter';
 
-
+dotenv.config();
 
 // create instance of express
 const app = express();
@@ -31,11 +30,29 @@ const app = express();
 // setup middleware functions to serve static files
 // handles client side
 app.use(express.static(path.join(__dirname, 'public')));
+
 // Address security issues
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-})); // Manage and control web security
+// --- UPDATED CORS CONFIG ---
+const allowedOrigins = (process.env.ALLOWED_ORIGINS ??
+  'http://localhost:8080,http://localhost:5173'
+).split(',');
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true); // allow curl/Postman with no origin
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
+// handle OPTIONS preflight
+//app.options('*', cors());
+
 // Parsing JSON data from incoming HTTP requests
 app.use(express.json());
 
@@ -55,7 +72,6 @@ app.use('/otp', OTPRouter);
 app.use('/test-email', TestEmailRouter);
 app.use('/email', OTPRouter);
 app.use('/guests', GuestRouter)
-
 
 // Setup "/" route to serve the index.html file
 app.get('/', (req, res) => {
@@ -84,6 +100,4 @@ Database.initialize()
 // app.listen(PORT, () => {
 //     console.log(`Server is running on port ${PORT}`);
 // });
-// 
-
-
+//

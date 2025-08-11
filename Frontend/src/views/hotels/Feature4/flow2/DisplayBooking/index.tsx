@@ -27,6 +27,7 @@ type BookingRow = {
   message_to_hotel: string 
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
 const DisplayBooking = () => {
   // State for booking row
   const [ booking, setBooking] = useState<BookingRow | null>(null)
@@ -50,7 +51,7 @@ const DisplayBooking = () => {
     console.log('Fetching booking with ID:', bookingId)
 
     // Fetch booking row
-    fetch(`http://localhost:3000/api/bookings/${bookingId}`)
+    fetch(`${API_BASE}/bookings/${bookingId}`)
       .then(r => {
         if (!r.ok) throw new Error(`Booking fetch failed ${r.status}`)
         return r.json()
@@ -59,7 +60,7 @@ const DisplayBooking = () => {
         setBooking(row)
 
         // Fetch hotel details
-        const hotelDetailApi = `http://localhost:3000/api/hotels/${row.hotel_id}`
+        const hotelDetailApi = `/api/hotels/${row.hotel_id}`
         fetch(hotelDetailApi)
           .then(resp => resp.json())
           .then((h: any) => setHotelData(h))
@@ -68,13 +69,13 @@ const DisplayBooking = () => {
       .catch(err => console.error('Failed to fetch booking row:', err))
 
     // Fetch main guest details
-    fetch(`http://localhost:3000/customers/${bookingId}`)
+    fetch(`${API_BASE}/customers/${bookingId}`)
       .then(r => r.json())
       .then(setMainGuest)
       .catch(err => console.error('Failed to fetch main guest:', err))
 
     // Fetch guest list
-    fetch(`http://localhost:3000/guests/${bookingId}`)
+    fetch(`${API_BASE}/guests/${bookingId}`)
       .then(async r => {
         if (!r.ok) throw new Error(`Guests fetch failed ${r.status}`)
         const data = await r.json()
@@ -83,7 +84,7 @@ const DisplayBooking = () => {
       .catch(err => console.error('Failed to fetch guests:', err))
 
     // Fetch room details from DB by bookingId
-    fetch(`http://localhost:3000/rooms/${encodeURIComponent(bookingId)}`)
+    fetch(`${API_BASE}/rooms/${encodeURIComponent(bookingId)}`)
       .then(r => (r.ok ? r.json() : null))
       .then(room => {
         if (room) {

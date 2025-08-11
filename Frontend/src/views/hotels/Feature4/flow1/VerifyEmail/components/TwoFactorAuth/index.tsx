@@ -16,6 +16,8 @@ type OTPInputProps = {
   onValueChange: HandleInputChangeType;
 };
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
+
 // OTP input field for each digit
 const OTPInput = ({ id, previousId, nextId, value, onValueChange }: OTPInputProps) => {
   // Handle keyboard navigation between OTP fields
@@ -86,7 +88,7 @@ const VerifyEmail = () => {
   const sendOTP = async (email: string) => {
     setSendStatus('sending');
     try {
-      const res = await fetch('http://localhost:3000/email/send-otp', {
+      const res = await fetch(`${API_BASE}/email/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -111,7 +113,7 @@ const VerifyEmail = () => {
     setOtpError('');
 
     try {
-      const res = await fetch('http://localhost:3000/email/verify-otp', {
+      const res = await fetch(`${API_BASE}/email/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: enteredOtp }),

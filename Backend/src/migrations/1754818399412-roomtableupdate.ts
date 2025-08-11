@@ -17,6 +17,10 @@ export class AlterRoomsMatchEntity1754820000000 implements MigrationInterface {
       MODIFY \`images\` longtext NULL,
       MODIFY \`booking_key\` varchar(255) NULL
     `);
+//     await queryRunner.query(`
+//   ALTER TABLE destinations
+//   MODIFY uid VARCHAR(36) NOT NULL DEFAULT (uuid());
+// `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

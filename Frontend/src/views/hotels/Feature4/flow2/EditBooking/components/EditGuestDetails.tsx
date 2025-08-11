@@ -16,6 +16,7 @@ type ApiGuest = {
   date_of_birth?: string | null;
 };
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
 // Convert date value to YYYY-MM-DD format
 const toYMD = (v: any): string => {
   if (!v) return '';
@@ -46,8 +47,8 @@ const EditGuestDetails = () => {
 
     // Fetch customer and guests data in parallel
     Promise.all([
-      fetch(`http://localhost:3000/customers/${bookingId}`).then(r => r.json()),
-      fetch(`http://localhost:3000/guests/${bookingId}`).then(r => r.json()),
+      fetch(`${API_BASE}/customers/${bookingId}`).then(r => r.json()),
+      fetch(`${API_BASE}/guests/${bookingId}`).then(r => r.json()),
     ])
       .then(([customer, guests]: [any, ApiGuest[]]) => {
         // Reset form with fetched data

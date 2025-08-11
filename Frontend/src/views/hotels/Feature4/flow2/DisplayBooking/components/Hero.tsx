@@ -14,7 +14,7 @@ import { AppMenu, LogoBox } from '@/components'
 import element17 from '@/assets/images/element/17.svg'
 import { useNavigate } from 'react-router-dom';
 
-
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
 const Hero = () => {
   const [showCancelModal, setShowCancelModal] = useState(false)
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ if (!bookingId) return alert('Booking ID missing in session');
 
   
     try {
-      const res = await fetch(`http://localhost:3000/bookings/${bookingId}`, {
+      const res = await fetch(`${API_BASE}/bookings/${bookingId}`, {
         method: 'DELETE',
       });
   

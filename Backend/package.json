@@ -4,13 +4,16 @@
   "main": "backend.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/backend.ts",
-    "dev": "nodemon src/backend.ts",
-    "build": "tsc",
+    "start": "ts-node --transpile-only src/backend.ts",
+    "dev": "nodemon --exec ts-node --transpile-only src/backend.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/Database.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d ./src/Database.ts",
-    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d ./src/Database.ts"
+    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d ./src/Database.ts",
+    "seed:destinations": "ts-node --transpile-only src/scripts/seedDestinations.ts",
+    "start:prod": "ts-node --transpile-only src/backend.ts",
+    "start:all": "npm run migration:run && npm run seed:destinations && npm run start:prod",
+    "build": "tsc -p tsconfig.json"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,7 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
     "csv-parser": "^3.2.0",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",

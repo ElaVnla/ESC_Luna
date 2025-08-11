@@ -1,0 +1,85 @@
+# version: "3.9"
+
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lunadb
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    profiles: ["docker-db"]
+    networks:
+      - appnet
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./Backend/.env.dockerdb
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    profiles: ["docker-db"]
+    networks:
+      appnet:
+        aliases:
+          - backend
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api     # <-- mapping with proper indent
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    profiles: ["docker-db"]
+    networks:
+      - appnet
+
+  backend-local:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./Backend/.env.localdb
+    ports:
+      - "3000:3000"
+    profiles: ["local-db"]
+    networks:
+      appnet:
+        aliases:
+          - backend
+
+  frontend-local:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: /api     # pass through to Vite build too
+    depends_on:
+      - backend-local
+    ports:
+      - "8080:80"
+    profiles: ["local-db"]
+    networks:
+      - appnet
+
+volumes:
+  db_data:
+
+networks:
+  appnet:

@@ -12,6 +12,10 @@ import BookingRouter from './BookingRouter';
 import CustomerRouter from './CustomerRouter';
 import PaymentRouter from './PaymentRouter';
 import GuestRouter from './GuestRouter'; 
+import DestinationRouter from './DestinationRouter';
+import HotelRouter from './HotelRouter';
+import RoomRouter from './RoomRouter';
+import OTPRouter from './OTPRouter';
 
 // stripe stuff
 
@@ -21,6 +25,8 @@ const router = Router();
 router.get('/', (req, res) => {
   res.json({ message: 'API router is working!' });
 });
+
+
 
 // Fetch hotels by destination (city)
 router.get('/hotels/syncByCity', async (req, res) => {
@@ -181,6 +187,8 @@ router.get('/hotels/prices', async (req, res) => {
   }
 });
 
+router.use('/hotels', HotelRouter);
+
 // NOT CURRENTLY USED
 // router.get('/hotels/sync/:id', async (req, res) => {
 //   const { id } = req.params;
@@ -271,6 +279,9 @@ router.use('/bookings', BookingRouter);
 router.use('/customers', CustomerRouter);
 router.use('/payments', PaymentRouter);
 router.use('/guests', GuestRouter); 
+router.use('/destinations', DestinationRouter);
 
+router.use('/rooms', RoomRouter);
+router.use('/email', OTPRouter);
 
 export default router;

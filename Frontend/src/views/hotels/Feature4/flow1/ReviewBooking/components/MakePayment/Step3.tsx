@@ -12,6 +12,8 @@ interface Step3WithSecretProps extends Step1Props {
   clientSecret: string;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
+
 // currencies without fractional units
 const ZERO_DECIMAL = ['jpy', 'krw', 'vnd'];
 
@@ -217,7 +219,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
       };
 
       // 3) create booking
-      const bookingRes = await fetch('http://localhost:3000/bookings/create', {
+      const bookingRes = await fetch(`${API_BASE}/bookings/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -231,7 +233,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
 
       // 4) store payment record
       const payment_reference = `PAY-${Date.now()}`;
-      await fetch('http://localhost:3000/payments/create', {
+      await fetch(`${API_BASE}/payments/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -259,7 +261,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
           }))
         : [];
 
-      await fetch('http://localhost:3000/email/send-confirmation', {
+      await fetch(`${API_BASE}/email/send-confirmation`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -320,7 +322,7 @@ const Step3 = ({ control, roomData: propRoom, hotelData: propHotel}: Step3WithSe
       });
 
       // Upsert room info to backend
-      await fetch('http://localhost:3000/rooms/upsert', {
+      await fetch(`${API_BASE}/rooms/upsert`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mapRoomForUpsert(hotelData.id, propRoom)),
