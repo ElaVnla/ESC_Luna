@@ -31,6 +31,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
+console.log('VITE_API_BASE at build:', import.meta.env.VITE_API_BASE);
+
 
 const getNumberOfNights = (checkin: string, checkout: string): number => {
   if (!checkin || !checkout) return 0;
@@ -129,9 +132,11 @@ const HotelLists = () => {
           checkout
         )}`;
 
+        console.log("CHECKING API STRING LOOKS LIKE: ", `${API_BASE}/hotels/syncByCity?${cityQuery}`);
+
         // Step 1: Sync with external API
         const syncRes = await fetch(
-          `http://localhost:3000/api/hotels/syncByCity?${cityQuery}`
+          `${API_BASE}/hotels/syncByCity?${cityQuery}`
         );
 
         if (!syncRes.ok) throw new Error("Sync failed");
@@ -143,7 +148,7 @@ const HotelLists = () => {
 
         // Step 2: Fetch from local DB after sync
         const dbRes = await fetch(
-          `http://localhost:3000/hotels/getHotelsByCity?${searchQuery}`
+          `${API_BASE}/hotels/getHotelsByCity?${searchQuery}`
         );
         if (!dbRes.ok) throw new Error("DB fetch failed");
         const dbData = await dbRes.json();
@@ -168,7 +173,7 @@ const HotelLists = () => {
           `/api/hotels/prices?${priceParams.toString()}`
         );
         const priceRes = await fetch(
-          `http://localhost:3000/api/hotels/prices?${priceParams}`
+          `${API_BASE}/hotels/prices?${priceParams}`
         );
         if (!priceRes.ok) throw new Error("Failed to fetch prices");
         const priceData = await priceRes.json(); // assumed to be [{ hotel_id: "...", price: 123 }, ...]
@@ -318,7 +323,7 @@ const HotelLists = () => {
       }
 
       const dbRes = await fetch(
-        `http://localhost:3000/hotels/getFilteredHotels?${queryParams.toString()}`
+        `${API_BASE}/hotels/getFilteredHotels?${queryParams.toString()}`
       );
 
       if (!dbRes.ok) throw new Error("DB fetch failed");
@@ -344,7 +349,7 @@ const HotelLists = () => {
         `/api/hotels/prices?${priceParams.toString()}`
       );
       const priceRes = await fetch(
-        `http://localhost:3000/api/hotels/prices?${priceParams}`
+        `${API_BASE}/hotels/prices?${priceParams}`
       );
       if (!priceRes.ok) throw new Error("Failed to fetch prices");
       const priceData = await priceRes.json();

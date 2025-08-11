@@ -11,6 +11,7 @@ type FormFields = {
   BookingID: string
   Email: string
 }
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
 
 const AvailabilityFilter = () => {
   const { control, handleSubmit, formState: { errors } } = useForm<FormFields>()
@@ -22,7 +23,7 @@ const AvailabilityFilter = () => {
     console.log(' onSubmit called with:', data)
 
     try {
-      const res = await fetch('http://localhost:3000/customers/verify-book', {
+      const res = await fetch(`${API_BASE}/customers/verify-book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -18,8 +18,8 @@
     const { hotelParams } = location.state as { hotelParams: HotelParams };
     const { hotelId, destinationId, checkIn, checkOut, guests } = hotelParams;
 
-    const roomDetailApi = `http://localhost:3000/api/hotels/${hotelId}/price?destination_id=${destinationId}&checkin=${checkIn}&checkout=${checkOut}&lang=en_US&currency=SGD&partner_id=16&country_code=SG&guests=${guests}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
-    const hotelDetailApi = `http://localhost:3000/api/hotels/${hotelId}`;
+    const roomDetailApi = `/api/hotels/${hotelId}/price?destination_id=${destinationId}&checkin=${checkIn}&checkout=${checkOut}&lang=en_US&currency=SGD&partner_id=16&country_code=SG&guests=${guests}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
+    const hotelDetailApi = `/api/hotels/${hotelId}`;
 
     console.log("Room Api link:", roomDetailApi);
     console.log("Hotel Api link:",hotelDetailApi);

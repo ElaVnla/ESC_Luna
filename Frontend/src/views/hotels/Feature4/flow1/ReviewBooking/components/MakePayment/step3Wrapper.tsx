@@ -8,6 +8,7 @@ import type { Step1Props } from '../types';
 // Load Stripe publishable key for payment
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
 // Wrapper component for Step3, handles Stripe payment intent creation
 const Step3Wrapper = (props: Step1Props) => {
   // State for Stripe client secret
@@ -17,7 +18,7 @@ const Step3Wrapper = (props: Step1Props) => {
     // Create Stripe payment intent when room price changes
     const createPaymentIntent = async () => {
       try {
-        const res = await fetch('http://localhost:3000/payments/create-payment-intent', {
+        const res = await fetch(`${API_BASE}/payments/create-payment-intent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

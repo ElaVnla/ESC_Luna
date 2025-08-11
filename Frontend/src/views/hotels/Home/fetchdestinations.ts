@@ -6,7 +6,9 @@ export async function parsedestinations(): Promise<destinationinterface[]>
 {
   try 
   {
-    const dfetch = await fetch("http://localhost:3000/Destinations/getAllDestinations");
+    const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // default to /api
+
+    const dfetch = await fetch(`${API_BASE}/Destinations/getAllDestinations`);
     if (!dfetch.ok) {
       throw new Error(`Failed to fetch destinations: ${dfetch.status}`);
     }
