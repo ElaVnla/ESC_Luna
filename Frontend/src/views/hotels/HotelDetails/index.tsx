@@ -1,6 +1,5 @@
   import { PageMetaData } from '@/components'
   import AboutHotel from './components/AboutHotel'
-  import AvailabilityFilter from './components/AvailabilityFilter'
   import HotelGallery from './components/HotelGallery'
   import { useEffect, useRef, useState } from 'react'
   import { HotelData, HotelParams } from '@/models/HotelDetailsApi'
@@ -11,6 +10,7 @@
   import RoomOptions from './components/RoomOptions'
   import HotelPolicies from './components/HotelPolicies'
   import { Container } from 'react-bootstrap'
+  import Hero from '../List/components/Hero';
 
 
   const HotelDetails = () => {
@@ -106,7 +106,7 @@
         <TopNavBar />
 
         <main>
-          <AvailabilityFilter />
+          <Hero />
           {hotelData?
             <>
               <HotelGallery hotelData={hotelData} />
