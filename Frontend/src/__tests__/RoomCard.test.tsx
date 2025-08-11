@@ -23,8 +23,8 @@ vi.mock('@/states', () => ({
 }));
 
 
-vi.mock(import("react-router-dom"), async (importOriginal) => {
-  const actual = await importOriginal()
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual:any = await importOriginal()
   return {
     ...actual,
         Link: ({ children, to, ...props }: any) => <a href={to} {...props}>{children}</a>,
@@ -32,74 +32,54 @@ vi.mock(import("react-router-dom"), async (importOriginal) => {
   }
 })
 
-import React from 'react';
 import { describe, it, expect} from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import RoomCard from '@/views/hotels/HotelDetails/components/RoomCard';
-
-// Mock data
-const mockRoomCardProps = {
-  name: 'Deluxe Room',
-  price: 200,
-  features: '<p>Feature</p>',
-  count: 2,
-  images: [
-    { url: 'img1.jpg', high_resolution_url: 'highres1.jpg' },
-    { url: 'img2.jpg', high_resolution_url: 'highres2.jpg' },
-  ],
-  amenities: ['WiFi', 'TV', 'AC', 'Mini Bar', 'Safe'],
-  schemes: ['Refundable'],
-
-  hotelData: {
-    id: 'hotel-123',
-    name: 'Mock Hotel',
-    address: '456 Mock Street',
-    address1: '456 Mock Street',
-    checkin_time: '3:00 PM',
-    latitude: 1.3521,
-    longitude: 103.8198,
-    description: 'A great place.',
-    imageCount: 3,
-    rating: 4.2,
-    amenities: {
-      airConditioning: true,
-      miniBarInRoom: true,
-    },
-    amenities_ratings: [],
-  },
-
-  roomDataf4: {
-    features: 'Test room feature',
-    roomAdditionalInfo: 'No smoking',
-  },
-};
+import { testRoomCard1 } from './MockData';
 
 
 describe('RoomCard Component', () => {
-  it('renders room information and responds to interactions', () => {
+  it('renders room information and responds to interactions', async () => {
     render(
       <BrowserRouter>
-        <RoomCard id={0} {...mockRoomCardProps} />
+        <RoomCard {...testRoomCard1} />
       </BrowserRouter>
     );
 
     // Heading and amenities
-    expect(screen.getByText('Deluxe Room')).toBeInTheDocument();
-    expect(screen.getByText('WiFi')).toBeInTheDocument();
+    expect(screen.getByText("Superior Double or Twin Room 2 Twin Beds")).toBeInTheDocument();
+    expect(screen.getByText('Air conditioning')).toBeInTheDocument();
 
     // Price
-    expect(screen.getByText('$200')).toBeInTheDocument();
+    expect(screen.getByText('$1236.18')).toBeInTheDocument();
+    
+    // Message based on room Count
+    expect(screen.getByText('Room Selling Fast!')).toBeInTheDocument();
 
     // "Select Room" button
     const selectBtn = screen.getByRole('button', { name: /select room/i });
     expect(selectBtn).toBeInTheDocument();
 
-    // "View more details" link toggles modal
+    // "View more details" toggles more details popup
     const viewMore = screen.getByText(/view more details/i);
     expect(viewMore).toBeInTheDocument();
-
+    
+    // Make sure expanded content is not displayed yet
+    expect(screen.queryByText("Room details")).not.toBeInTheDocument()
+    
+    // CLick Button to expand text
     fireEvent.click(viewMore);
-    expect(screen.getByText(/room details/i)).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText("Room details")).toBeInTheDocument()
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("1 Double Bed OR 2 Twin Beds")).toBeInTheDocument()
+    );
+    // Extra details should only be visible now
+    expect(screen.getByRole('dialog'))
+    
+    
   });
 });

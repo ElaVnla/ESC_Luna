@@ -17,7 +17,7 @@ const amenityNames = new Map<string, string>(
   ["dryCleaning", "Dry Cleaning"],
   ["miniBarInRoom", "Mini Bar In Room"],
   ["hairDryer", "Hair Dryer"],
-  ["meetingRooms", "Meetin Rooms"],
+  ["meetingRooms", "Meeting Rooms"],
   ["outdoorPool" , "Outdoor Pool"],
   ["parkingGarage", "Parking Garage"],
   ["roomService" , "Room Service"],
@@ -29,29 +29,30 @@ const amenityNames = new Map<string, string>(
 ]
 )
 
+export function camelCaseToString(camel: string) {
+  // Add a space before each uppercase letter that is not at the beginning of the string
+  let result = camel.replace(/([A-Z])/g, ' $1');
+  // Capitalize the first letter of the resulting string
+  result = result.charAt(0).toUpperCase() + result.slice(1);
+
+  return result;
+}
+
+export function splitString(inputString: string) {
+  const [mainText, remainText] = inputString.split("Distances are displayed to the nearest 0.1 mile and kilometer. <br /> ")
+  let stringSplitter = "The nearest airports"
+  if(!remainText.includes(stringSplitter)){
+    stringSplitter = "The preferred airport"
+  }
+  var [distText, extraText] = remainText.split(stringSplitter)
+  extraText = stringSplitter + extraText
+  return {mainText, distText, extraText} 
+}
 
 const AboutHotel = ({hotelData}: Props) => {
   if (!hotelData) return null;
-
-  function splitString(inputString: string) {
-    const [mainText, remainText] = inputString.split("Distances are displayed to the nearest 0.1 mile and kilometer. <br /> ")
-    const stringSplitter = "The nearest airports are:"
-    var [distText, extraText] = remainText.split(stringSplitter)
-    extraText = stringSplitter + extraText
-    return {mainText, distText, extraText} 
-  }
-
+  
   const {mainText, distText, extraText} = splitString(hotelData.description)
-
-
-  function camelCaseToString(camel: string) {
-    // Add a space before each uppercase letter that is not at the beginning of the string
-    let result = camel.replace(/([A-Z])/g, ' $1');
-    // Capitalize the first letter of the resulting string
-    result = result.charAt(0).toUpperCase() + result.slice(1);
-
-    return result;
-  }
 
   const { isOpen, toggle } = useToggle()
   const cleanedDistText = distText.replace(/\/\s*[\d.]+\s*mi/g, '');
@@ -94,7 +95,7 @@ const AboutHotel = ({hotelData}: Props) => {
                   <div className="mb-2"><b>Check in Time:</b> {hotelData.checkin_time}</div>
 
                   <p>{mainText}</p>
-                  <Collapse in={isOpen}>
+                  <Collapse in={isOpen} mountOnEnter unmountOnExit={true} >
                     <div>
                       <div dangerouslySetInnerHTML={{ __html: extraText }} />
                     </div>
