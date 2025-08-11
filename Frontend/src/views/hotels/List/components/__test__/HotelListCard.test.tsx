@@ -2,8 +2,18 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import { MemoryRouter } from "react-router-dom";
 import HotelListCard from "../HotelListCard";
 import { type HotelsListType } from "../../utils/HotelTypes";
+
+// Mock react-router-dom
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  };
+});
 
 // Mock data
 const mockHotel: HotelsListType = {
@@ -25,26 +35,35 @@ const mockHotel: HotelsListType = {
   price: 150,
 };
 
+// Test wrapper component that provides Router context
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <MemoryRouter>{children}</MemoryRouter>
+);
+
+// Helper function to render with Router context
+const renderWithRouter = (component: React.ReactElement) =>
+  render(component, { wrapper: TestWrapper });
+
 describe("HotelListCard", () => {
   it("renders hotel information correctly", () => {
-    render(<HotelListCard hotel={mockHotel} />);
+    renderWithRouter(<HotelListCard hotel={mockHotel} />);
 
     // Check basic hotel information
     expect(screen.getByText("Test Hotel")).toBeInTheDocument();
     expect(screen.getByText("123 Test Street, Test City")).toBeInTheDocument();
     expect(screen.getByText("$150")).toBeInTheDocument();
-    expect(screen.getByText("/day")).toBeInTheDocument();
+    expect(screen.getByText("total")).toBeInTheDocument();
   });
 
   it("renders correct number of star ratings", () => {
-    render(<HotelListCard hotel={mockHotel} />);
+    renderWithRouter(<HotelListCard hotel={mockHotel} />);
 
     const starIcons = screen.getAllByTestId("star-icon");
     expect(starIcons.length).toBeGreaterThan(0);
   });
 
   it("renders amenities list", () => {
-    render(<HotelListCard hotel={mockHotel} />);
+    renderWithRouter(<HotelListCard hotel={mockHotel} />);
 
     expect(screen.getByText("Air-conditioning")).toBeInTheDocument();
     expect(screen.getByText("WiFi")).toBeInTheDocument();
@@ -52,7 +71,7 @@ describe("HotelListCard", () => {
   });
 
   it("renders image slider with correct images", () => {
-    render(<HotelListCard hotel={mockHotel} />);
+    renderWithRouter(<HotelListCard hotel={mockHotel} />);
 
     // Check that TinySlider is rendered
     expect(screen.getByTestId("tiny-slider")).toBeInTheDocument();
@@ -66,24 +85,17 @@ describe("HotelListCard", () => {
     );
   });
 
-  // it("renders hotel name as a link to details page", () => {
-  //   render(<HotelListCard hotel={mockHotel} />);
+  it("renders Select Hotel button", () => {
+    renderWithRouter(<HotelListCard hotel={mockHotel} />);
 
-  //   const hotelLink = screen.getByRole("link", { name: "Test Hotel" });
-  //   expect(hotelLink).toHaveAttribute("href", "/hotels/detail");
-  // });
-
-  it("renders Select Room button", () => {
-    render(<HotelListCard hotel={mockHotel} />);
-
-    const selectButton = screen.getByRole("button", { name: "Select Room" });
+    const selectButton = screen.getByRole("button", { name: "Select Hotel" });
     expect(selectButton).toBeInTheDocument();
     expect(selectButton).toHaveClass("btn-dark");
   });
 
   it("handles missing image gracefully", () => {
     const hotelWithoutImages = { ...mockHotel, images: [] };
-    render(<HotelListCard hotel={hotelWithoutImages} />);
+    renderWithRouter(<HotelListCard hotel={hotelWithoutImages} />);
 
     // Should still render the slider container
     // expect(screen.getByTestId("tiny-slider")).toBeInTheDocument();
@@ -93,7 +105,7 @@ describe("HotelListCard", () => {
 
   it("handles zero rating correctly", () => {
     const hotelWithZeroRating = { ...mockHotel, star_rating: 0 };
-    render(<HotelListCard hotel={hotelWithZeroRating} />);
+    renderWithRouter(<HotelListCard hotel={hotelWithZeroRating} />);
 
     // Should still render without errors
     expect(screen.getByText("Test Hotel")).toBeInTheDocument();
@@ -101,7 +113,7 @@ describe("HotelListCard", () => {
 
   it("handles missing amenities gracefully", () => {
     const hotelWithoutAmenities = { ...mockHotel, amenities: [] };
-    render(<HotelListCard hotel={hotelWithoutAmenities} />);
+    renderWithRouter(<HotelListCard hotel={hotelWithoutAmenities} />);
 
     // Should still render the hotel name
     expect(screen.getByText("Test Hotel")).toBeInTheDocument();
