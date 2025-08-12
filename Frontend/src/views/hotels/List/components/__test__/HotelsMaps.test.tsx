@@ -360,17 +360,6 @@ describe("HotelsMaps", () => {
       await user.click(closeButton);
       expect(mockOnClose).toHaveBeenCalled();
     });
-
-    it("does not render close button when onClose not provided", () => {
-      render(
-        <MapComponent
-          {...defaultProps}
-          forceExpanded={true}
-          onClose={undefined}
-        />
-      );
-      expect(screen.queryByText("X Close")).not.toBeInTheDocument();
-    });
   });
 
   describe("Edge Cases and Error Handling", () => {

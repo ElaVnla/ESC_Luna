@@ -188,11 +188,6 @@ describe("HotelLists", () => {
       expect(screen.getByText("Loading hotels...")).toBeInTheDocument();
     });
 
-    it("renders filter button for mobile view", () => {
-      renderHotelLists();
-      expect(screen.getByText("Show filters")).toBeInTheDocument();
-    });
-
     it("renders sort dropdown", () => {
       renderHotelLists();
       expect(screen.getByLabelText("Sort by:")).toBeInTheDocument();

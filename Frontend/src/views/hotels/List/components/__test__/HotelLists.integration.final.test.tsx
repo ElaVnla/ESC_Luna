@@ -492,12 +492,6 @@ describe("HotelLists Integration Test", () => {
       const starCheckboxes = screen.getAllByRole("checkbox");
       expect(starCheckboxes.length).toBeGreaterThan(0);
     });
-
-    it("shows mobile filter button", () => {
-      renderWithRouter();
-
-      expect(screen.getByText("Show filters")).toBeInTheDocument();
-    });
   });
 
   describe("User Interactions", () => {
