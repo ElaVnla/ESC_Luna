@@ -1,6 +1,6 @@
 // Frontend/src/views/hotels/List/components/__tests__/HotelListCard.test.tsx
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
 import HotelListCard from "../HotelListCard";
