@@ -211,11 +211,6 @@ const VerifyEmail = () => {
                     </div>
 
                     <div className="text-primary-hover mt-3 text-center">
-                      Copyrights ©{currentYear} Booking. Build by{' '}
-                      <a href={developedByLink} target="_blank" className="text-body" rel="noreferrer">
-                        StackBros
-                      </a>
-                      .
                     </div>
                   </form>
                 </div>

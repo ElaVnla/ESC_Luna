@@ -196,11 +196,6 @@ const TwoFactorAuth = () => {
                     </div>
 
                     <div className="text-primary-hover mt-3 text-center">
-                      Copyrights ©{currentYear} Booking. Built by{' '}
-                      <a href={developedByLink} target="_blank" className="text-body">
-                        StackBros
-                      </a>
-                      .
                     </div>
                   </form>
                 </div>
