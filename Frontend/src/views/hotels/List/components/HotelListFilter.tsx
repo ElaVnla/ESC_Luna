@@ -9,8 +9,6 @@ const minDistance = 0.1;
 const HotelListFilter = ({ filters, setFilters }: HotelListFilterProps) => {
   const minRating = filters?.guestRatingRange?.[0] ?? 0;
   const maxRating = filters?.guestRatingRange?.[1] ?? 5;
-  console.log(minRating);
-  console.log(maxRating);
 
   const handleCheckboxChange = (
     id: string,

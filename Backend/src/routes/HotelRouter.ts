@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { Database } from "../Database";
-import { getAllHotels, getHotelsByCity,getFilteredHotels } from "../Services/HotelService";
+import { getAllHotels, getHotelsByCity, getFilteredHotels } from "../Services/HotelService";
+import { HotelPrices } from "../entities/HotelPrices";
+import { getRepository } from "typeorm";
 
 const router = Router();
 
@@ -10,35 +12,27 @@ router.get("/", (req, res) => {
 
 router.get("/getHotelsByCity", async (req, res) => {
   try {
-    const cityParam = req.query.city;
-    if (!cityParam || typeof cityParam !== "string") {
+    const { city, checkin, checkout, guests, rooms } = req.query;
+    //const cityParam = req.query.city;
+    if (!city || typeof city !== "string") {
       return res.status(400).json({ error: "Missing or invalid city parameter" });
     }
 
-    // Split by comma
-    const parts = cityParam.split(",").map((part) => part.trim());
-
-    // parts could be:
-    // [city, countryCode] or [city, state, countryCode]
-
-    if (parts.length < 2) {
-      return res.status(400).json({ error: "City parameter must include city and country code at least" });
-    }
-
-    // Extract city, state, countryCode accordingly
-    // State might be empty string, so if only two parts, state is empty
-    const city = parts[0];
+    // parse city,state,country from city param string (e.g. "Singapore, Singapore")
+    const parts = city.split(",").map((p) => p.trim());
+    const cityName = parts[0];
     let state = "";
-    if (parts.length === 2) {
-      // Format: city,countryCode (no state)
-      state = "";
-    } else if (parts.length >= 3) {
-      // Format: city,state,countryCode (state may be empty string)
+    if (parts.length >= 3) {
       state = parts[1];
     }
 
-    const hotels = await getHotelsByCity(city);
-    //const hotels = await getHotelsByCity(cityParam);
+    const hotels = await getHotelsByCity(
+      cityName, 
+      checkin as string, 
+      checkout as string, 
+      guests as string, 
+      rooms as string 
+    );
 
     res.json(hotels);
   } catch (error) {
@@ -46,6 +40,64 @@ router.get("/getHotelsByCity", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch hotels" });
   }
 });
+
+// router.get("/getFilteredHotels", async (req, res) => {
+//   try {
+//     const {
+//       rawStarRatings,
+//       guestRatingMin,
+//       guestRatingMax,
+//       rawPriceRanges,
+//       checkin,
+//       checkout,
+//       guests,
+//       rooms,
+//       city,
+//       state,
+//     } = req.query;
+
+//     const filters: any = {
+//       city,
+//       state,
+//       checkin,
+//       checkout,
+//       guests,
+//       rooms,
+//     };
+
+//     if (typeof rawStarRatings === "string") {
+//       filters.star_rating = rawStarRatings
+//         .split(",")
+//         .map((s) => Number(s.trim()))
+//         .filter((n) => !isNaN(n));
+//     }
+
+//     if (guestRatingMin && guestRatingMax) {
+//       filters.guest_rating_min = Number(guestRatingMin);
+//       filters.guest_rating_max = Number(guestRatingMax);
+//     }
+
+//     if (typeof rawPriceRanges === "string") {
+//       const priceRanges = rawPriceRanges
+//         .split(",")
+//         .map((s) => s.trim())
+//         .filter(Boolean)
+//         .map((range) => {
+//           const [min, max] = range.split("-").map(Number);
+//           if (!isNaN(min) && !isNaN(max)) return { min, max };
+//           return null;
+//         })
+//         .filter(Boolean);
+//       filters.priceRanges = priceRanges;
+//     }
+
+//     const hotels = await getFilteredHotels(filters);
+//     res.json(hotels);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to filter hotels" });
+//   }
+// });
 
 router.get("/getFilteredHotels", async (req, res) => {
   try {
@@ -68,15 +120,6 @@ router.get("/getFilteredHotels", async (req, res) => {
       filters.guest_rating_min = Number(guestRatingMin);
       filters.guest_rating_max = Number(guestRatingMax);
     }
-    // if (typeof rawGuestRatings === "string") {
-    //   const guests = rawGuestRatings
-    //     .split(",")
-    //     .map(s => Number(s.trim()))
-    //     .filter(n => !isNaN(n));
-    //   //if (guests.length > 0) filters.guest_rating = guests;
-    //   const minGuest = Math.min(...guests);
-    //   filters.guest_rating = minGuest;
-    // }
 
     // Price Ranges
     console.log(typeof(rawPriceRanges));
@@ -96,7 +139,6 @@ router.get("/getFilteredHotels", async (req, res) => {
 
       if (parsedRanges.length > 0) filters.priceRanges = parsedRanges;
       console.log("Parsed price ranges:", filters.priceRanges);
-      //if (priceRanges.length > 0) filters.priceRanges = priceRanges;
     }
 
     const hotels = await getFilteredHotels(filters);
@@ -104,6 +146,47 @@ router.get("/getFilteredHotels", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to filter hotels" });
+  }
+});
+
+router.get("/getHotelPrices", async (req, res) => {
+  try {
+    const {
+      city,
+      state,
+      checkin,
+      checkout,
+      guests,
+      rooms,
+      currency,
+    } = req.query;
+
+    // Validate required params
+    if (!city || !checkin || !checkout || !guests || !rooms) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    const hotelPricesRepo = getRepository(HotelPrices);
+
+    // Build query to fetch prices matching the filters
+    // Note: You might need to join with hotels table if you want to filter by city and state
+    // For now, assuming city and state filtering is done elsewhere or hotelPrices table contains this info
+    // Otherwise join with hotels on hotelPrices.id = hotels.id and filter on hotels.city/state
+
+    const prices = await hotelPricesRepo
+      .createQueryBuilder("hp")
+      .select(["hp.id", "hp.total_price"])
+      .where("hp.checkin_date = :checkin", { checkin })
+      .andWhere("hp.checkout_date = :checkout", { checkout })
+      .andWhere("hp.guests = :guests", { guests: Number(guests) })
+      .andWhere("hp.rooms = :rooms", { rooms: Number(rooms) })
+      .andWhere("hp.currency = :currency", { currency: currency || "SGD" })
+      .getMany();
+
+    return res.json(prices);
+  } catch (error) {
+    console.error("Error fetching hotel prices:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -116,32 +199,5 @@ router.get("/getAllHotels", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch hotels" });
   }
 });
-
-// router.post("/updateHotels", async (req, res) => {
-//   const destinationId = req.query.destination_id as string;
-//   if (!destinationId) {
-//     return res
-//       .status(400)
-//       .json({ error: "Missing destination_id query param" });
-//   }
-
-//   try {
-//     const savedHotels = await syncHotelsFromAPI(destinationId);
-//     res.json({ message: "Hotels synced", count: savedHotels.length });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed to sync hotels from API" });
-//   }
-// });
-
-// router.get("/getHotels", async (req, res) => {
-//   try {
-//     const response = await syncHotelsFromAPI();
-//     res.json(response);
-//   } catch (error) {
-//     console.error("Error fetching external data:", error);
-//     res.status(500).json({ message: "Failed to fetch external data" });
-//   }
-// });
 
 export default router;

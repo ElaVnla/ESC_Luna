@@ -92,12 +92,12 @@ router.get('/hotels/prices', async (req, res) => {
   }
 
   // get country code from city and state
-  const countryCode = await getCountryCode(city as string, state as string);
-  //const countryCode = "IT";
-  console.log(`Country code found ${countryCode}`);
-  if (!countryCode) {
-    return res.status(404).json({ error: 'Country code not found for given city/state' });
-  }
+  // const countryCode = await getCountryCode(city as string, state as string);
+  // //const countryCode = "IT";
+  // console.log(`Country code found ${countryCode}`);
+  // if (!countryCode) {
+  //   return res.status(404).json({ error: 'Country code not found for given city/state' });
+  // }
 
   try {
     const externalQuery = new URLSearchParams({
@@ -138,18 +138,20 @@ router.get('/hotels/prices', async (req, res) => {
         return res.status(500).json({ error: 'Failed to parse price API response' });
       }
 
-    if (!apiRes.ok) {
-      console.error("Hotel price API error response:", parsed);
-      // return res.status(200).json({
-      //   warning: `Hotel price API returned ${apiRes.status}, possibly no results`,
-      //   response: parsed,
-      // });
-    } else if (Array.isArray(parsed.hotels) && parsed.hotels.length > 0) {
-        hotels = parsed.hotels;
-        break; // success, hotel found
-    } else {
-      console.log("No hotels found in response.");
-    }
+      if (!apiRes.ok) {
+        console.error("Hotel price API error response:", parsed);
+        // return res.status(200).json({
+        //   warning: `Hotel price API returned ${apiRes.status}, possibly no results`,
+        //   response: parsed,
+        // });
+      } else if (Array.isArray(parsed.hotels) && parsed.hotels.length > 0) {
+          hotels = parsed.hotels;
+          console.log(`Attempt ${attempt + 1} - Hotel prices found!`);
+          console.log(`Hotels ${hotels.length} found!`)
+          break; // success, hotel found
+      } else {
+        console.log("No hotels found in response.");
+      }
 
       attempt++;
       if (attempt < maxRetries) {
@@ -171,7 +173,12 @@ router.get('/hotels/prices', async (req, res) => {
     //   return res.status(500).json({ error: 'Hotel price API did not return a hotels array' });
     // }
     
-    await updateHotelPrices(hotels);
+    await updateHotelPrices(hotels, {
+      checkin_date: checkin as string,
+      checkout_date: checkout as string,
+      guests: Number(guests),
+      rooms: Number(req.query.rooms),
+    });
     return res.status(200).json(hotels);
   } catch (err) {
     console.error('Error fetching hotel prices:', err);

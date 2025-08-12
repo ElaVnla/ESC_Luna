@@ -97,15 +97,25 @@ const AvailabilityFilter = () => {
     const city = selectedLocation.term;
     const state = selectedLocation.state || "";
     const [start, end] = formValue.stayFor as [Date, Date];
-    const checkin = encodeURIComponent(start.toISOString());
-    const checkout = encodeURIComponent(end.toISOString());
+    const checkin = start.toISOString();
+    const checkout = end.toISOString();
 
-    const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(
-      state
-    )}&guests=${getGuestsValue()}
-    &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(
-      checkout
-    )}`;
+    const query = new URLSearchParams({
+      city,
+      state,
+      guests: getGuestsValue(),
+      checkin,
+      checkout,
+    }).toString();
+    // const checkin = encodeURIComponent(start.toISOString());
+    // const checkout = encodeURIComponent(end.toISOString());
+
+    // const query = `city=${encodeURIComponent(city)}&state=${encodeURIComponent(
+    //   state
+    // )}&guests=${getGuestsValue()}
+    // &checkin=${encodeURIComponent(checkin)}&checkout=${encodeURIComponent(
+    //   checkout
+    // )}`;
     console.log(city);
     console.log(state);
     navigate(`/hotels/list?${query}`);
