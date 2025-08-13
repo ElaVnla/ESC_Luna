@@ -57,18 +57,26 @@ const EditBooking = () => {
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem('pendingBooking');
+  
       if (!raw) {
-        toast.error('No booking in progress. Please start from your booking list.');
+        window.location.href = '/hotels/verify-booking';
         return;
       }
+  
       const parsed = JSON.parse(raw);
-      if (!parsed?.bookingId) {
-        toast.error('Invalid booking context. Please reopen this booking.');
+      if (!parsed?.bookingId || !parsed?.email) {
+        window.location.href = '/hotels/verify-booking';
+        return;
       }
+  
+      // You can still show a toast if needed (optional)
+      // toast.info('Booking context loaded.');
     } catch {
-      toast.error('Failed to read booking context from session.');
+      // Corrupted sessionStorage
+      window.location.href = '/hotels/verify-booking';
     }
   }, []);
+  
 
   // Handler for saving guest details
   const handleSave = async () => {

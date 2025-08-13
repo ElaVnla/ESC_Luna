@@ -6,6 +6,7 @@ import forgotPassImg from '@/assets/images/element/forgot-pass.svg';
 import logoIcon from '@/assets/images/logo-icon.svg';
 import { developedByLink, currentYear } from '@/states';
 
+
 type HandleInputChangeType = (id: OTPInputProps['id'], value: OTPInputProps['value']) => void;
 
 type OTPInputProps = {
@@ -58,18 +59,32 @@ const TwoFactorAuth = () => {
 
   useEffect(() => {
     const stored = sessionStorage.getItem('pendingBooking');
-    if (stored) {
+  
+    if (!stored) {
+      // If the user refreshed or accessed directly → kick back to start
+      window.location.href = '/hotels/verify-booking';
+      return;
+    }
+  
+    try {
       const { email, bookingId } = JSON.parse(stored);
+      if (!email || !bookingId) throw new Error();
+  
       setEmail(email);
       setBookingId(bookingId);
-
+  
+      // Send OTP again when the component loads
       fetch(`${API_BASE}/email/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       }).catch((err) => console.error('OTP send error:', err));
+    } catch (err) {
+      console.error('Corrupted booking session:', err);
+      window.location.href = '/hotels/verify-booking';
     }
   }, []);
+  
 
   // const handleVerify = async () => {
   //   const otp = Object.values(inputValues).join('');
