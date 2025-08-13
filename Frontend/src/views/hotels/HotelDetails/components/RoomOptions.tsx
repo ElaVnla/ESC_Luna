@@ -25,6 +25,7 @@ const RoomOptions = ({roomData, hotelData, hotelParams}: Props) => {
                 params: { hotelId: hotelParams.hotelId, startDate: hotelParams.checkIn, endDate: hotelParams.checkOut }
             });
             setUnavailableRoomIds(res.data);
+            
         };
 
         fetchUnavailableRooms();
@@ -49,6 +50,8 @@ const RoomOptions = ({roomData, hotelData, hotelParams}: Props) => {
     });
     setRoomMap(tempRoomMap);
   }, [roomData.rooms, unavailableRoomIds])
+
+
   
     
   return (
@@ -70,6 +73,8 @@ const RoomOptions = ({roomData, hotelData, hotelParams}: Props) => {
             if (cheapestRoom.roomAdditionalInfo.breakfastInfo !== "") {
               schemes.push("Free Breakfast Provided");
             }
+
+            console.log("CHECKIN AND CHECKOUT LOOK HERE: ", hotelParams);
 
             const details = cheapestRoom.long_description
               .replace(/<\/?b>/g, '')
