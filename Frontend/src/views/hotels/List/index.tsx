@@ -12,7 +12,7 @@ const HotelsList = () => {
   // const { searchParams } = location.state as {searchParams: AvailabilityFormType};
   const searchParams =
   (location.state as { searchParams: AvailabilityFormType } | null)?.searchParams ?? null;
-  console.log(searchParams)
+  console.log(searchParams, "Search Parameters")
   // const searchParams : AvailabilityFormType = {
   //   location: "00Hr",
   //   stayFor: [

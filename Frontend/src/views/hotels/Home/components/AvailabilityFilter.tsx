@@ -116,7 +116,7 @@ const AvailabilityFilter = ({searchParams}:{searchParams: AvailabilityFormType})
     console.log(state);
     console.log(initialValue, "initial value")
     console.log(formValue, "formValue")
-    navigate(`/hotels/list?${query}`, {state:{searchParams: initialValue}});
+    navigate(`/hotels/list?${query}`, {state:{searchParams: formValue}});
   };
 
   return (
