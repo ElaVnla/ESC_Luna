@@ -43,59 +43,74 @@ const DisplayBooking = () => {
 
   // Load booking and guest info using bookingId from sessionStorage
   useEffect(() => {
-    // Get bookingId from sessionStorage
-    const stored = sessionStorage.getItem('pendingBooking')
-    if (!stored) return
-    const { bookingId } = JSON.parse(stored)
-
-    console.log('Fetching booking with ID:', bookingId)
-
-    // Fetch booking row
-    fetch(`${API_BASE}/bookings/${bookingId}`)
-      .then(r => {
-        if (!r.ok) throw new Error(`Booking fetch failed ${r.status}`)
-        return r.json()
-      })
-      .then((row: BookingRow) => {
-        setBooking(row)
-
-        // Fetch hotel details
-        const hotelDetailApi = `/api/hotels/${row.hotel_id}`
-        fetch(hotelDetailApi)
-          .then(resp => resp.json())
-          .then((h: any) => setHotelData(h))
-          .catch(err => console.error('Failed to fetch hotel data:', err))
-      })
-      .catch(err => console.error('Failed to fetch booking row:', err))
-
-    // Fetch main guest details
-    fetch(`${API_BASE}/customers/${bookingId}`)
-      .then(r => r.json())
-      .then(setMainGuest)
-      .catch(err => console.error('Failed to fetch main guest:', err))
-
-    // Fetch guest list
-    fetch(`${API_BASE}/guests/${bookingId}`)
-      .then(async r => {
-        if (!r.ok) throw new Error(`Guests fetch failed ${r.status}`)
-        const data = await r.json()
-        setGuests(data)
-      })
-      .catch(err => console.error('Failed to fetch guests:', err))
-
-    // Fetch room details from DB by bookingId
-    fetch(`${API_BASE}/rooms/${encodeURIComponent(bookingId)}`)
-      .then(r => (r.ok ? r.json() : null))
-      .then(room => {
-        if (room) {
-          console.log('Found room in DB by booking id:', bookingId)
-          setSelectedRoom(room)
-        } else {
-          console.warn('No room cached for this booking; selectedRoom will be undefined.')
-        }
-      })
-      .catch(err => console.error('Failed to fetch room from DB:', err))
-  }, [])
+    const stored = sessionStorage.getItem('pendingBooking');
+  
+    if (!stored) {
+      // Redirect if booking context is missing
+      window.location.href = '/hotels/verify-booking';
+      return;
+    }
+  
+    try {
+      const { bookingId, email } = JSON.parse(stored);
+  
+      if (!bookingId || !email) throw new Error('Missing data');
+  
+      console.log('Fetching booking with ID:', bookingId);
+  
+      // Fetch booking row
+      fetch(`${API_BASE}/bookings/${bookingId}`)
+        .then(r => {
+          if (!r.ok) throw new Error(`Booking fetch failed ${r.status}`);
+          return r.json();
+        })
+        .then((row: BookingRow) => {
+          setBooking(row);
+  
+          // Fetch hotel details
+          const hotelDetailApi = `/api/hotels/${row.hotel_id}`;
+          fetch(hotelDetailApi)
+            .then(resp => resp.json())
+            .then((h: any) => setHotelData(h))
+            .catch(err => console.error('Failed to fetch hotel data:', err));
+        })
+        .catch(err => console.error('Failed to fetch booking row:', err));
+  
+      // Fetch main guest details
+      fetch(`${API_BASE}/customers/${bookingId}`)
+        .then(r => r.json())
+        .then(setMainGuest)
+        .catch(err => console.error('Failed to fetch main guest:', err));
+  
+      // Fetch guest list
+      fetch(`${API_BASE}/guests/${bookingId}`)
+        .then(async r => {
+          if (!r.ok) throw new Error(`Guests fetch failed ${r.status}`);
+          const data = await r.json();
+          setGuests(data);
+        })
+        .catch(err => console.error('Failed to fetch guests:', err));
+  
+      // Fetch room details
+      fetch(`${API_BASE}/rooms/${encodeURIComponent(bookingId)}`)
+        .then(r => (r.ok ? r.json() : null))
+        .then(room => {
+          if (room) {
+            console.log('Found room in DB by booking id:', bookingId);
+            setSelectedRoom(room);
+          } else {
+            console.warn('No room cached for this booking');
+          }
+        })
+        .catch(err => console.error('Failed to fetch room from DB:', err));
+  
+    } catch (err) {
+      console.error('Invalid session storage format:', err);
+      window.location.href = '/hotels/verify-booking';
+    }
+  }, []);
+  
+  
 
   // Debug logging for state changes
   useEffect(() => { if (booking) console.log('booking:', booking) }, [booking])
