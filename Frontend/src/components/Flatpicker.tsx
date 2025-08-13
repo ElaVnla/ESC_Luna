@@ -10,22 +10,37 @@ type FlatpickrProps = {
   getValue?: (date: Date | Date[]) => void
 }
 
+const normalizeDate = (date: Date): Date => {
+  const d = new Date(date)
+  d.setHours(12, 0, 0, 0)
+  return d
+}
+
 const Flatpicker = ({ className, options, placeholder, value, getValue }: FlatpickrProps) => {
   const element = useRef<HTMLInputElement | null>(null)
 
-  const handleDateChange = useCallback(
-    (selectedDates: Date[]) => {
+  const normalizeDate = (date: Date): Date => {
+    const d = new Date(date)
+    d.setHours(12, 0, 0, 0)
+    return d
+  }
 
-      const isRange = options?.mode == 'range'
-      const isCompleteRange = selectedDates.length == 2
+    const handleDateChange = useCallback(
+    (selectedDates: Date[]) => {
+      const isRange = options?.mode === 'range'
+      const isCompleteRange = selectedDates.length === 2
 
       if (!isRange || isCompleteRange) {
-        const newDate = selectedDates.length === 1 ? selectedDates[0] : selectedDates
+        let newDate: Date | Date[] =
+          selectedDates.length === 1
+            ? normalizeDate(selectedDates[0])
+            : selectedDates.map(normalizeDate)
         getValue?.(newDate)
       }
     },
-    [getValue,options?.mode],
+    [getValue, options?.mode],
   )
+
 
   useEffect(() => {
     if (element.current) {
