@@ -40,7 +40,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// Mock child components to avoid complex dependencies
+// Mock child components
 vi.mock("../views/hotels/List/components/HotelListCard", () => ({
   default: ({ hotel }: { hotel: HotelsListType }) => (
     <div data-testid="hotel-card">
@@ -75,7 +75,7 @@ vi.mock("../views/hotels/List/components/HotelsMaps", () => ({
   default: () => <div data-testid="hotels-map">Map Component</div>,
 }));
 
-// Mock Bootstrap components that might cause issues
+// mock Bootstrap components idk
 vi.mock("react-bootstrap", () => ({
   Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Row: ({ children, ...props }: any) => <div {...props}>{children}</div>,
@@ -121,7 +121,7 @@ const mockHotelsData = [
     id: "hotel1",
     name: "Luxury Hotel Singapore",
     address: "123 Marina Bay, Singapore",
-    latitude: 1.2966,
+    latitude: 1.2966, // added coordinates for HotelsMaps
     longitude: 103.8547,
     star_rating: 5,
     guest_rating: 4.8,
@@ -241,7 +241,6 @@ describe("HotelLists", () => {
         },
         { timeout: 5000 }
       );
-
       // Then check for hotels
       await waitFor(
         () => {
