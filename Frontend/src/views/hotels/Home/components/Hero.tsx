@@ -8,8 +8,20 @@ import avatar12 from '@/assets/images/avatar/12.jpg'
 import bg6 from '@/assets/images/bg/06.jpg'
 import fourByThree11 from '@/assets/images/category/hotel/4by3/11.jpg'
 import fourByThree12 from '@/assets/images/category/hotel/4by3/12.jpg'
+import { AvailabilityFormType } from '@/hooks/useAvailabilityForm'
 
 const Hero = () => {
+  const searchParams : AvailabilityFormType = {
+    location: "",
+    stayFor: [
+      new Date(Date.now() + 6 * 24 * 60 * 60 * 1000), // today + 3 days
+      new Date(Date.now() + 9 * 24 * 60 * 60 * 1000), // today + 6 days
+    ],
+    guests: {
+      totalguests: 2,
+      rooms: 1,
+    },
+  }
   return (
     <section className="pt-3 pt-lg-5">
       <Container>
@@ -107,7 +119,7 @@ const Hero = () => {
             </div>
           </Col>
         </Row>
-        <AvailabilityFilter />
+        <AvailabilityFilter searchParams={searchParams} />
       </Container>
     </section>
   )

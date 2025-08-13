@@ -16,7 +16,7 @@
   const HotelDetails = () => {
     const location = useLocation();
     const { hotelParams } = location.state as { hotelParams: HotelParams };
-    const { hotelId, destinationId, checkIn, checkOut, guests } = hotelParams;
+    const { hotelId, destinationId, checkIn, checkOut, guests, searchParams } = hotelParams;
 
     const roomDetailApi = `/api/hotels/${hotelId}/price?destination_id=${destinationId}&checkin=${checkIn}&checkout=${checkOut}&lang=en_US&currency=SGD&partner_id=16&country_code=SG&guests=${guests}&partner_id=1089&landing_page=wl-acme-earn&product_type=earn`;
     const hotelDetailApi = `/api/hotels/${hotelId}`;
@@ -106,7 +106,7 @@
         <TopNavBar />
 
         <main>
-          <Hero />
+          <Hero searchParams={searchParams}/>
           {hotelData?
             <>
               <HotelGallery hotelData={hotelData} />

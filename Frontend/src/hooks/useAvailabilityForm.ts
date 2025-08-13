@@ -4,8 +4,7 @@ export type AvailabilityFormType = {
   location: string
   stayFor: Date | Array<Date>
   guests: {
-    adults: number
-    children: number
+    totalguests: number
     rooms: number
   }
 }
@@ -15,8 +14,7 @@ export function useAvailabilityForm() {
     location: 'Singapore, Singapore',
     stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     guests: {
-      adults: 2,
-      children: 1,
+      totalguests: 2,
       rooms: 1,
     },
   }

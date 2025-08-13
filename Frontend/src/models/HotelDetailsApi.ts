@@ -1,3 +1,5 @@
+import { AvailabilityFormType } from "@/hooks/useAvailabilityForm";
+
 export type HotelData = {
   id: string;
   imageCount: number;
@@ -58,4 +60,5 @@ export type HotelParams = {
   checkIn: string;
   checkOut: string;
   guests: string;
+  searchParams: AvailabilityFormType | null;
 }

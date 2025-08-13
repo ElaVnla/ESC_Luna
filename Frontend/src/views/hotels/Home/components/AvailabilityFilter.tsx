@@ -34,8 +34,9 @@ type AvailabilityFormType = {
   };
 };
 
-const AvailabilityFilter = () => {
-  const initialValue: AvailabilityFormType = {
+const AvailabilityFilter = ({searchParams}:{searchParams: AvailabilityFormType}) => {
+
+  let initialValue: AvailabilityFormType = {
     location: "00Hr",
     //stayFor: [new Date(), new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)],
     stayFor: [
@@ -47,6 +48,10 @@ const AvailabilityFilter = () => {
       rooms: 1,
     },
   };
+
+  if(searchParams?.location !== ""){
+    initialValue = searchParams
+  }
 
   const [formValue, setFormValue] =
     useState<AvailabilityFormType>(initialValue);
@@ -84,6 +89,7 @@ const AvailabilityFilter = () => {
     parsedestinations().then(setLocations);
   }, []);
   console.log("Locations:", locations);
+  
 
   const navigate = useNavigate();
 
@@ -108,7 +114,9 @@ const AvailabilityFilter = () => {
     )}`;
     console.log(city);
     console.log(state);
-    navigate(`/hotels/list?${query}`);
+    console.log(initialValue, "initial value")
+    console.log(formValue, "formValue")
+    navigate(`/hotels/list?${query}`, {state:{searchParams: initialValue}});
   };
 
   return (

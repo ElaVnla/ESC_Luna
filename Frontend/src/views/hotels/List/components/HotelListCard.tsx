@@ -42,6 +42,7 @@ const HotelListCard = ({
   checkin,
   checkout,
   guests,
+  searchParams,
   setShowMap
 }: HotelFetchProps) => {
   const {
@@ -110,6 +111,7 @@ const HotelListCard = ({
           checkIn: checkin || "",
           checkOut: checkout || "",
           guests: guests?.trim(),
+          searchParams: searchParams,
         } as HotelParams
       }  
     });

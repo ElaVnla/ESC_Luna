@@ -1,3 +1,5 @@
+import { AvailabilityFormType } from "@/hooks/useAvailabilityForm"
+
 export type HotelsListType = {
   id: number
   name: string
@@ -20,6 +22,7 @@ export type HotelFetchProps = {
   checkin?: string;
   checkout?: string;
   guests?: string;
+  searchParams?: AvailabilityFormType | null;
   setShowMap?: (info: { latitude: number; longitude: number; address: string }) => void;
 };
 

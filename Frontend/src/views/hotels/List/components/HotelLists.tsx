@@ -19,6 +19,7 @@ import MapComponent from "./HotelsMaps"
 import { HotelsListType } from "../utils/HotelTypes";
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AvailabilityFormType } from "@/hooks/useAvailabilityForm";
 
 // TODO: DONE make checkin, checkout and guests responsive (search button refreshes when checkincheckout/guests change)
 // TODO: DONE make "select room" lead to feature 3
@@ -89,7 +90,7 @@ function mapHotelsWithPricesAndImages(hotels: any[], priceData: any[]): any[] {
   });
 }
 
-const HotelLists = () => {
+const HotelLists = ({searchParams}:{searchParams: AvailabilityFormType | null}) => {
   const { isOpen, toggle } = useToggle();
 
   const [hotels, setHotels] = useState<HotelsListType[]>([]);
@@ -542,6 +543,7 @@ const HotelLists = () => {
                       checkout={checkout}
                       guests={guests}
                       setShowMap={() => setMapHotel(hotel)}
+                      searchParams={searchParams}
                     />
                   ))}
                   <nav
