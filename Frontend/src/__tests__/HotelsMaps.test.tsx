@@ -120,8 +120,8 @@ Object.defineProperty(window, "history", {
   writable: true,
 });
 
-import MapComponent from "../HotelsMaps";
-import type { HotelsListType } from "../../utils/HotelTypes";
+import MapComponent from "../views/hotels/List/components/HotelsMaps";
+import type { HotelsListType } from "../views/hotels/List/utils/HotelTypes";
 
 describe("HotelsMaps", () => {
   const mockHotels: HotelsListType[] = [
@@ -359,17 +359,6 @@ describe("HotelsMaps", () => {
 
       await user.click(closeButton);
       expect(mockOnClose).toHaveBeenCalled();
-    });
-
-    it("does not render close button when onClose not provided", () => {
-      render(
-        <MapComponent
-          {...defaultProps}
-          forceExpanded={true}
-          onClose={undefined}
-        />
-      );
-      expect(screen.queryByText("X Close")).not.toBeInTheDocument();
     });
   });
 

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
-import HotelListFilter from "../HotelListFilter";
+import HotelListFilter from "../views/hotels/List/components/HotelListFilter";
 
 // Mock the states module
 vi.mock("@/states", () => ({

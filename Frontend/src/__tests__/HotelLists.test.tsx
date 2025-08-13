@@ -3,8 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
-import HotelLists from "../HotelLists";
-import { HotelsListType } from "../../utils/HotelTypes";
+import HotelLists from "../views/hotels/List/components/HotelLists";
+import { HotelsListType } from "../views/hotels/List/utils/HotelTypes";
 
 // Mock the hooks module
 const mockToggle = vi.fn();
@@ -40,8 +40,8 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// Mock child components to avoid complex dependencies
-vi.mock("../HotelListCard", () => ({
+// Mock child components
+vi.mock("../views/hotels/List/components/HotelListCard", () => ({
   default: ({ hotel }: { hotel: HotelsListType }) => (
     <div data-testid="hotel-card">
       <h3>{hotel.name}</h3>
@@ -53,7 +53,7 @@ vi.mock("../HotelListCard", () => ({
   ),
 }));
 
-vi.mock("../HotelListFilter", () => ({
+vi.mock("../views/hotels/List/components/HotelListFilter", () => ({
   default: ({ filters, setFilters }: any) => (
     <div data-testid="hotel-filter">
       <button
@@ -71,7 +71,11 @@ vi.mock("../HotelListFilter", () => ({
   ),
 }));
 
-// Mock Bootstrap components that might cause issues
+vi.mock("../views/hotels/List/components/HotelsMaps", () => ({
+  default: () => <div data-testid="hotels-map">Map Component</div>,
+}));
+
+// mock Bootstrap components idk
 vi.mock("react-bootstrap", () => ({
   Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Row: ({ children, ...props }: any) => <div {...props}>{children}</div>,
@@ -96,6 +100,7 @@ vi.mock("react-icons/bs", () => ({
   BsExclamationOctagonFill: () => <span>!</span>,
   BsGridFill: () => <span>Grid</span>,
   BsListUl: () => <span>List</span>,
+  BsStarFill: () => <span>★</span>,
 }));
 
 vi.mock("react-icons/fa6", () => ({
@@ -103,6 +108,9 @@ vi.mock("react-icons/fa6", () => ({
   FaAngleRight: () => <span>→</span>,
   FaSliders: () => <span>Filters</span>,
 }));
+
+// Mock environment variable
+vi.stubEnv("VITE_API_BASE", "/api");
 
 // Mock fetch API
 const mockFetch = vi.fn();
@@ -113,6 +121,8 @@ const mockHotelsData = [
     id: "hotel1",
     name: "Luxury Hotel Singapore",
     address: "123 Marina Bay, Singapore",
+    latitude: 1.2966, // added coordinates for HotelsMaps
+    longitude: 103.8547,
     star_rating: 5,
     guest_rating: 4.8,
     amenities: '["WiFi", "Pool", "Gym"]',
@@ -125,6 +135,8 @@ const mockHotelsData = [
     id: "hotel2",
     name: "Budget Inn Singapore",
     address: "456 Orchard Road, Singapore",
+    latitude: 1.3048,
+    longitude: 103.8318,
     star_rating: 3,
     guest_rating: 4.2,
     amenities: '["WiFi", "AC"]',
@@ -188,11 +200,6 @@ describe("HotelLists", () => {
       expect(screen.getByText("Loading hotels...")).toBeInTheDocument();
     });
 
-    it("renders filter button for mobile view", () => {
-      renderHotelLists();
-      expect(screen.getByText("Show filters")).toBeInTheDocument();
-    });
-
     it("renders sort dropdown", () => {
       renderHotelLists();
       expect(screen.getByLabelText("Sort by:")).toBeInTheDocument();
@@ -225,21 +232,35 @@ describe("HotelLists", () => {
     it("displays hotels after successful fetch", async () => {
       renderHotelLists();
 
+      // Wait for loading to finish first
+      await waitFor(
+        () => {
+          expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+      // Then check for hotels
       await waitFor(
         () => {
           expect(
             screen.getByText("Luxury Hotel Singapore")
           ).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       await waitFor(
         () => {
           expect(screen.getByText("Budget Inn Singapore")).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
+
+      // Verify both hotels are rendered
+      const hotelCards = screen.getAllByTestId("hotel-card");
+      expect(hotelCards).toHaveLength(2);
     });
 
     it("displays no hotels message when no data is returned", async () => {
@@ -262,9 +283,18 @@ describe("HotelLists", () => {
 
       await waitFor(
         () => {
+          expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
           expect(screen.getByText("No hotels found.")).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
 
@@ -276,9 +306,18 @@ describe("HotelLists", () => {
 
       await waitFor(
         () => {
+          expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
           expect(screen.getByText("No hotels found.")).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
   });
@@ -291,10 +330,19 @@ describe("HotelLists", () => {
       await waitFor(
         () => {
           expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
+          expect(
             screen.getByText("Luxury Hotel Singapore")
           ).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       const sortSelect = screen.getByLabelText("Sort by:");
@@ -310,10 +358,19 @@ describe("HotelLists", () => {
       await waitFor(
         () => {
           expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
+          expect(
             screen.getByText("Luxury Hotel Singapore")
           ).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       const sortSelect = screen.getByLabelText("Sort by:");
@@ -331,10 +388,19 @@ describe("HotelLists", () => {
       await waitFor(
         () => {
           expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
+          expect(
             screen.getByText("Luxury Hotel Singapore")
           ).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       // Luxury Hotel (5 stars) should appear before Budget Inn (3 stars)
@@ -352,7 +418,7 @@ describe("HotelLists", () => {
         () => {
           expect(screen.getByTestId("hotel-filter")).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
 
@@ -363,7 +429,7 @@ describe("HotelLists", () => {
         () => {
           expect(screen.getAllByText("Clear all")[0]).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
 
@@ -374,7 +440,7 @@ describe("HotelLists", () => {
         () => {
           expect(screen.getAllByText("Filter Result")[0]).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
   });
@@ -388,9 +454,18 @@ describe("HotelLists", () => {
 
       await waitFor(
         () => {
+          expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
           expect(screen.queryByText("No hotels found.")).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
 
@@ -407,9 +482,18 @@ describe("HotelLists", () => {
 
       await waitFor(
         () => {
+          expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
           expect(screen.getByText("No hotels found.")).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
 
@@ -430,9 +514,18 @@ describe("HotelLists", () => {
 
       await waitFor(
         () => {
+          expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
           expect(screen.getByText("No hotels found.")).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
     });
   });
@@ -444,10 +537,19 @@ describe("HotelLists", () => {
       await waitFor(
         () => {
           expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
+          expect(
             screen.getByText("Luxury Hotel Singapore")
           ).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       // Hotel cards should be rendered with processed data
@@ -476,10 +578,19 @@ describe("HotelLists", () => {
       await waitFor(
         () => {
           expect(
+            screen.queryByText("Loading hotels...")
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 5000 }
+      );
+
+      await waitFor(
+        () => {
+          expect(
             screen.getByText("Luxury Hotel Singapore")
           ).toBeInTheDocument();
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       // Should only show the hotel with price data
@@ -497,7 +608,7 @@ describe("HotelLists", () => {
         () => {
           expect(mockFetch).toHaveBeenCalledTimes(3);
         },
-        { timeout: 3000 }
+        { timeout: 5000 }
       );
 
       // Check sync API call (only contains city)

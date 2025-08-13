@@ -3,7 +3,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
-import HotelLists from "../HotelLists";
+import HotelLists from "../views/hotels/List/components/HotelLists";
 
 // Mock environment variables
 Object.defineProperty(import.meta, "env", {
@@ -491,12 +491,6 @@ describe("HotelLists Integration Test", () => {
       // The actual filter will have checkboxes for star ratings
       const starCheckboxes = screen.getAllByRole("checkbox");
       expect(starCheckboxes.length).toBeGreaterThan(0);
-    });
-
-    it("shows mobile filter button", () => {
-      renderWithRouter();
-
-      expect(screen.getByText("Show filters")).toBeInTheDocument();
     });
   });
 

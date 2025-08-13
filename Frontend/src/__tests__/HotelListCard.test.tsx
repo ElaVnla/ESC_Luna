@@ -3,8 +3,8 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
-import HotelListCard from "../HotelListCard";
-import { type HotelsListType } from "../../utils/HotelTypes";
+import HotelListCard from "../views/hotels/List/components/HotelListCard";
+import { type HotelsListType } from "../views/hotels/List/utils/HotelTypes";
 
 // Mock react-router-dom
 vi.mock("react-router-dom", async () => {
