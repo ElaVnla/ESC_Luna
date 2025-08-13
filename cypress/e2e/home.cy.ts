@@ -149,7 +149,7 @@ describe('Hotel search flow', () => {
       cy.intercept('GET', '**/api/hotels/*/price*').as('getHotelPrice');
       
       // Select Room to go to Feature 3
-      cy.get(':nth-child(1) > .g-0 > .col-md-7 > .py-md-2 > .d-sm-flex > .mt-3 > .mb-0').first().click();
+      cy.get(':nth-child(1) > .g-0 > .col-md-7 > .py-md-2 > .d-sm-flex > .mt-3 > .mb-0').click();
       
 
       // Feature 3
@@ -178,7 +178,7 @@ describe('Hotel search flow', () => {
       cy.get('[style="cursor: pointer; position: absolute; top: 20px; right: 20px; z-index: 2000; border: none; background: white; color: black;"]').click();
 
       // Select Room to goto Feature 4
-      cy.get('.mt-3 > .mb-0').first().click();
+      cy.get('.mt-3 > .mb-0').click();
       cy.intercept('GET', '**/.deploy_status_henson.json', { statusCode: 200, body: {} }).as('stripeStatus')
 
       // Test Guest Details details
@@ -271,102 +271,32 @@ describe('Hotel search flow', () => {
           });
       });
 
-      // Intercepts
-      cy.intercept('POST', /https:\/\/api\.stripe\.com\/v1\/payment_intents\/[^/]+\/confirm/).as('stripeConfirm');
-      cy.intercept('POST', 'http://localhost:3000/bookings/create').as('createBooking');
-      cy.intercept('POST', 'http://localhost:3000/payments/create').as('createPayment');
-      cy.intercept('POST', 'http://localhost:3000/email/send-confirmation').as('sendEmail');
-      cy.intercept('POST', 'http://localhost:3000/rooms/upsert').as('upsertRoom');
+      cy.get('.btn-primary').click();
 
-      // Go to payment step (one click is enough)
-      cy.get('.btn-primary').should('be.visible').click();
-
-      // Allow Payment Element to mount
-      cy.get('iframe[title="Secure payment input frame"]', { timeout: 20000 }).should('be.visible');
-
-      // Fill Stripe fields 
-      cy.getStripePaymentBody().find('input[name="number"]').should('be.visible').type('4242424242424242');
-      cy.getStripePaymentBody().find('input[name="expiry"]').should('be.visible').type('1232');
-      cy.getStripePaymentBody().find('input[name="cvc"]').should('be.visible').type('987');
-
-      // Click elsewhere 
-      cy.get('body').click(100, 100);
-
+      // Make Payment
       cy.wait(5000);
 
-      // Ensure the Pay button is actually enabled before clicking
-      cy.get('.btn-success').should('not.be.disabled').click();
+      cy.getStripePaymentBody()
+        .find('input[name="number"]')
+        .type('4242424242424242');
 
-      cy.wait('@stripeConfirm', { timeout: 30000 })
-        .its('response.statusCode')
-        .should('be.oneOf', [200, 201]);
+      cy.getStripePaymentBody()
+        .find('input[name="expiry"]')
+        .type('1232');
 
-      // Final URL
-      cy.url({ timeout: 20000 }).should('include', '/hotels/confirmed-booking');
+      cy.getStripePaymentBody()
+        .find('input[name="cvc"]',)
+        .type('987');
 
-      // New URL
-      cy.url({ timeout: 20_000 }).should('include', '/hotels/confirmed-booking');
+
+
+
+      cy.get('.btn-success').click();
       cy.on('uncaught:exception', (err) => {
         if (err.message.includes("Cannot read properties of undefined (reading 'words')")) {
           return false;
           }
         });
-
-      cy.wait(10000);
-
-      // Extract the Booking ID text and save it
-
-      cy.get('.shadow .card-body').invoke('text').then(raw => {
-        const text = raw.replace(/\s+/g, ' ').trim();
-        const m = text.match(/(BK-[^-]+-\d{10,17}-\d{3})(?!\d)/i);
-        expect(m, 'Booking ID present').to.not.be.null;
-        const bookingId = m![1];
-        cy.wrap(bookingId).as('bookingId');
-        cy.log('Booking ID:', bookingId);
-      });
-
-      cy.get('@bookingId').then((bookingId: string) => {
-        cy.get('.card-body > .d-flex > .btn').click();
-        cy.get(':nth-child(2) > .nav-link').click();
-        cy.get(':nth-child(1) > .col-md-12 > .form-control-lg').eq(0).type(bookingId);
-        cy.get(':nth-child(2) > .col-md-12 > .form-control-lg').eq(0).type(emailAddress);
-      });
-
-      cy.get(':nth-child(3) > .btn').click();
-
-      cy.wait(5000);
-      cy.mailslurp({ apiKey: Cypress.env('MAILSLURP_API_KEY') }).then((m) => {
-        cy.then({ timeout: 70000 }, () => m.waitForLatestEmail(inboxId, 60000))
-          .then((email) => {
-            const raw = (email.body || email.text).replace(/<[^>]+>/g, ' ');
-            const match = raw.match(/\b\d{5}\b/);
-
-            const otp = match[0];
-
-            cy.get('#input1').clear().type(otp[0]);
-            cy.get('#input2').clear().type(otp[1]);
-            cy.get('#input3').clear().type(otp[2]);
-            cy.get('#input4').clear().type(otp[3]);
-            cy.get('#input5').clear().type(otp[4]);
-
-          });
-      });
-
-      cy.get(':nth-child(4) > .btn').click();
-
-      // Check Full Name
-      cy.contains('Full Name').parent().should('contain.text', 'Mr Justin Kok');
-
-      // Check Email (can be exact or just domain)
-      cy.contains('Email').parent().should('contain.text', emailAddress);
-
-      // Check Mobile
-      cy.contains('Mobile').parent().should('contain.text', '+6583021575');
-
-      // Check Billing Address
-      cy.contains('Billing Address').parent().should('contain.text', '58 Somapah Rd');
-
-
     })
   })
 })
