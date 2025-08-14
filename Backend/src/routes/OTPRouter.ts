@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { sendOTPEmail, sendConfirmationEmail } from '../Services/EmailService';
 
 const router = Router();
-const otpStore: Record<string, string> = {}; // Stores OTPs for each email
+export const otpStore: Record<string, string> = {}; // Stores OTPs for each email
 
 // Send a 5-digit OTP to the user's email
 router.post('/send-otp', async (req, res) => {
