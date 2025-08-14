@@ -5,8 +5,9 @@ export class Hotel {
     @PrimaryColumn({ type: 'varchar', length: 10, collation: 'utf8mb4_bin' })
     id!: string;
 
-    @Column({ length: 255 })
+    @Column({ type: "varchar", length: 255 }) // explicitly add type    
     name!: string;
+
 
     @Column({ type: "text", nullable: true })
     address!: string;
@@ -23,13 +24,13 @@ export class Hotel {
     @Column({ type: "decimal", precision: 10, scale: 7, nullable: true })
     longitude!: number;
 
-    @Column({ length: 50, nullable: true })
+    @Column({ type: "varchar", length: 50, nullable: true })
     phone_number!: string;
 
-    @Column({ length: 100, nullable: true })
+    @Column({ type: "varchar", length: 100, nullable: true })
     contact_email!: string;
 
-    @Column({ length: 50, nullable: true })
+    @Column({ type: "varchar", length: 50, nullable: true })
     fax_number!: string;
 
     @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
@@ -41,31 +42,31 @@ export class Hotel {
     @Column({ type: "text", nullable: true })
     description!: string;
 
-    @Column({ length: 20, nullable: true })
+    @Column({type: "varchar", length: 20, nullable: true })
     postal_code!: string;
 
-    @Column({ length: 100, nullable: true })
+    @Column({type: "varchar", length: 100, nullable: true })
     city!: string;
 
-    @Column({ length: 100, nullable: true })
+    @Column({type: "varchar", length: 100, nullable: true })
     state!: string;
 
-    @Column({ length: 2, nullable: true })
+    @Column({type: "varchar", length: 2, nullable: true })
     country_code!: string;
 
     @Column({ type: "int", nullable: true })
     image_count!: number;
 
-    @Column({ length: 10, nullable: true })
+    @Column({type: "varchar", length: 10, nullable: true })
     primary_destination_id!: string;
     
-    @Column({ length: 100, nullable: true })
+    @Column({type: "varchar", length: 100, nullable: true })
     img_baseurl!: string;
 
     @Column({ type: "int", nullable: true })
     default_img_index!: number;
 
-    @Column({ length: 5, nullable: true })
+    @Column({type: "varchar", length: 5, nullable: true })
     img_suffix!: string;
     
 

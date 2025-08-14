@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "vitest run --root Frontend",
+    "test":  "npm run test --prefix Backend && npm run test --prefix Frontend",
     "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
